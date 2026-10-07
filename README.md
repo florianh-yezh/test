@@ -9,3 +9,7 @@ Ouvrir `index.html` dans un navigateur.
 - `images/` — photos du restaurant et logo
 
 À compléter : fichier original du logo (`images/logo.svg` est une reproduction), lien de la page Facebook, page Mentions légales.
+
+## Grossesse Marina
+
+Application de suivi de grossesse dans `grossesse-marina/index.html` (une seule page, sans dépendance) : semaines d'aménorrhée, rendez-vous et suivi type français, prénoms, aliments à éviter, guides, valise maternité, journal, chrono contractions et compteur de mouvements. Les données sont gardées dans le navigateur.

@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2E1435">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Grossesse Marina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : une colonne façon appli mobile (max 720px), en-tête « dragée » prune, barre d'onglets fixée en bas */
+:root{
+  --bg:#F7EEF1; --surface:#FFFFFF; --surface-2:#F2E4EA; --ink:#2A1330; --muted:#76607C; --line:#E8D6DE;
+  --accent:#B0306F; --accent-ink:#FFFFFF; --accent-soft:#F7DCE9;
+  --sage:#4F7D60; --sage-soft:#DCEBE1; --warn:#B8372B; --warn-soft:#F9E0DC; --amber:#9A6514; --amber-soft:#F6E8CC;
+  --hero:#2E1435; --hero-2:#4A1F4F; --hero-ink:#FCEFF6; --hero-muted:#D9B9D3; --hero-accent:#FF9CCB;
+  --f-display:"Gloock", "Georgia", serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"DM Mono", ui-monospace, "SFMono-Regular", monospace;
+  --r:18px; --r-sm:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#160D1A; --surface:#211528; --surface-2:#2C1D35; --ink:#F7E9F1; --muted:#B49CB9; --line:#3A2945;
+  --accent:#F28DBE; --accent-ink:#2A0F1E; --accent-soft:#45203A;
+  --sage:#9CCBAB; --sage-soft:#1F3328; --warn:#FF9182; --warn-soft:#3E1D1E; --amber:#EBBC62; --amber-soft:#3A2C15;
+  --hero:#2B1734; --hero-2:#43204B; --hero-ink:#FCEFF6; --hero-muted:#CDAECB; --hero-accent:#FF9CCB;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#160D1A; --surface:#211528; --surface-2:#2C1D35; --ink:#F7E9F1; --muted:#B49CB9; --line:#3A2945;
+  --accent:#F28DBE; --accent-ink:#2A0F1E; --accent-soft:#45203A;
+  --sage:#9CCBAB; --sage-soft:#1F3328; --warn:#FF9182; --warn-soft:#3E1D1E; --amber:#EBBC62; --amber-soft:#3A2C15;
+  --hero:#2B1734; --hero-2:#43204B; --hero-ink:#FCEFF6; --hero-muted:#CDAECB; --hero-accent:#FF9CCB;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+.app{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:14px 110px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:28px}
+h3{font-size:20px}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font:600 11px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding-block:4px 14px}
+.brand{display:flex;align-items:baseline;gap:8px;min-width:0}
+.brand h1{font-size:24px}
+.brand h1 em{font-style:normal;color:var(--accent)}
+.sync{font:500 11px/1 var(--f-body);padding:6px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.sync.on{background:var(--sage-soft);color:var(--sage)}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* buttons, inputs */
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.small{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn.danger{background:var(--warn-soft);color:var(--warn)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted);min-width:0;flex:1 1 140px}
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],select,textarea{
+  width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);font-weight:500;min-width:0}
+textarea{resize:vertical;min-height:70px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.card.soft{background:var(--surface-2);border-color:transparent}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.sectionhead{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-block:6px 2px}
+.sectionhead p{flex-basis:100%}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:22px;color:var(--hero-ink);
+  background:radial-gradient(120% 90% at 100% 0%, var(--hero-2) 0%, var(--hero) 60%);}
+.hero::after{content:"";position:absolute;inset:auto -60px -80px auto;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb, var(--hero-accent) 28%, transparent), transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;position:relative;z-index:1}
+.ring{width:150px;height:150px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .fruit{font-size:44px;line-height:1;animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-5px)}}
+.hero .big{font-family:var(--f-display);font-size:64px;line-height:.9}
+.hero .big small{font-size:22px;color:var(--hero-muted);margin-left:4px}
+.hero .sub{color:var(--hero-muted);font-size:14px}
+.hero .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hero .chip{background:color-mix(in srgb, var(--hero-ink) 12%, transparent);color:var(--hero-ink);border-radius:99px;padding:6px 11px;font-size:12.5px;font-weight:600}
+.hero .size{margin-top:16px;position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hero .size div{background:color-mix(in srgb, var(--hero-ink) 9%, transparent);border-radius:14px;padding:10px 12px;min-width:0}
+.hero .size b{display:block;font-family:var(--f-mono);font-weight:500;font-size:17px}
+.hero .size span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--hero-muted)}
+.trim{display:grid;grid-template-columns:15fr 14fr 12fr;gap:4px;margin-top:14px;position:relative;z-index:1}
+.trim i{height:6px;border-radius:9px;background:color-mix(in srgb, var(--hero-ink) 18%, transparent);position:relative;overflow:hidden}
+.trim i b{position:absolute;inset:0 auto 0 0;background:var(--hero-accent);border-radius:9px}
+.trimlbl{display:grid;grid-template-columns:15fr 14fr 12fr;gap:4px;font-size:11px;color:var(--hero-muted);margin-top:5px;position:relative;z-index:1}
+@media (max-width:460px){
+  .hero-grid{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .hero .chips{justify-content:center}
+  .ring{width:136px;height:136px}
+}
+
+/* week info */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.duo{grid-template-columns:1fr}}
+.duo .card h3{display:flex;align-items:center;gap:8px;font-size:18px;margin-bottom:6px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}
+.dot.sage{background:var(--sage)}
+
+/* list rows */
+.list{display:flex;flex-direction:column}
+.item{display:flex;gap:12px;align-items:flex-start;padding-block:12px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .body{flex:1;min-width:0}
+.item .title{font-weight:600}
+.datebox{width:52px;flex:none;text-align:center;border-radius:12px;background:var(--surface-2);padding:6px 0}
+.datebox b{display:block;font-family:var(--f-display);font-size:22px;line-height:1}
+.datebox span{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 9px;background:var(--surface-2);color:var(--muted)}
+.pill.echo{background:var(--accent-soft);color:var(--accent)}
+.pill.labo{background:var(--amber-soft);color:var(--amber)}
+.pill.consult{background:var(--sage-soft);color:var(--sage)}
+.pill.admin,.pill.prepa{background:var(--surface-2);color:var(--ink)}
+.pill.non{background:var(--warn-soft);color:var(--warn)}
+.pill.att{background:var(--amber-soft);color:var(--amber)}
+.pill.ok{background:var(--sage-soft);color:var(--sage)}
+.item.done .title{text-decoration:line-through;color:var(--muted)}
+.check{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);background:var(--surface);flex:none;cursor:pointer;display:grid;place-items:center;margin-top:1px}
+.check.on{background:var(--sage);border-color:var(--sage)}
+.check.on::after{content:"";width:6px;height:11px;border:solid var(--surface);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:8px;font-size:18px;line-height:1}
+.x:hover{color:var(--warn)}
+
+/* segmented */
+.seg{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-weight:600;font-size:13.5px;white-space:nowrap;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* weeks */
+.weeks{display:flex;gap:8px;overflow-x:auto;padding-block:4px 8px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.wk{flex:none;width:58px;scroll-snap-align:center;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 0;text-align:center;cursor:pointer}
+.wk b{display:block;font-family:var(--f-display);font-size:20px;font-weight:400}
+.wk span{font-size:10px;color:var(--muted);letter-spacing:.06em}
+.wk.now{border-color:var(--accent)}
+.wk[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.wk[aria-pressed="true"] span{color:var(--accent-ink)}
+.wkhead{display:flex;gap:16px;align-items:center}
+.wkhead .emo{font-size:58px;line-height:1;width:84px;height:84px;display:grid;place-items:center;border-radius:24px;background:var(--surface-2);flex:none}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.facts div{background:var(--surface-2);border-radius:12px;padding:10px}
+.facts b{display:block;font-family:var(--f-mono);font-weight:500;font-size:16px}
+.facts span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* names */
+.namecard{display:flex;align-items:center;gap:12px;padding-block:12px;border-top:1px solid var(--line)}
+.namecard:first-child{border-top:0}
+.namecard .nm{font-family:var(--f-display);font-size:24px;line-height:1.1;min-width:0;overflow-wrap:anywhere}
+.namecard .full{font-size:12.5px;color:var(--muted)}
+.heart{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 10px;cursor:pointer;font-size:12.5px;font-weight:600;display:inline-flex;gap:5px;align-items:center;color:var(--muted)}
+.heart svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+.heart.on{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.heart.on svg{fill:currentColor}
+.sex{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.sex.F{background:var(--accent-soft);color:var(--accent)}
+.sex.M{background:var(--sage-soft);color:var(--sage)}
+.sex.X{background:var(--amber-soft);color:var(--amber)}
+.sugg{display:flex;flex-wrap:wrap;gap:8px}
+.sugg button{border:1px dashed var(--line);background:transparent;border-radius:99px;padding:6px 12px;cursor:pointer;font-weight:500}
+.sugg button:hover{border-color:var(--accent);color:var(--accent)}
+.duel{font-family:var(--f-display);font-size:44px;text-align:center;padding-block:10px;line-height:1.1;overflow-wrap:anywhere}
+
+/* food */
+.foodrow{display:flex;gap:12px;align-items:flex-start;padding-block:12px;border-top:1px solid var(--line)}
+.foodrow:first-child{border-top:0}
+.foodrow .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;font-weight:800}
+.foodrow .ic.non{background:var(--warn-soft);color:var(--warn)}
+.foodrow .ic.att{background:var(--amber-soft);color:var(--amber)}
+.foodrow .ic.ok{background:var(--sage-soft);color:var(--sage)}
+.tag{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-right:4px}
+
+/* guides accordion */
+details.g{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+details.g summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;gap:12px;align-items:center}
+details.g summary::-webkit-details-marker{display:none}
+details.g summary::after{content:"+";margin-left:auto;font-size:22px;color:var(--muted);transition:transform .2s}
+details.g[open] summary::after{transform:rotate(45deg)}
+details.g .gbody{padding:0 18px 18px;display:flex;flex-direction:column;gap:10px;max-width:65ch}
+details.g ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+details.g.alert{border-color:var(--warn)}
+details.g.alert summary h3{color:var(--warn)}
+.gnum{font-family:var(--f-mono);font-size:12px;color:var(--muted);width:24px;flex:none}
+
+/* tools */
+.timer{font-family:var(--f-mono);font-size:44px;text-align:center;font-variant-numeric:tabular-nums;line-height:1.1}
+.bigtap{width:100%;border:0;border-radius:20px;padding:22px;font-size:18px;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.bigtap.stop{background:var(--ink);color:var(--bg)}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font-weight:600;color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid var(--line)}
+table.t td{padding:7px 4px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.progressbar{height:8px;border-radius:9px;background:var(--surface-2);overflow:hidden}
+.progressbar b{display:block;height:100%;background:var(--sage);border-radius:9px;transition:width .3s}
+.mood{display:flex;gap:6px}
+.mood button{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 0;font-size:22px;cursor:pointer}
+.mood button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.spark{width:100%;height:120px;display:block}
+
+/* banner + toast */
+.banner{border-radius:14px;padding:12px 14px;background:var(--amber-soft);color:var(--amber);font-size:13.5px;font-weight:500}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.disclaimer{font-size:12px;color:var(--muted);text-align:center;max-width:60ch;margin:8px auto 0}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+nav.tabs button{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--muted);font-size:10.5px;font-weight:600}
+nav.tabs svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-current="page"]{color:var(--accent)}
+nav.tabs button[aria-current="page"] svg{stroke-width:2.2}
+
+/* modal sheet */
+.sheet{position:fixed;inset:0;z-index:40;display:grid;place-items:end center;background:color-mix(in srgb, var(--ink) 40%, transparent)}
+.sheet .panel{width:100%;max-width:720px;max-height:92%;overflow:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:.4;transform:translateY(6px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1>Grossesse <em id="brandName">Marina</em></h1></div>
+    <span class="spacer"></span>
+    <span class="sync" id="sync">Sur cet appareil</span>
+    <button class="iconbtn" id="openSettings" aria-label="Réglages">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <main id="view" class="stack"></main>
+  <p class="disclaimer">Informations générales basées sur les recommandations françaises. Elles ne remplacent jamais l'avis de ta sage-femme, de ton médecin ou de la maternité.</p>
+</div>
+
+<nav class="tabs" aria-label="Navigation">
+  <div class="in">
+    <button data-tab="accueil"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</button>
+    <button data-tab="semaines"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Semaines</button>
+    <button data-tab="rdv"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>RDV</button>
+    <button data-tab="prenoms"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Prénoms</button>
+    <button data-tab="assiette"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M4 4l16 16"/></svg>Assiette</button>
+    <button data-tab="guide"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6M9 11h6"/></svg>Guide</button>
+  </div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sheet" id="sheet" hidden><div class="panel" id="sheetPanel"></div></div>
+
+<script>
+/* ---------------- Données de référence ---------------- */
+// [SA, emoji, comparaison, taille cm, poids g, bébé, maman]
+const WEEKS = [
+ [4,"🌱","une graine de pavot",0.1,0,"L'œuf s'implante dans la paroi de l'utérus.","Retard de règles : le test devient positif."],
+ [5,"🌾","une graine de sésame",0.2,0,"Le cœur primitif commence à battre.","Fatigue, seins tendus, envies d'uriner plus fréquentes."],
+ [6,"🫘","une lentille",0.4,0,"Ébauches des bras, des jambes et du tube neural.","Nausées possibles : fractionne les repas."],
+ [7,"🫐","une myrtille",1,0,"Le cerveau se développe à toute vitesse.","Prends rendez-vous pour la première consultation."],
+ [8,"🍇","un grain de raisin",1.6,1,"Les doigts commencent à se dessiner.","L'utérus a la taille d'une orange."],
+ [9,"🍒","une cerise",2.3,2,"Les paupières se forment, les muscles bougent déjà.","Pense à la prise de sang du 1er trimestre."],
+ [10,"🍓","une fraise",3.1,4,"L'embryon devient fœtus : tous ses organes sont en place.","Les nausées sont souvent au plus fort."],
+ [11,"🌰","une châtaigne",4.1,7,"Les ongles apparaissent, il bouge sans que tu le sentes.","Écho du 1er trimestre à caler entre 11 et 13 SA + 6 j."],
+ [12,"🍋","un citron",5.4,14,"Les réflexes arrivent : il ouvre et ferme les mains.","Écho de datation : tu vas le voir gigoter."],
+ [13,"🥝","un kiwi",7.4,23,"Les cordes vocales se forment.","Fin du 1er trimestre en vue, l'énergie revient souvent."],
+ [14,"🍑","une pêche",8.7,43,"Il fait des grimaces et peut sucer son pouce.","Déclare ta grossesse avant 15 SA (CPAM et CAF)."],
+ [15,"🍎","une pomme",10.1,70,"Ses os durcissent, sa peau est encore translucide.","Bienvenue dans le 2e trimestre."],
+ [16,"🥑","un avocat",11.6,100,"Il entend les bruits de ton corps : cœur, digestion, voix.","Consultation du 4e mois et entretien prénatal précoce."],
+ [17,"🍐","une poire",13,140,"Une première couche de graisse se forme sous la peau.","Le ventre s'arrondit visiblement."],
+ [18,"🫑","un poivron",14.2,190,"Ses empreintes digitales se dessinent.","Premières « bulles » possibles (souvent entre 18 et 22 SA)."],
+ [19,"🥭","une mangue",15.3,240,"Un enduit protecteur, le vernix, recouvre sa peau.","Les ligaments de l'utérus peuvent tirailler."],
+ [20,"🍌","une banane",25.6,300,"Mi-parcours ! Il avale du liquide amniotique.","Tu sens probablement ses mouvements."],
+ [21,"🥕","une carotte",26.7,360,"Ses sourcils et ses cils poussent.","Jambes lourdes : surélève les pieds le soir."],
+ [22,"🥒","une courgette",27.8,430,"Il réagit aux sons et à la lumière.","Écho morphologique : on peut connaître le sexe."],
+ [23,"🍊","un pamplemousse",28.9,500,"Ses poumons se préparent à respirer.","Hydrate la peau du ventre matin et soir."],
+ [24,"🌽","un épi de maïs",30,600,"Il alterne phases d'éveil et de sommeil.","Dépistage du diabète gestationnel possible (24–28 SA)."],
+ [25,"🍠","une patate douce",34.6,660,"Ses cheveux poussent et prennent de la couleur.","Brûlures d'estomac : petits repas, pas de couché juste après."],
+ [26,"🥬","une laitue",35.6,760,"Ses yeux commencent à s'ouvrir.","6e mois : prise en charge à 100 % par l'Assurance Maladie."],
+ [27,"🥦","un chou-fleur",36.6,875,"Il a le hoquet : tu le sens par petites secousses.","Dernière semaine du 2e trimestre."],
+ [28,"🍆","une aubergine",37.6,1000,"Il rêve peut-être déjà (sommeil paradoxal).","3e trimestre. Injection anti-D si tu es Rhésus négatif."],
+ [29,"🥥","une noix de coco",38.6,1150,"Ses muscles et ses poumons mûrissent.","Dors plutôt sur le côté gauche."],
+ [30,"🥬","un chou vert",39.9,1320,"Il prend environ 200 g par semaine.","Prépare la liste de naissance et la valise."],
+ [31,"🍍","un ananas",41.1,1500,"Ses cinq sens fonctionnent.","Souffle court : l'utérus appuie sur le diaphragme."],
+ [32,"🍈","un melon charentais",42.4,1700,"Il se place souvent tête en bas.","Écho du 3e trimestre (30–32 SA)."],
+ [33,"🎃","un potimarron",43.7,1900,"Son immunité se renforce grâce à tes anticorps.","Consultation d'anesthésie au 8e mois."],
+ [34,"🍈","un melon miel",45,2150,"Ses ongles atteignent le bout des doigts.","Le congé maternité approche (6 semaines avant le terme)."],
+ [35,"🥬","une laitue romaine",46.2,2380,"Il a moins de place mais bouge toujours régulièrement.","Prélèvement vaginal (streptocoque B) entre 34 et 38 SA."],
+ [36,"🍉","une mini-pastèque",47.4,2600,"Ses poumons sont presque prêts.","Valise bouclée, papiers et trajet repérés."],
+ [37,"🥬","une blette",48.6,2860,"Il est considéré comme né à terme dès maintenant.","Contractions d'entraînement plus fréquentes."],
+ [38,"🥬","un poireau",49.8,3080,"Il fait ses réserves de graisse.","Repos : chaque jour peut être le grand jour."],
+ [39,"🍉","une pastèque",50.7,3290,"Le duvet qui couvrait sa peau tombe.","Surveille la perte des eaux et le rythme des contractions."],
+ [40,"🎃","une citrouille",51.2,3460,"Il est prêt à te rencontrer.","Consultations rapprochées à la maternité."],
+ [41,"🍉","une grosse pastèque",51.7,3600,"Terme théorique en France : 41 SA.","Surveillance tous les 2 jours ; le déclenchement sera discuté."]
+];
+
+const RDV_PLAN = [
+ [8,"1re consultation prénatale","consult","Confirmation, prise de sang (groupe, toxo, rubéole…)"],
+ [12,"Échographie du 1er trimestre","echo","Datation et clarté nucale (11 à 13 SA + 6 j)"],
+ [12,"Prise de sang : dépistage trisomie 21","labo","Marqueurs sériques, le même jour ou juste après l'écho"],
+ [14,"Déclarer la grossesse","admin","Avant 15 SA, en ligne via le médecin ou la sage-femme"],
+ [16,"Consultation du 4e mois","consult","Avec l'entretien prénatal précoce"],
+ [20,"Consultation du 5e mois","consult",""],
+ [22,"Échographie morphologique","echo","2e trimestre, 20 à 22 SA"],
+ [24,"Consultation du 6e mois","consult",""],
+ [26,"Dépistage du diabète gestationnel","labo","Seulement si prescrit (24 à 28 SA)"],
+ [28,"Consultation du 7e mois","consult","Injection anti-D si Rhésus négatif"],
+ [28,"Préparation à la naissance","prepa","7 séances prises en charge"],
+ [32,"Échographie du 3e trimestre","echo","30 à 32 SA"],
+ [32,"Consultation du 8e mois","consult",""],
+ [33,"Consultation d'anesthésie","consult","Obligatoire, même sans péridurale prévue"],
+ [35,"Prélèvement vaginal (streptocoque B)","labo","Entre 34 et 38 SA"],
+ [36,"Consultation du 9e mois","consult","À la maternité"],
+ [41,"Terme : rendez-vous à la maternité","consult","Surveillance de dépassement"]
+];
+const TYPES = {consult:"Consultation",echo:"Échographie",labo:"Analyse",admin:"Démarche",prepa:"Préparation",autre:"Autre"};
+
+const FOOD = [
+ ["non","Fromages au lait cru","Camembert, brie, reblochon, roquefort, mont-d'or… au lait cru.","Listériose","Choisis-les au lait pasteurisé."],
+ ["non","Croûte des fromages","Même pasteurisés, la croûte concentre les bactéries.","Listériose","Retire toujours la croûte."],
+ ["non","Fromage râpé en sachet","Manipulé après fabrication.","Listériose","Râpe toi-même un comté ou un parmesan."],
+ ["non","Lait cru","Lait de ferme non pasteurisé.","Listériose, toxoplasmose","Lait UHT ou pasteurisé : aucun problème."],
+ ["non","Charcuterie crue ou séchée","Jambon cru, saucisson, chorizo, viande des Grisons, bresaola.","Toxoplasmose, listériose","OK si cuite dans un plat chaud (pizza, quiche)."],
+ ["non","Rillettes, pâtés, foie gras","Ainsi que les produits en gelée.","Listériose",""],
+ ["non","Viande crue ou saignante","Tartare, carpaccio, steak bleu ou saignant.","Toxoplasmose","Cuisson à cœur : plus de rose au centre."],
+ ["non","Poisson cru","Sushi, sashimi, tartare, ceviche, gravlax.","Listériose, parasites","Les makis cuits ou végétariens restent possibles."],
+ ["non","Poisson fumé","Saumon, truite, haddock fumés.","Listériose","OK s'il est recuit dans un plat chaud."],
+ ["non","Coquillages crus","Huîtres, palourdes, moules crues.","Listériose, virus","Bien cuits, ils sont autorisés."],
+ ["non","Surimi, tarama","Produits de la mer transformés et réfrigérés.","Listériose",""],
+ ["non","Œufs crus ou peu cuits","Mayonnaise maison, mousse au chocolat, tiramisu, œuf coque.","Salmonellose","Œufs durs, omelette bien cuite ou produits industriels pasteurisés."],
+ ["non","Graines germées crues","Soja, alfalfa, radis germés.","Bactéries","Cuites, elles ne posent pas de problème."],
+ ["non","Alcool","Vin, bière, cidre, champagne, cocktails.","Toxique pour le bébé","Zéro alcool : aucune dose n'est sans risque."],
+ ["non","Espadon, marlin, requin, siki, lamproie","Gros poissons prédateurs.","Mercure","À éviter totalement."],
+ ["non","Foie et produits au foie","Foie de veau, de volaille, pâté de foie.","Excès de vitamine A",""],
+ ["att","Café, thé, cola","Sources de caféine.","Caféine","Pas plus de 2 à 3 tasses par jour. Boissons énergisantes à éviter."],
+ ["att","Thon, lotte, bar, dorade, raie, brochet","Poissons qui accumulent le mercure.","Mercure","Pas plus de 150 g par semaine."],
+ ["att","Soja et produits au soja","Tofu, boissons et desserts au soja.","Phyto-œstrogènes","Pas plus d'un produit par jour."],
+ ["att","Réglisse","Bonbons, boissons, tisanes à la réglisse.","Tension artérielle","Avec modération."],
+ ["att","Tisanes et huiles essentielles","Certaines plantes sont déconseillées pendant la grossesse.","Plantes actives","Demande à ta sage-femme ou au pharmacien."],
+ ["att","Fruits, légumes et herbes crus","Surtout la terre qui peut y rester.","Toxoplasmose (si non immunisée)","Lave-les soigneusement, épluche-les."],
+ ["att","Restauration rapide et plats crus du traiteur","Salades composées, sandwichs préparés à l'avance.","Listériose","Préfère le fait-maison ou les plats servis chauds."],
+ ["ok","Fromages à pâte pressée cuite","Comté, emmental, beaufort, gruyère, parmesan.","Calcium","Sans la croûte."],
+ ["ok","Laitages pasteurisés","Yaourts, fromage blanc, lait UHT, fromages pasteurisés.","Calcium","3 produits laitiers par jour."],
+ ["ok","Viande et volaille bien cuites","Bœuf, porc, poulet, cuits à cœur.","Fer, protéines",""],
+ ["ok","Petits poissons gras cuits","Sardine, maquereau, hareng, saumon cuit.","Oméga-3","Du poisson 2 fois par semaine, dont un gras."],
+ ["ok","Œufs bien cuits","Durs, omelette, au plat bien cuit.","Protéines, choline",""],
+ ["ok","Légumineuses","Lentilles, pois chiches, haricots secs.","Fer, fibres, folates",""],
+ ["ok","Légumes verts","Épinards, brocoli, haricots verts, bien lavés.","Vitamine B9 (folates)",""],
+ ["ok","Fruits frais lavés","Lavés ou épluchés.","Vitamines, fibres",""],
+ ["ok","Féculents complets","Pain complet, riz, pâtes, quinoa.","Énergie, fibres",""],
+ ["ok","Eau","Environ 1,5 L par jour, plus s'il fait chaud.","Hydratation",""]
+];
+
+const GUIDES = [
+ {alert:true,t:"Quand appeler la maternité sans attendre",b:`<p>Appelle la maternité (ou le 15 la nuit, le 112 depuis un portable) si :</p><ul>
+  <li>tu as des saignements, même légers ;</li><li>tu perds du liquide (perte des eaux) ;</li>
+  <li>tu as des contractions régulières avant 37 SA ;</li><li>tu sens moins ou plus du tout bouger le bébé ;</li>
+  <li>tu as plus de 38 °C de fièvre ;</li><li>tu as de violents maux de tête, des troubles de la vue, ou le visage et les mains qui gonflent d'un coup ;</li>
+  <li>tu as une douleur au ventre forte et continue ;</li><li>tes paumes et plantes de pieds te démangent fortement.</li></ul>
+  <p class="muted">Dans le doute, appelle : les équipes préfèrent te voir pour rien.</p>`},
+ {t:"Le travail a commencé ?",b:`<ul><li><b>Contractions</b> : régulières, de plus en plus fortes et rapprochées, elles ne passent ni au repos ni dans un bain chaud.</li>
+  <li><b>1er bébé</b> : en général on part quand elles reviennent toutes les 5 minutes depuis 1 à 2 heures.</li>
+  <li><b>Perte des eaux</b> : on part à la maternité, même sans contractions.</li>
+  <li>Utilise le chrono de contractions de l'onglet Guide → Outils.</li></ul>`},
+ {t:"Nausées du 1er trimestre",b:`<ul><li>Mange un petit quelque chose avant de te lever (biscotte, amandes).</li><li>Fractionne : 5 à 6 petits repas plutôt que 3 gros.</li>
+  <li>Bois par petites gorgées entre les repas.</li><li>Le gingembre aide beaucoup de femmes.</li><li>Évite les odeurs fortes et la cuisine grasse.</li></ul>
+  <p>Si tu vomis tout ce que tu manges ou perds du poids, consulte : ça se soigne.</p>`},
+ {t:"Toxoplasmose et listériose",b:`<p><b>Toxoplasmose</b> (si tu n'es pas immunisée) : viande bien cuite, fruits et légumes lavés, gants pour jardiner, pas de litière du chat. Une prise de sang tous les mois permet de surveiller.</p>
+  <p><b>Listériose</b> (pour toutes) : pas de lait cru ni de croûte de fromage, consommer vite les restes, nettoyer le frigo régulièrement. Tout est détaillé dans l'onglet Assiette.</p>`},
+ {t:"Bien dormir",b:`<ul><li>À partir du 3e trimestre, dors plutôt sur le côté gauche.</li><li>Un coussin de grossesse entre les genoux soulage le dos.</li>
+  <li>Surélève légèrement la tête du lit en cas de remontées acides.</li><li>Une petite sieste dans la journée compte vraiment.</li></ul>`},
+ {t:"Sport et activité",b:`<ul><li>Marche, natation, aquagym, yoga et pilates prénatals : parfaits.</li><li>Environ 30 minutes par jour, à un rythme où tu peux parler.</li>
+  <li>À éviter : sports de combat, risques de chute (ski, équitation), plongée sous-marine.</li><li>Arrête-toi en cas de douleur, saignement ou essoufflement inhabituel.</li></ul>`},
+ {t:"Médicaments",b:`<ul><li>Pas d'automédication, y compris les « naturels » et les huiles essentielles.</li><li>Le paracétamol reste l'antidouleur de référence, à la dose la plus faible et sur avis.</li>
+  <li>Ibuprofène, aspirine et autres anti-inflammatoires : à éviter, interdits à partir du 6e mois.</li><li>Signale ta grossesse à chaque professionnel (dentiste, pharmacien, radiologue).</li></ul>`},
+ {t:"Petits maux et astuces",b:`<ul><li><b>Jambes lourdes</b> : jambes surélevées, douche fraîche sur les mollets, bas de contention si prescrits.</li>
+  <li><b>Constipation</b> : fibres, pruneaux, eau, marche.</li><li><b>Brûlures d'estomac</b> : petits repas, pas d'allongement juste après.</li>
+  <li><b>Vergetures</b> : hydratation quotidienne du ventre, des seins et des hanches.</li><li><b>Crampes</b> : étirements et hydratation ; parle-en à la sage-femme (magnésium).</li></ul>`},
+ {t:"Démarches administratives",b:`<ul><li><b>Déclaration de grossesse</b> avant 15 SA (faite en ligne par le médecin ou la sage-femme).</li>
+  <li><b>Inscription à la maternité</b> le plus tôt possible.</li><li><b>Prise en charge à 100 %</b> à partir du 1er jour du 6e mois.</li>
+  <li><b>Congé maternité</b> : 16 semaines pour un 1er ou 2e enfant (6 avant le terme, 10 après).</li>
+  <li><b>Congé paternité</b> : 28 jours, dont une partie obligatoire juste après la naissance.</li>
+  <li><b>Reconnaissance anticipée</b> en mairie si vous n'êtes pas mariés.</li><li><b>Déclaration de naissance</b> en mairie dans les 5 jours.</li>
+  <li><b>Mode de garde</b> : inscriptions en crèche souvent dès le 6e mois.</li></ul><p class="muted">Les règles changent : vérifie sur ameli.fr et service-public.fr.</p>`},
+ {t:"Préparation à la naissance",b:`<ul><li>Un entretien prénatal précoce puis 7 séances, prises en charge par l'Assurance Maladie.</li>
+  <li>Méthodes au choix : classique, sophrologie, haptonomie, yoga, piscine, chant prénatal.</li>
+  <li>À commencer vers le 6e mois.</li><li>Le ou la partenaire est bienvenu(e) aux séances.</li></ul>`},
+ {t:"Le rôle du partenaire",b:`<ul><li>Venir aux échos et à quelques consultations.</li><li>Prendre en charge la litière du chat et les courses « à risque ».</li>
+  <li>Monter la chambre, installer le siège auto, repérer le trajet de la maternité.</li><li>Masser le dos, les pieds… et écouter.</li>
+  <li>Garder le téléphone chargé à partir de 36 SA.</li></ul>`},
+ {t:"Allaitement ou biberon",b:`<p>Les deux sont des choix respectables. Si tu veux allaiter, renseigne-toi avant la naissance : séance de préparation dédiée, consultante en lactation, associations (La Leche League, etc.). Une mise au sein précoce, dans l'heure qui suit la naissance, aide beaucoup.</p>`}
+];
+
+const VALISE = {
+ "Pour Marina":["Chemises de nuit ou t-shirts amples (×3)","Robe de chambre","Chaussons et chaussettes","Culottes jetables ou filet","Serviettes hygiéniques maternité","Soutiens-gorge d'allaitement (×2)","Coussinets d'allaitement","Trousse de toilette","Brumisateur","En-cas et boissons","Chargeur avec câble long","Tenue de sortie confortable","Livre, musique, casque"],
+ "Pour bébé":["Bodies naissance (×6)","Pyjamas (×6)","Bonnet","Chaussettes (×3)","Gilet","Gigoteuse","Langes (×4)","Serviette de bain","Couches taille 1 (selon la maternité)","Siège auto installé dans la voiture","Doudou"],
+ "Papiers":["Carte Vitale","Carte de mutuelle","Pièce d'identité","Dossier de suivi et échographies","Résultats de prises de sang","Carte de groupe sanguin","Reconnaissance anticipée (si non mariés)","Livret de famille (si mariés)"],
+ "Pour le partenaire":["Tenue de rechange","En-cas et boissons","Monnaie pour le parking","Chargeur de téléphone"]
+};
+
+const SUGG = {
+ F:["Louise","Ambre","Jade","Alba","Romy","Alma","Rose","Mia","Lina","Anna","Iris","Mila","Emma","Agathe","Céleste","Margaux","Victoire","Nina","Capucine","Héloïse","Apolline","Joy","Lise","Olivia"],
+ M:["Gabriel","Raphaël","Léon","Louis","Maël","Noah","Jules","Arthur","Adam","Lucas","Isaac","Gabin","Aaron","Hugo","Malo","Nino","Côme","Marius","Timothée","Elio","Milo","Augustin","Sohan","Théo"],
+ X:["Camille","Sacha","Eden","Charlie","Lou","Noa","Alix","Maé","Andrea","Ange","Swann","Morgan"]
+};
+const MOODS = ["😫","😕","😐","🙂","🥰"];
+
+/* ---------------- État & stockage ---------------- */
+const DEFAULTS = {
+  profil:{maman:"Marina",papa:"",nom:"",mode:"ddr",ddr:"",terme:"",sexe:""},
+  rdv:{items:[]}, prenoms:{items:[]}, journal:{items:[]}, valise:{checked:{},custom:[]}
+};
+const KEYS = Object.keys(DEFAULTS);
+const clone = o => JSON.parse(JSON.stringify(o));
+const S = {};
+function lsGet(k){ try{ const v = localStorage.getItem("gm:"+k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem("gm:"+k, JSON.stringify(v)); }catch(e){} }
+for (const k of KEYS){ S[k] = Object.assign(clone(DEFAULTS[k]), lsGet(k) || {}); }
+
+const UI = Object.assign({tab:"accueil", guideTab:"tutos", foodCat:"all", foodQ:"", nameSex:"all", week:null}, lsGet("ui") || {});
+let db = null, readOnly = false;
+const writing = {}, dirty = {};
+
+async function initCloud(){
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  try{
+    const [d, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    if (!d) return;
+    db = d;
+    if (user && typeof user.can === "function"){
+      try{ const c = await user.can("data.write"); if (c === false) setReadOnly(); }catch(e){}
+    }
+    setSync(true);
+    for (const k of KEYS){
+      db.doc("grossesse/"+k).onSnapshot(snap => {
+        if (!snap.exists) return;
+        S[k] = Object.assign(clone(DEFAULTS[k]), clone(snap.data()));
+        lsSet(k, S[k]);
+        requestRender();
+      }, () => setSync(false));
+    }
+  }catch(e){ db = null; }
+}
+function setSync(on){ const el = document.getElementById("sync"); el.textContent = on ? (readOnly ? "Lecture seule" : "Synchronisé") : "Sur cet appareil"; el.classList.toggle("on", !!on); }
+function setReadOnly(){
+  readOnly = true; setSync(!!db);
+  const b = document.getElementById("banner");
+  b.textContent = "Tu peux consulter l'appli, mais tes modifications ne seront pas enregistrées. Demande au propriétaire de te donner l'accès Contributeur.";
+  b.hidden = false;
+}
+function save(k){
+  lsSet(k, S[k]);
+  if (db && !readOnly) flush(k);
+}
+async function flush(k){
+  if (writing[k]){ dirty[k] = true; return; }
+  writing[k] = true;
+  let retried = false;
+  do{
+    dirty[k] = false;
+    try{ await db.doc("grossesse/"+k).set(clone(S[k])); }
+    catch(e){
+      const code = e && e.code;
+      if (code === "invalid_argument" || code === "not_granted"){ setReadOnly(); break; }
+      if (code === "quota_exceeded"){ toast("Espace plein : supprime quelques entrées."); break; }
+      if (code === "unavailable" && !retried){ retried = true; dirty[k] = true; await new Promise(r=>setTimeout(r, 600+Math.random()*800)); }
+    }
+  } while (dirty[k]);
+  writing[k] = false;
+}
+
+/* ---------------- Utilitaires ---------------- */
+const DAY = 86400000;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Math.random().toString(36).slice(2,10);
+function parseD(s){ if(!s) return null; const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); }
+function fmtISO(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function today(){ const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function addDays(d,n){ const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function diffDays(a,b){ return Math.round((a - b)/DAY); }
+const fmtLong = d => d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const fmtMid = d => d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"long"});
+function toast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("show"), 2200); }
+
+function ddr(){
+  const p = S.profil;
+  if (p.mode === "terme" && p.terme){ const t = parseD(p.terme); return t ? addDays(t, -287) : null; }
+  return parseD(p.ddr);
+}
+function preg(){
+  const d0 = ddr(); if (!d0) return null;
+  const days = diffDays(today(), d0);
+  const terme = addDays(d0, 287);
+  const sa = Math.floor(days/7), j = ((days%7)+7)%7;
+  const trim = sa < 15 ? 1 : sa < 29 ? 2 : 3;
+  const mois = Math.max(1, Math.min(9, Math.floor((days-14)/30.44)+1));
+  return {days, sa, j, terme, trim, mois, left: diffDays(terme, today()), pct: Math.max(0, Math.min(1, days/287))};
+}
+function weekData(sa){ const c = Math.max(4, Math.min(41, sa)); return WEEKS.find(w => w[0] === c); }
+function fmtSize(cm){ return cm < 1 ? (cm*10).toLocaleString("fr-FR")+" mm" : cm.toLocaleString("fr-FR")+" cm"; }
+function fmtWeight(g){ return g < 1 ? "< 1 g" : g >= 1000 ? (g/1000).toLocaleString("fr-FR",{maximumFractionDigits:2})+" kg" : g+" g"; }
+const mamanName = () => S.profil.maman || "Marina";
+const papaName = () => S.profil.papa || "Papa";
+
+/* ---------------- Rendu ---------------- */
+let pendingRender = false;
+function requestRender(){
+  const a = document.activeElement;
+  if (a && document.getElementById("view").contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName) && a.type !== "checkbox"){ pendingRender = true; return; }
+  render();
+}
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender){ pendingRender = false; requestRender(); } }, 50));
+
+function render(){
+  document.getElementById("brandName").textContent = mamanName();
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === UI.tab ? "page" : "false"));
+  const v = document.getElementById("view");
+  const fn = {accueil:vAccueil, semaines:vSemaines, rdv:vRdv, prenoms:vPrenoms, assiette:vAssiette, guide:vGuide}[UI.tab] || vAccueil;
+  v.innerHTML = fn();
+  if (UI.tab === "semaines"){ const cur = v.querySelector('.wk[aria-pressed="true"]'); if (cur) cur.scrollIntoView({inline:"center", block:"nearest"}); }
+  if (UI.tab === "guide" && UI.guideTab === "outils") tick();
+}
+
+function heroHTML(p){
+  const w = weekData(p.sa);
+  const C = 2*Math.PI*52;
+  const tick = f => { const a = f*2*Math.PI; return `<line x1="${60+46*Math.cos(a)}" y1="${60+46*Math.sin(a)}" x2="${60+58*Math.cos(a)}" y2="${60+58*Math.sin(a)}" stroke="var(--hero)" stroke-width="3"/>`; };
+  const tp = [[0,15],[15,29],[29,41]].map(([a,b]) => Math.max(0, Math.min(1, (p.days/7 - a)/(b - a))));
+  const before = p.days < 0;
+  return `<section class="hero fade">
+    <div class="hero-grid">
+      <div class="ring" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="color-mix(in srgb, var(--hero-ink) 14%, transparent)" stroke-width="8"/>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--hero-accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p.pct)}"/>
+        ${tick(15/41)}${tick(29/41)}</svg>
+        <div class="center"><div><div class="fruit">${w[1]}</div><div class="mono" style="font-size:12px;color:var(--hero-muted);margin-top:4px">${Math.round(p.pct*100)} %</div></div></div>
+      </div>
+      <div>
+        <div class="eyebrow" style="color:var(--hero-muted)">${before ? "Bientôt" : "Aujourd'hui · " + p.trim + (p.trim===1?"er":"e") + " trimestre"}</div>
+        <div class="big">${Math.max(0,p.sa)}<small>SA</small> <small>+ ${p.j} j</small></div>
+        <p class="sub">Bébé a la taille d'${esc(w[2])}.</p>
+        <div class="chips">
+          <span class="chip">${p.mois}${p.mois===1?"er":"e"} mois</span>
+          <span class="chip">${p.left > 0 ? "J − " + p.left : p.left === 0 ? "C'est le jour J" : "Terme dépassé de " + (-p.left) + " j"}</span>
+          <span class="chip">Terme ${p.terme.toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</span>
+        </div>
+      </div>
+    </div>
+    <div class="size">
+      <div><span>Taille</span><b>${fmtSize(w[3])}</b></div>
+      <div><span>Poids</span><b>${fmtWeight(w[4])}</b></div>
+      <div><span>Il reste</span><b>${Math.max(0, Math.ceil(p.left/7))} sem.</b></div>
+    </div>
+    <div class="trim">${tp.map(f=>`<i><b style="width:${f*100}%"></b></i>`).join("")}</div>
+    <div class="trimlbl"><span>T1 · 0–14 SA</span><span>T2 · 15–28 SA</span><span>T3 · 29–41 SA</span></div>
+  </section>`;
+}
+
+function setupHTML(){
+  return `<section class="hero fade"><div style="position:relative;z-index:1" class="stack">
+    <div class="eyebrow" style="color:var(--hero-muted)">Bienvenue</div>
+    <h2 style="font-size:36px">On commence par une date.</h2>
+    <p class="sub">Indique la date de début de tes dernières règles, ou la date de terme donnée à l'échographie. L'appli calcule tout le reste : semaines d'aménorrhée, trimestre, calendrier des rendez-vous.</p>
+    <form id="quickSetup" class="row" style="align-items:flex-end">
+      <label class="f" style="color:var(--hero-muted)">Je connais
+        <select id="qsMode"><option value="ddr">la date des dernières règles</option><option value="terme">la date de terme</option></select></label>
+      <label class="f" style="color:var(--hero-muted)">Date<input type="date" id="qsDate" required></label>
+      <button class="btn" type="submit">C'est parti</button>
+    </form>
+  </div></section>`;
+}
+
+function vAccueil(){
+  const p = preg();
+  let h = p ? heroHTML(p) : setupHTML();
+  const sa = p ? p.sa : 4;
+  const w = weekData(sa);
+  if (p){
+    h += `<div class="duo">
+      <div class="card"><h3><span class="dot"></span>Bébé cette semaine</h3><p>${esc(w[5])}</p></div>
+      <div class="card"><h3><span class="dot sage"></span>${esc(mamanName())} cette semaine</h3><p>${esc(w[6])}</p></div>
+    </div>`;
+  }
+  // prochain RDV
+  const t = today();
+  const next = S.rdv.items.filter(r => !r.fait && parseD(r.date) >= t).sort((a,b)=>a.date.localeCompare(b.date)+((a.heure||"").localeCompare(b.heure||"")))[0];
+  const favs = topNames().slice(0,3);
+  h += `<div class="grid2">
+    <div class="card stack">
+      <div class="row"><span class="eyebrow">Prochain rendez-vous</span><span class="spacer"></span><button class="btn small ghost" data-go="rdv">Agenda</button></div>
+      ${next ? `<div class="item" style="padding:0">${dateBox(next.date)}<div class="body"><div class="title">${esc(next.titre)}</div>
+        <div class="muted" style="font-size:13.5px">${esc(fmtMid(parseD(next.date)))}${next.heure?" · "+esc(next.heure):""}${next.lieu?" · "+esc(next.lieu):""}</div>
+        <div style="margin-top:6px"><span class="pill ${esc(next.type)}">${esc(TYPES[next.type]||"Autre")}</span> <span class="muted" style="font-size:12.5px">dans ${diffDays(parseD(next.date), t)} j</span></div></div></div>`
+        : `<p class="muted">Aucun rendez-vous à venir. ${p ? "Génère le calendrier de suivi en un clic dans l'agenda." : ""}</p>`}
+    </div>
+    <div class="card stack">
+      <div class="row"><span class="eyebrow">Prénoms coups de cœur</span><span class="spacer"></span><button class="btn small ghost" data-go="prenoms">Tous</button></div>
+      ${favs.length ? favs.map(n => `<div class="row"><span class="sex ${esc(n.sexe)}">${n.sexe==="X"?"F/G":n.sexe==="F"?"F":"G"}</span><span style="font-family:var(--f-display);font-size:22px">${esc(n.prenom)}</span><span class="spacer"></span><span class="muted" style="font-size:12.5px">${n.elle&&n.lui?"♥ ♥ commun":"♥"}</span></div>`).join("")
+        : `<p class="muted">Ajoutez les prénoms que vous aimez, chacun peut mettre son cœur.</p>`}
+    </div>
+  </div>`;
+  h += `<div class="grid2">
+    <button class="card soft" data-guide="outils" style="text-align:left;cursor:pointer;border:0"><span class="eyebrow">Outil</span><h3 style="margin-top:6px">Chrono contractions</h3><p class="muted" style="font-size:13.5px">Durée et écart entre chaque contraction.</p></button>
+    <button class="card soft" data-guide="outils" style="text-align:left;cursor:pointer;border:0"><span class="eyebrow">Outil</span><h3 style="margin-top:6px">Compteur de mouvements</h3><p class="muted" style="font-size:13.5px">Compte les mouvements de bébé.</p></button>
+    <button class="card soft" data-guide="valise" style="text-align:left;cursor:pointer;border:0"><span class="eyebrow">Checklist</span><h3 style="margin-top:6px">Valise maternité</h3><p class="muted" style="font-size:13.5px">${valiseStats().done} sur ${valiseStats().total} prêts.</p></button>
+    <button class="card soft" data-go="assiette" style="text-align:left;cursor:pointer;border:0"><span class="eyebrow">Alimentation</span><h3 style="margin-top:6px">Est-ce que je peux manger… ?</h3><p class="muted" style="font-size:13.5px">${FOOD.length} aliments classés.</p></button>
+  </div>`;
+  return h;
+}
+
+function dateBox(iso){
+  const d = parseD(iso);
+  return `<div class="datebox"><b>${d.getDate()}</b><span>${d.toLocaleDateString("fr-FR",{month:"short"}).replace(".","")}</span></div>`;
+}
+
+function vSemaines(){
+  const p = preg();
+  const cur = p ? Math.max(4, Math.min(41, p.sa)) : null;
+  const sel = UI.week || cur || 12;
+  const w = weekData(sel);
+  const d0 = ddr();
+  const range = d0 ? `Du ${addDays(d0, sel*7).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})} au ${addDays(d0, sel*7+6).toLocaleDateString("fr-FR",{day:"numeric",month:"long"})}` : "";
+  return `<div class="sectionhead"><h2>Semaine par semaine</h2><p class="muted">En semaines d'aménorrhée (SA), comme en France : on compte depuis le 1er jour des dernières règles.</p></div>
+  <div class="weeks" role="group" aria-label="Choisir une semaine">${WEEKS.map(x => `<button class="wk ${x[0]===cur?"now":""}" data-week="${x[0]}" aria-pressed="${x[0]===sel}"><b>${x[0]}</b><span>${x[0]===cur?"MAINT.":"SA"}</span></button>`).join("")}</div>
+  <section class="card fade">
+    <div class="wkhead"><div class="emo">${w[1]}</div><div style="min-width:0">
+      <div class="eyebrow">${sel} SA · ${sel<15?"1er":sel<29?"2e":"3e"} trimestre</div>
+      <h2 style="margin-top:4px">${esc(w[2].replace(/^une? /,"").replace(/^./,c=>c.toUpperCase()))}</h2>
+      ${range ? `<p class="muted" style="font-size:13.5px">${range}</p>` : ""}</div></div>
+    <div class="facts"><div><span>Taille</span><b>${fmtSize(w[3])}</b></div><div><span>Poids</span><b>${fmtWeight(w[4])}</b></div><div><span>Mois</span><b>${Math.max(1, Math.min(9, Math.floor((sel*7-14)/30.44)+1))}</b></div></div>
+  </section>
+  <div class="duo">
+    <div class="card"><h3><span class="dot"></span>Bébé</h3><p>${esc(w[5])}</p></div>
+    <div class="card"><h3><span class="dot sage"></span>${esc(mamanName())}</h3><p>${esc(w[6])}</p></div>
+  </div>
+  <p class="muted" style="font-size:12.5px">Jusqu'à 19 SA la taille est mesurée de la tête aux fesses, ensuite de la tête aux pieds. Chaque bébé grandit à son rythme.</p>`;
+}
+
+function vRdv(){
+  const t = today();
+  const items = S.rdv.items.slice().sort((a,b)=>a.date.localeCompare(b.date) || (a.heure||"").localeCompare(b.heure||""));
+  const up = items.filter(r => parseD(r.date) >= t && !r.fait), past = items.filter(r => parseD(r.date) < t || r.fait);
+  const row = r => `<div class="item ${r.fait?"done":""}">
+      <button class="check ${r.fait?"on":""}" data-rdvdone="${esc(r.id)}" aria-label="Marquer comme fait"></button>
+      ${dateBox(r.date)}
+      <div class="body"><div class="title">${esc(r.titre)}</div>
+        <div class="muted" style="font-size:13.5px">${esc(fmtMid(parseD(r.date)))}${r.heure?" · "+esc(r.heure):""}${r.lieu?" · "+esc(r.lieu):""}</div>
+        ${r.notes?`<div style="font-size:13.5px;margin-top:2px">${esc(r.notes)}</div>`:""}
+        <div style="margin-top:6px" class="row"><span class="pill ${esc(r.type)}">${esc(TYPES[r.type]||"Autre")}</span>${r.suggere?`<span class="pill">Date indicative</span>`:""}</div></div>
+      <button class="x" data-rdvdel="${esc(r.id)}" aria-label="Supprimer">×</button></div>`;
+  const p = preg();
+  return `<div class="sectionhead"><h2>Rendez-vous</h2><span class="spacer"></span>
+    ${p ? `<button class="btn small ghost" id="genPlan">Générer le suivi type</button>` : ""}
+    <p class="muted">Consultations, échographies, prises de sang, démarches. ${p?"Le suivi type ajoute les étapes françaises avec des dates indicatives à ajuster.":"Renseigne une date dans les réglages pour générer le suivi type."}</p></div>
+  <form class="card stack" id="rdvForm">
+    <h3>Nouveau rendez-vous</h3>
+    <div class="row"><label class="f" style="flex-basis:100%">Intitulé<input type="text" id="rdvTitre" required placeholder="Échographie du 2e trimestre"></label></div>
+    <div class="row">
+      <label class="f">Date<input type="date" id="rdvDate" required></label>
+      <label class="f">Heure<input type="time" id="rdvHeure"></label>
+      <label class="f">Type<select id="rdvType">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("")}</select></label>
+    </div>
+    <div class="row"><label class="f">Lieu<input type="text" id="rdvLieu" placeholder="Maternité, cabinet…"></label><label class="f">Notes<input type="text" id="rdvNotes" placeholder="À jeun, apporter le dossier…"></label></div>
+    <div class="row"><button class="btn" type="submit" ${readOnly?"disabled":""}>Ajouter</button></div>
+  </form>
+  <section class="card"><div class="row"><h3>À venir</h3><span class="spacer"></span><span class="mono muted">${up.length}</span></div>
+    <div class="list" style="margin-top:6px">${up.length ? up.map(row).join("") : `<p class="muted" style="padding-block:10px">Rien de prévu pour l'instant.</p>`}</div></section>
+  ${past.length ? `<section class="card"><div class="row"><h3>Passés ou faits</h3><span class="spacer"></span><span class="mono muted">${past.length}</span></div><div class="list" style="margin-top:6px">${past.reverse().map(row).join("")}</div></section>` : ""}`;
+}
+
+function topNames(){
+  return S.prenoms.items.slice().filter(n=>n.elle||n.lui).sort((a,b)=>((b.elle?1:0)+(b.lui?1:0))-((a.elle?1:0)+(a.lui?1:0)) || a.prenom.localeCompare(b.prenom,"fr"));
+}
+function vPrenoms(){
+  const f = UI.nameSex;
+  const nom = S.profil.nom ? " " + S.profil.nom.toUpperCase() : "";
+  const items = S.prenoms.items.filter(n => f==="all" || (f==="fav" ? (n.elle&&n.lui) : n.sexe===f))
+    .sort((a,b)=>((b.elle?1:0)+(b.lui?1:0))-((a.elle?1:0)+(a.lui?1:0)) || a.prenom.localeCompare(b.prenom,"fr"));
+  const have = new Set(S.prenoms.items.map(n=>n.prenom.toLowerCase()));
+  const sugSex = (f==="F"||f==="M"||f==="X") ? f : (S.profil.sexe || "F");
+  const sugg = (SUGG[sugSex]||SUGG.F).filter(n=>!have.has(n.toLowerCase()));
+  const common = S.prenoms.items.filter(n=>n.elle&&n.lui);
+  return `<div class="sectionhead"><h2>Prénoms</h2><p class="muted">Chacun met son cœur. Les prénoms aimés par vous deux remontent en haut.${S.profil.nom?"":" Ajoute votre nom de famille dans les réglages pour voir le prénom en entier."}</p></div>
+  <form class="card stack" id="nameForm">
+    <div class="row" style="align-items:flex-end">
+      <label class="f" style="flex:2 1 180px">Prénom<input type="text" id="nameIn" required placeholder="Ex. Alma" maxlength="40"></label>
+      <label class="f">Pour<select id="nameSex"><option value="F">une fille</option><option value="M">un garçon</option><option value="X">les deux</option></select></label>
+      <button class="btn" type="submit" ${readOnly?"disabled":""}>Ajouter</button>
+    </div>
+    <div><div class="eyebrow" style="margin-bottom:8px">Idées ${sugSex==="F"?"pour une fille":sugSex==="M"?"pour un garçon":"mixtes"}</div>
+      <div class="sugg">${sugg.slice(0,14).map(n=>`<button type="button" data-sugg="${esc(n)}" data-sx="${sugSex}">+ ${esc(n)}</button>`).join("")}</div></div>
+  </form>
+  <div class="seg">${[["all","Tous"],["fav","Coups de cœur communs"],["F","Fille"],["M","Garçon"],["X","Mixte"]].map(([k,l])=>`<button data-namef="${k}" aria-pressed="${f===k}">${l}</button>`).join("")}</div>
+  <section class="card"><div class="list">${items.length ? items.map(n => `<div class="namecard">
+      <span class="sex ${esc(n.sexe)}">${n.sexe==="X"?"F/G":n.sexe==="F"?"F":"G"}</span>
+      <div style="min-width:0;flex:1"><div class="nm">${esc(n.prenom)}</div>${nom?`<div class="full">${esc(n.prenom+nom)}</div>`:""}</div>
+      <button class="heart ${n.elle?"on":""}" data-heart="elle" data-id="${esc(n.id)}" aria-pressed="${!!n.elle}"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>${esc(mamanName())}</button>
+      <button class="heart ${n.lui?"on":""}" data-heart="lui" data-id="${esc(n.id)}" aria-pressed="${!!n.lui}"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>${esc(papaName())}</button>
+      <button class="x" data-namedel="${esc(n.id)}" aria-label="Supprimer ${esc(n.prenom)}">×</button></div>`).join("")
+      : `<p class="muted" style="padding-block:10px">${f==="fav"?"Pas encore de prénom aimé par vous deux.":"Aucun prénom ici pour l'instant. Ajoutez-en un ou piochez dans les idées."}</p>`}</div></section>
+  ${common.length >= 2 ? `<section class="card soft stack"><span class="eyebrow">Vous hésitez ?</span><div class="duel" id="duel">${esc(UI.tirage || "…")}</div><button class="btn ghost" id="tirage">Tirer au sort parmi vos coups de cœur communs</button></section>` : ""}`;
+}
+
+function vAssiette(){
+  return `<div class="sectionhead"><h2>Dans l'assiette</h2><p class="muted">Les deux risques principaux sont la listériose (pour toutes) et la toxoplasmose (si tu n'es pas immunisée : ta prise de sang le dit).</p></div>
+  <div class="card stack">
+    <label class="f">Est-ce que je peux manger…<input type="search" id="foodQ" placeholder="sushi, comté, café, mayonnaise…" value="${esc(UI.foodQ)}"></label>
+    <div class="seg">${[["all","Tout"],["non","À éviter"],["att","Avec modération"],["ok","Bons choix"]].map(([k,l])=>`<button data-foodf="${k}" aria-pressed="${UI.foodCat===k}">${l}</button>`).join("")}</div>
+  </div>
+  <section class="card"><div class="list" id="foodList">${foodList()}</div></section>
+  <section class="card soft stack"><h3>Les bons réflexes en cuisine</h3>
+    <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+      <li>Cuire viandes et poissons à cœur.</li><li>Laver fruits, légumes et herbes aromatiques à grande eau.</li>
+      <li>Se laver les mains après avoir touché de la viande crue, de la terre ou des légumes non lavés.</li>
+      <li>Nettoyer le réfrigérateur 2 fois par mois, le régler à 4 °C maximum.</li>
+      <li>Consommer les restes rapidement, après les avoir bien réchauffés.</li>
+      <li>Séparer aliments crus et cuits dans le frigo.</li></ul></section>`;
+}
+function foodList(){
+  const q = UI.foodQ.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+  const rows = FOOD.filter(f => (UI.foodCat==="all"||f[0]===UI.foodCat) && (!q || norm(f[1]+" "+f[2]+" "+f[3]).includes(q)));
+  const lbl = {non:"À éviter",att:"Modération",ok:"Oui"}, ic = {non:"✕",att:"!",ok:"✓"};
+  if (!rows.length) return `<p class="muted" style="padding-block:10px">Rien trouvé pour « ${esc(UI.foodQ)} ». Dans le doute, demande à ta sage-femme.</p>`;
+  return rows.map(f => `<div class="foodrow"><div class="ic ${f[0]}" aria-hidden="true">${ic[f[0]]}</div>
+    <div style="flex:1;min-width:0"><div class="row" style="gap:8px"><b>${esc(f[1])}</b><span class="pill ${f[0]}">${lbl[f[0]]}</span></div>
+    <div class="muted" style="font-size:13.5px">${esc(f[2])}</div>
+    <div style="font-size:13.5px;margin-top:4px"><span class="tag">${esc(f[3])}</span>${esc(f[4])}</div></div></div>`).join("");
+}
+
+function valiseStats(){
+  let total = 0, done = 0;
+  for (const [cat, list] of Object.entries(VALISE)) list.forEach((it,i)=>{ total++; if (S.valise.checked[cat+"|"+i]) done++; });
+  (S.valise.custom||[]).forEach(c=>{ total++; if (c.ok) done++; });
+  return {total, done};
+}
+function vGuide(){
+  const g = UI.guideTab;
+  const seg = `<div class="seg">${[["tutos","Tutos"],["outils","Outils"],["valise","Valise"],["journal","Journal"]].map(([k,l])=>`<button data-gt="${k}" aria-pressed="${g===k}">${l}</button>`).join("")}</div>`;
+  let body = "";
+  if (g === "tutos"){
+    body = `<div class="sectionhead"><h2>Le guide</h2><p class="muted">L'essentiel, sans jargon.</p></div>${seg}
+      <div class="stack">${GUIDES.map((x,i)=>`<details class="g ${x.alert?"alert":""}" ${x.alert?"open":""}><summary><span class="gnum">${String(i+1).padStart(2,"0")}</span><h3>${esc(x.t)}</h3></summary><div class="gbody">${x.b}</div></details>`).join("")}</div>`;
+  } else if (g === "outils"){
+    const c = Tools.c, k = Tools.k;
+    const lastRows = c.list.slice(-8).reverse();
+    body = `<div class="sectionhead"><h2>Outils</h2></div>${seg}
+    <section class="card stack"><div class="row"><h3>Chrono contractions</h3><span class="spacer"></span>${c.list.length?`<button class="btn small ghost" id="cReset">Effacer</button>`:""}</div>
+      <div class="timer" id="cTimer">${c.start ? "00:00" : "—"}</div>
+      <button class="bigtap ${c.start?"stop":""}" id="cBtn">${c.start ? "Fin de la contraction" : "Début d'une contraction"}</button>
+      <p class="muted" id="cSummary" style="font-size:13.5px">${contrSummary()}</p>
+      ${lastRows.length?`<div style="overflow-x:auto"><table class="t"><thead><tr><th>Heure</th><th>Durée</th><th>Écart</th></tr></thead><tbody>${lastRows.map(r=>`<tr><td>${new Date(r.s).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</td><td>${mmss(r.d)}</td><td>${r.gap?mmss(r.gap):"—"}</td></tr>`).join("")}</tbody></table></div>`:""}
+    </section>
+    <section class="card stack"><div class="row"><h3>Compteur de mouvements</h3><span class="spacer"></span>${k.n?`<button class="btn small ghost" id="kReset">Recommencer</button>`:""}</div>
+      <div class="timer">${k.n}<span class="muted" style="font-size:18px"> / 10</span></div>
+      <div class="progressbar"><b style="width:${Math.min(100,k.n*10)}%"></b></div>
+      <button class="bigtap" id="kBtn">Il a bougé</button>
+      <p class="muted" id="kInfo" style="font-size:13.5px">${k.start ? "Commencé à "+new Date(k.start).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})+". " : ""}À partir du 3e trimestre, installe-toi au calme, allongée sur le côté. Si bébé bouge nettement moins que d'habitude, appelle la maternité.</p>
+    </section>`;
+  } else if (g === "valise"){
+    const st = valiseStats();
+    body = `<div class="sectionhead"><h2>Valise maternité</h2><p class="muted">À boucler vers 34–36 SA. Chaque maternité a sa propre liste, demande-la.</p></div>${seg}
+    <div class="card stack"><div class="row"><b>${st.done} / ${st.total} prêts</b><span class="spacer"></span><span class="mono muted">${Math.round(st.done/Math.max(1,st.total)*100)} %</span></div><div class="progressbar"><b style="width:${st.done/Math.max(1,st.total)*100}%"></b></div></div>
+    ${Object.entries(VALISE).map(([cat,list])=>`<section class="card"><h3 style="margin-bottom:4px">${esc(cat.replace("Marina", mamanName()))}</h3><div class="list">${list.map((it,i)=>{const key=cat+"|"+i, on=!!S.valise.checked[key];return `<div class="item ${on?"done":""}" style="align-items:center"><button class="check ${on?"on":""}" data-val="${esc(key)}" aria-label="${esc(it)}"></button><div class="body title" style="font-weight:500">${esc(it)}</div></div>`}).join("")}</div></section>`).join("")}
+    <section class="card"><h3 style="margin-bottom:4px">Vos ajouts</h3><div class="list">${(S.valise.custom||[]).map(c=>`<div class="item ${c.ok?"done":""}" style="align-items:center"><button class="check ${c.ok?"on":""}" data-valc="${esc(c.id)}" aria-label="${esc(c.t)}"></button><div class="body title" style="font-weight:500">${esc(c.t)}</div><button class="x" data-valdel="${esc(c.id)}" aria-label="Supprimer">×</button></div>`).join("")}</div>
+      <form id="valForm" class="row" style="margin-top:10px"><input type="text" id="valIn" placeholder="Ajouter un objet" required style="flex:1"><button class="btn" type="submit" ${readOnly?"disabled":""}>Ajouter</button></form></section>`;
+  } else {
+    const items = S.journal.items.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    body = `<div class="sectionhead"><h2>Journal</h2><p class="muted">Poids, humeur, petits moments à ne pas oublier.</p></div>${seg}
+    <form class="card stack" id="jForm">
+      <div class="row"><label class="f">Date<input type="date" id="jDate" value="${fmtISO(today())}" required></label><label class="f">Poids (kg)<input type="number" id="jPoids" step="0.1" min="30" max="200" placeholder="64,5"></label></div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Humeur</div><div class="mood">${MOODS.map((m,i)=>`<button type="button" data-mood="${i}" aria-pressed="${UI.mood===i}" aria-label="Humeur ${i+1} sur 5">${m}</button>`).join("")}</div></div>
+      <label class="f">Note<textarea id="jNote" placeholder="Premier coup de pied ressenti pendant le dîner…"></textarea></label>
+      <div class="row"><button class="btn" type="submit" ${readOnly?"disabled":""}>Enregistrer</button></div>
+    </form>
+    ${weightChart()}
+    <section class="card"><div class="list">${items.length ? items.map(j=>`<div class="item"><div class="datebox">${MOODS[j.mood] ? `<b style="font-family:inherit">${MOODS[j.mood]}</b>` : `<b>${parseD(j.date).getDate()}</b>`}<span>${parseD(j.date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}).replace(".","")}</span></div>
+      <div class="body"><div class="title">${esc(fmtMid(parseD(j.date)))}${j.poids?` · <span class="mono">${esc(String(j.poids).replace(".",","))} kg</span>`:""}${saAt(j.date)}</div>${j.note?`<p style="font-size:14px;white-space:pre-wrap">${esc(j.note)}</p>`:""}</div>
+      <button class="x" data-jdel="${esc(j.id)}" aria-label="Supprimer">×</button></div>`).join("") : `<p class="muted" style="padding-block:10px">Aucune entrée pour l'instant.</p>`}</div></section>`;
+  }
+  return body;
+}
+function saAt(iso){ const d0 = ddr(); if (!d0) return ""; const n = diffDays(parseD(iso), d0); return n>=0 ? ` <span class="pill">${Math.floor(n/7)} SA</span>` : ""; }
+function weightChart(){
+  const pts = S.journal.items.filter(j=>j.poids).sort((a,b)=>a.date.localeCompare(b.date));
+  if (pts.length < 2) return `<p class="muted" style="font-size:13.5px">La courbe de poids apparaît dès 2 pesées. La prise de poids conseillée dépend de ton IMC de départ : parles-en à ta sage-femme.</p>`;
+  const W = 600, H = 150, pl = 40, pr = 16, pt = 14, pb = 26;
+  const xs = pts.map(p=>parseD(p.date).getTime()), ys = pts.map(p=>+p.poids);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), yMin = Math.floor(Math.min(...ys)-1), yMax = Math.ceil(Math.max(...ys)+1);
+  const X = t => pl + (x1===x0?0.5:(t-x0)/(x1-x0))*(W-pl-pr), Y = v => pt + (1-(v-yMin)/(yMax-yMin))*(H-pt-pb);
+  const line = pts.map((p,i)=>`${i?"L":"M"}${X(xs[i]).toFixed(1)},${Y(ys[i]).toFixed(1)}`).join(" ");
+  const area = line + ` L${X(xs[xs.length-1]).toFixed(1)},${H-pb} L${X(xs[0]).toFixed(1)},${H-pb} Z`;
+  const ticks = [yMin, (yMin+yMax)/2, yMax];
+  const diff = (ys[ys.length-1]-ys[0]);
+  return `<section class="card stack"><div class="row"><h3>Courbe de poids</h3><span class="spacer"></span><span class="mono">${diff>=0?"+":""}${diff.toLocaleString("fr-FR",{maximumFractionDigits:1})} kg</span></div>
+  <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Évolution du poids">
+    ${ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${Y(t)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="DM Mono, monospace">${t.toLocaleString("fr-FR",{maximumFractionDigits:1})}</text>`).join("")}
+    <path d="${area}" fill="var(--accent-soft)"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    <circle cx="${X(xs[xs.length-1])}" cy="${Y(ys[ys.length-1])}" r="5" fill="var(--accent)"/>
+    <text x="${pl}" y="${H-6}" font-size="11" fill="var(--muted)">${parseD(pts[0].date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</text>
+    <text x="${W-pr}" y="${H-6}" font-size="11" fill="var(--muted)" text-anchor="end">${parseD(pts[pts.length-1].date).toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</text>
+  </svg></section>`;
+}
+
+/* ---------------- Outils (locaux à l'appareil) ---------------- */
+const Tools = { c: Object.assign({start:null, list:[]}, lsGet("contr")||{}), k: Object.assign({n:0, start:null}, lsGet("kicks")||{}) };
+const mmss = ms => { const s = Math.round(ms/1000); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+function contrSummary(){
+  const l = Tools.c.list;
+  if (!l.length) return "Appuie au début de chaque contraction, puis à la fin. L'appli calcule la durée et l'écart.";
+  const recent = l.filter(r => Date.now() - r.s < 3600000);
+  const gaps = recent.map(r=>r.gap).filter(Boolean);
+  if (gaps.length < 2) return `${l.length} contraction${l.length>1?"s":""} notée${l.length>1?"s":""}.`;
+  const avgGap = gaps.reduce((a,b)=>a+b,0)/gaps.length, avgD = recent.reduce((a,r)=>a+r.d,0)/recent.length;
+  let s = `Sur la dernière heure : ${recent.length} contractions, écart moyen ${mmss(avgGap)}, durée moyenne ${mmss(avgD)}.`;
+  if (avgGap <= 5*60000 && recent.length >= 6) s += " Elles sont rapprochées : appelle la maternité.";
+  return s;
+}
+let timerInt = null;
+function tick(){
+  clearInterval(timerInt);
+  const el = document.getElementById("cTimer");
+  if (!el || !Tools.c.start) return;
+  const upd = () => { const e = document.getElementById("cTimer"); if (!e || !Tools.c.start){ clearInterval(timerInt); return; } e.textContent = mmss(Date.now()-Tools.c.start); };
+  upd(); timerInt = setInterval(upd, 500);
+}
+
+/* ---------------- Réglages ---------------- */
+function openSettings(){
+  const p = S.profil;
+  document.getElementById("sheetPanel").innerHTML = `<form id="setForm" class="stack">
+    <div class="row"><h2>Réglages</h2><span class="spacer"></span><button type="button" class="iconbtn" id="closeSheet" aria-label="Fermer">✕</button></div>
+    <div class="card stack"><h3>La grossesse</h3>
+      <label class="f">Je renseigne<select id="sMode"><option value="ddr" ${p.mode!=="terme"?"selected":""}>la date des dernières règles</option><option value="terme" ${p.mode==="terme"?"selected":""}>la date de terme (échographie)</option></select></label>
+      <label class="f">Date<input type="date" id="sDate" value="${esc(p.mode==="terme"?p.terme:p.ddr)}"></label>
+      <p class="muted" style="font-size:13px">En France, le terme est fixé à 41 SA, soit 287 jours après le début des dernières règles. Si l'échographie a corrigé la date, renseigne le terme qu'elle donne.</p>
+      <label class="f">Sexe du bébé<select id="sSexe"><option value="" ${!p.sexe?"selected":""}>Surprise / on ne sait pas</option><option value="F" ${p.sexe==="F"?"selected":""}>Une fille</option><option value="M" ${p.sexe==="M"?"selected":""}>Un garçon</option></select></label>
+    </div>
+    <div class="card stack"><h3>Vous</h3>
+      <div class="row"><label class="f">Maman<input type="text" id="sMaman" value="${esc(p.maman)}" maxlength="30"></label><label class="f">Partenaire<input type="text" id="sPapa" value="${esc(p.papa)}" placeholder="Prénom" maxlength="30"></label></div>
+      <label class="f">Nom de famille du bébé<input type="text" id="sNom" value="${esc(p.nom)}" maxlength="40"></label>
+    </div>
+    <div class="row"><button class="btn" type="submit" ${readOnly?"disabled":""}>Enregistrer</button><span class="spacer"></span>
+      <span class="muted" style="font-size:12.5px">${db ? "Données partagées entre vous deux." : "Données gardées sur cet appareil."}</span></div>
+  </form>`;
+  document.getElementById("sheet").hidden = false;
+}
+function closeSheet(){ document.getElementById("sheet").hidden = true; }
+
+/* ---------------- Événements ---------------- */
+function setTab(t){ UI.tab = t; lsSet("ui", UI); render(); window.scrollTo({top:0}); }
+document.querySelector("nav.tabs").addEventListener("click", e => { const b = e.target.closest("button[data-tab]"); if (b) setTab(b.dataset.tab); });
+document.getElementById("openSettings").addEventListener("click", openSettings);
+document.getElementById("sheet").addEventListener("click", e => { if (e.target.id === "sheet" || e.target.closest("#closeSheet")) closeSheet(); });
+
+function guard(){ if (readOnly){ toast("Lecture seule : modification non enregistrée."); return false; } return true; }
+
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  const id = e.target.id;
+  if (!guard()) return;
+  if (id === "setForm"){
+    const p = S.profil, mode = document.getElementById("sMode").value, d = document.getElementById("sDate").value;
+    p.mode = mode; if (mode === "terme") p.terme = d; else p.ddr = d;
+    p.sexe = document.getElementById("sSexe").value;
+    p.maman = document.getElementById("sMaman").value.trim() || "Marina";
+    p.papa = document.getElementById("sPapa").value.trim();
+    p.nom = document.getElementById("sNom").value.trim();
+    save("profil"); closeSheet(); render(); toast("Réglages enregistrés");
+  }
+  if (id === "quickSetup"){
+    const mode = document.getElementById("qsMode").value, d = document.getElementById("qsDate").value;
+    if (!d) return;
+    S.profil.mode = mode; if (mode === "terme") S.profil.terme = d; else S.profil.ddr = d;
+    save("profil"); render(); toast("C'est noté !");
+  }
+  if (id === "rdvForm"){
+    S.rdv.items.push({id:uid(), titre:document.getElementById("rdvTitre").value.trim(), date:document.getElementById("rdvDate").value,
+      heure:document.getElementById("rdvHeure").value, type:document.getElementById("rdvType").value,
+      lieu:document.getElementById("rdvLieu").value.trim(), notes:document.getElementById("rdvNotes").value.trim(), fait:false});
+    save("rdv"); render(); toast("Rendez-vous ajouté");
+  }
+  if (id === "nameForm"){
+    const n = document.getElementById("nameIn").value.trim();
+    if (!n) return;
+    if (S.prenoms.items.some(x=>x.prenom.toLowerCase()===n.toLowerCase())){ toast(n+" est déjà dans la liste"); return; }
+    S.prenoms.items.push({id:uid(), prenom:n.charAt(0).toUpperCase()+n.slice(1), sexe:document.getElementById("nameSex").value, elle:false, lui:false});
+    save("prenoms"); render(); toast(n+" ajouté");
+  }
+  if (id === "valForm"){
+    const t = document.getElementById("valIn").value.trim(); if (!t) return;
+    S.valise.custom = S.valise.custom || []; S.valise.custom.push({id:uid(), t, ok:false});
+    save("valise"); render();
+  }
+  if (id === "jForm"){
+    const poids = parseFloat(String(document.getElementById("jPoids").value).replace(",","."));
+    const note = document.getElementById("jNote").value.trim();
+    const mood = typeof UI.mood === "number" ? UI.mood : null;
+    if (!note && isNaN(poids) && mood === null){ toast("Ajoute un poids, une humeur ou une note"); return; }
+    S.journal.items.push({id:uid(), date:document.getElementById("jDate").value, poids:isNaN(poids)?null:Math.round(poids*10)/10, mood, note});
+    UI.mood = null; save("journal"); render(); toast("Entrée enregistrée");
+  }
+});
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) return;
+  const d = t.dataset;
+  if (d.go){ setTab(d.go); return; }
+  if (d.guide){ UI.guideTab = d.guide; setTab("guide"); return; }
+  if (d.week){ UI.week = +d.week; lsSet("ui", UI); render(); return; }
+  if (d.gt){ UI.guideTab = d.gt; lsSet("ui", UI); render(); return; }
+  if (d.foodf){ UI.foodCat = d.foodf; lsSet("ui", UI); render(); return; }
+  if (d.namef){ UI.nameSex = d.namef; lsSet("ui", UI); render(); return; }
+  if (d.mood !== undefined){ UI.mood = +d.mood; document.querySelectorAll("[data-mood]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.mood===d.mood)); return; }
+  if (t.id === "tirage"){
+    const c = S.prenoms.items.filter(n=>n.elle&&n.lui); if (!c.length) return;
+    let i = 0; const el = document.getElementById("duel");
+    const spin = setInterval(()=>{ el.textContent = c[i++ % c.length].prenom; }, 70);
+    setTimeout(()=>{ clearInterval(spin); UI.tirage = c[Math.floor(Math.random()*c.length)].prenom; el.textContent = UI.tirage; }, 1200);
+    return;
+  }
+  // outils locaux
+  if (t.id === "cBtn"){
+    const c = Tools.c;
+    if (!c.start){ c.start = Date.now(); }
+    else { const s = c.start, prev = c.list[c.list.length-1]; c.list.push({s, d:Date.now()-s, gap: prev ? s - prev.s : null}); c.start = null; }
+    lsSet("contr", c); render(); return;
+  }
+  if (t.id === "cReset"){ Tools.c = {start:null, list:[]}; lsSet("contr", Tools.c); render(); return; }
+  if (t.id === "kBtn"){ const k = Tools.k; if (!k.start) k.start = Date.now(); k.n++; lsSet("kicks", k); render(); if (k.n === 10) toast("10 mouvements en " + Math.round((Date.now()-k.start)/60000) + " min"); return; }
+  if (t.id === "kReset"){ Tools.k = {n:0, start:null}; lsSet("kicks", Tools.k); render(); return; }
+
+  // actions sur les données partagées
+  const mutating = d.rdvdone || d.rdvdel || d.heart || d.namedel || d.sugg || d.val || d.valc || d.valdel || d.jdel || t.id === "genPlan";
+  if (!mutating) return;
+  if (!guard()) return;
+  if (d.rdvdone){ const r = S.rdv.items.find(x=>x.id===d.rdvdone); if (r){ r.fait = !r.fait; save("rdv"); render(); } }
+  else if (d.rdvdel){ S.rdv.items = S.rdv.items.filter(x=>x.id!==d.rdvdel); save("rdv"); render(); toast("Rendez-vous supprimé"); }
+  else if (d.heart){ const n = S.prenoms.items.find(x=>x.id===d.id); if (n){ n[d.heart] = !n[d.heart]; save("prenoms"); render(); } }
+  else if (d.namedel){ S.prenoms.items = S.prenoms.items.filter(x=>x.id!==d.namedel); save("prenoms"); render(); }
+  else if (d.sugg){ if (!S.prenoms.items.some(x=>x.prenom.toLowerCase()===d.sugg.toLowerCase())){ S.prenoms.items.push({id:uid(), prenom:d.sugg, sexe:d.sx, elle:false, lui:false}); save("prenoms"); render(); toast(d.sugg+" ajouté"); } }
+  else if (d.val){ S.valise.checked[d.val] = !S.valise.checked[d.val]; if (!S.valise.checked[d.val]) delete S.valise.checked[d.val]; save("valise"); render(); }
+  else if (d.valc){ const c = (S.valise.custom||[]).find(x=>x.id===d.valc); if (c){ c.ok = !c.ok; save("valise"); render(); } }
+  else if (d.valdel){ S.valise.custom = (S.valise.custom||[]).filter(x=>x.id!==d.valdel); save("valise"); render(); }
+  else if (d.jdel){ S.journal.items = S.journal.items.filter(x=>x.id!==d.jdel); save("journal"); render(); }
+  else if (t.id === "genPlan"){
+    const d0 = ddr(); if (!d0) return;
+    const have = new Set(S.rdv.items.map(r=>r.titre));
+    let n = 0;
+    for (const [sa, titre, type, notes] of RDV_PLAN){
+      if (have.has(titre)) continue;
+      const date = fmtISO(addDays(d0, sa*7));
+      S.rdv.items.push({id:uid(), titre, date, heure:"", type, lieu:"", notes, fait: parseD(date) < today(), suggere:true}); n++;
+    }
+    save("rdv"); render(); toast(n ? n+" étapes ajoutées" : "Le suivi type est déjà dans l'agenda");
+  }
+});
+
+document.addEventListener("input", e => {
+  if (e.target.id === "foodQ"){ UI.foodQ = e.target.value; const l = document.getElementById("foodList"); if (l) l.innerHTML = foodList(); }
+});
+
+render();
+initCloud();
+</script>
+
+</body>
+</html>
