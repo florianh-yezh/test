@@ -16,5 +16,5 @@ window.GM_CONFIG = {
   // Identifiant du « foyer » dans la base : toutes vos données sont rangées sous foyers/<foyer>/...
   foyer: "marina",
   // Adresse du worker Cloudflare qui appelle Gemini (ex. "https://grossesse-ia.monnom.workers.dev").
-  assistantUrl: ""
+  assistantUrl: "https://grossesse-ia.flofloflo5629.workers.dev"
 };
