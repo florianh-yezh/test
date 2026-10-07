@@ -1,0 +1,19 @@
+rules_version = '2';
+// Règles de sécurité Firestore pour Grossesse Marina.
+// Remplace les deux adresses ci-dessous par les vôtres (en minuscules), puis publie dans
+// Console Firebase → Firestore Database → Règles.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function autorise() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in [
+          "adresse.papa@gmail.com",
+          "adresse.marina@gmail.com"
+        ];
+    }
+    match /foyers/{foyer}/{document=**} {
+      allow read, write: if autorise();
+    }
+  }
+}

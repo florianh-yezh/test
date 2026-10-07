@@ -1,0 +1,11 @@
+# Déploiement en ligne de commande (optionnel) : npx wrangler deploy
+# puis : npx wrangler secret put GEMINI_API_KEY
+name = "grossesse-ia"
+main = "assistant.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+FIREBASE_PROJECT_ID = "a-remplacer"
+ALLOWED_EMAILS = "adresse.papa@gmail.com,adresse.marina@gmail.com"
+ALLOWED_ORIGINS = "https://florianh-yezh.github.io"
+GEMINI_MODEL = "gemini-flash-latest"

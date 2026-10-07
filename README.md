@@ -12,4 +12,8 @@ Ouvrir `index.html` dans un navigateur.
 
 ## Grossesse Marina
 
-Application de suivi de grossesse dans `grossesse-marina/index.html` (une seule page, sans dépendance) : semaines d'aménorrhée, rendez-vous et suivi type français, prénoms, aliments à éviter, guides, valise maternité, journal, chrono contractions et compteur de mouvements. Les données sont gardées dans le navigateur.
+Appli de suivi de grossesse installable sur Android (PWA), dans `grossesse-marina/` : semaines d'aménorrhée, agenda avec suivi type français, prénoms, aliments à éviter, guides, valise maternité, journal, chrono de contractions, compteur de mouvements et assistante IA.
+
+- Synchronisation entre deux téléphones avec Firebase (Auth Google + Firestore), mode hors ligne grâce au service worker.
+- Assistante Gemini via un worker Cloudflare (`grossesse-marina/worker/`) qui garde la clé secrète et n'accepte que les comptes autorisés.
+- Mise en route : voir [`grossesse-marina/INSTALLATION.md`](grossesse-marina/INSTALLATION.md).
