@@ -3,6 +3,8 @@
 name = "grossesse-ia"
 main = "assistant.js"
 compatibility_date = "2025-06-01"
+account_id = "148c73cb2c7bfce445d87231c7cdb43e"
+workers_dev = true
 
 [vars]
 FIREBASE_PROJECT_ID = "grossesse-marina-8da5c"
