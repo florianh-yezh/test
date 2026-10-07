@@ -31,12 +31,19 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Déployer sur Cloudflare
-        uses: cloudflare/wrangler-action@v3
+      - uses: actions/setup-node@v4
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          workingDirectory: grossesse-marina/worker
-          secrets: |
-            GEMINI_API_KEY
+          node-version: 20
+
+      - name: Déployer le worker
+        working-directory: grossesse-marina/worker
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --yes wrangler@3.90.0 deploy
+
+      - name: Enregistrer la clé Gemini
+        working-directory: grossesse-marina/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: printf '%s' "$GEMINI_API_KEY" | npx --yes wrangler@3.90.0 secret put GEMINI_API_KEY
