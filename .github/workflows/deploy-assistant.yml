@@ -1,0 +1,42 @@
+# Déploie l'assistante de Grossesse Marina (worker Cloudflare) à chaque modification du dossier worker.
+# Secrets à créer dans GitHub (Settings → Secrets and variables → Actions) :
+#   CLOUDFLARE_API_TOKEN  jeton Cloudflare (modèle « Edit Cloudflare Workers »)
+#   GEMINI_API_KEY        clé Gemini créée sur https://aistudio.google.com/apikey
+name: Déployer l'assistante
+
+on:
+  push:
+    branches: [ccr-276ffb08-7divet]
+    paths:
+      - "grossesse-marina/worker/**"
+      - ".github/workflows/deploy-assistant.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vérifier les secrets
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GEMINI: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          missing=0
+          if [ -z "$CF" ]; then echo "::error::Secret CLOUDFLARE_API_TOKEN manquant (Settings → Secrets and variables → Actions)."; missing=1; fi
+          if [ -z "$GEMINI" ]; then echo "::error::Secret GEMINI_API_KEY manquant (Settings → Secrets and variables → Actions)."; missing=1; fi
+          exit $missing
+
+      - uses: actions/checkout@v4
+
+      - name: Déployer sur Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: grossesse-marina/worker
+          secrets: |
+            GEMINI_API_KEY
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
