@@ -8,8 +8,8 @@ service cloud.firestore {
       return request.auth != null
         && request.auth.token.email_verified == true
         && request.auth.token.email.lower() in [
-          "adresse.papa@gmail.com",
-          "adresse.marina@gmail.com"
+          "flofloflo5629@gmail.com",
+          "pastureau.marina56@gmail.com"
         ];
     }
     match /foyers/{foyer}/{document=**} {

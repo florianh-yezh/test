@@ -12,7 +12,7 @@ window.GM_CONFIG = {
     appId: "1:122972335752:web:4691a6c9e38cbe161f393d"
   },
   // Adresses Google autorisées (la vraie protection est dans firestore.rules et dans le worker).
-  allowedEmails: [],
+  allowedEmails: ["flofloflo5629@gmail.com", "pastureau.marina56@gmail.com"],
   // Identifiant du « foyer » dans la base : toutes vos données sont rangées sous foyers/<foyer>/...
   foyer: "marina",
   // Adresse du worker Cloudflare qui appelle Gemini (ex. "https://grossesse-ia.monnom.workers.dev").
