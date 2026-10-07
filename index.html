@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braise — Cuisine au feu de bois · Paris</title>
+  <meta name="description" content="Braise, restaurant gastronomique parisien. Une cuisine de saison cuite au feu de bois, des vins vivants et une table pour vos plus belles soirées.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="loader" aria-hidden="true">
+    <span class="loader__word">Braise</span>
+    <span class="loader__bar"></span>
+  </div>
+
+  <!-- Curseur personnalisé -->
+  <div class="cursor" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <a href="#top" class="nav__logo">Braise<span>.</span></a>
+    <nav class="nav__links" aria-label="Navigation principale">
+      <a href="#histoire">Histoire</a>
+      <a href="#carte">La carte</a>
+      <a href="#galerie">Galerie</a>
+      <a href="#avis">Avis</a>
+      <a href="#infos">Infos</a>
+    </nav>
+    <a href="#reserver" class="btn btn--small nav__cta">Réserver</a>
+    <button class="nav__burger" aria-label="Ouvrir le menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <div class="mobile-menu" aria-hidden="true">
+    <a href="#histoire">Histoire</a>
+    <a href="#carte">La carte</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#avis">Avis</a>
+    <a href="#reserver">Réserver</a>
+  </div>
+
+  <main id="top">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__bg" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80')"></div>
+      <div class="hero__overlay"></div>
+      <div class="embers" aria-hidden="true"></div>
+
+      <div class="hero__content">
+        <p class="eyebrow reveal">Paris 11ᵉ — Depuis 2019</p>
+        <h1 class="hero__title">
+          <span class="line"><span>Le goût</span></span>
+          <span class="line"><span><em>du feu</em>,</span></span>
+          <span class="line"><span>la finesse du geste.</span></span>
+        </h1>
+        <p class="hero__sub reveal">Une cuisine de saison cuite sur la braise, des vins vivants et une salle où le temps ralentit.</p>
+        <div class="hero__actions reveal">
+          <a href="#reserver" class="btn">Réserver une table</a>
+          <a href="#carte" class="btn btn--ghost">Découvrir la carte</a>
+        </div>
+      </div>
+
+      <div class="hero__scroll" aria-hidden="true">
+        <span>Défiler</span>
+        <i></i>
+      </div>
+    </section>
+
+    <!-- Bandeau défilant -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Feu de bois</span><b>✦</b><span>Produits de saison</span><b>✦</b><span>Vins nature</span><b>✦</b><span>Fait maison</span><b>✦</b><span>Circuit court</span><b>✦</b>
+        <span>Feu de bois</span><b>✦</b><span>Produits de saison</span><b>✦</b><span>Vins nature</span><b>✦</b><span>Fait maison</span><b>✦</b><span>Circuit court</span><b>✦</b>
+      </div>
+    </div>
+
+    <!-- Histoire -->
+    <section class="section about" id="histoire">
+      <div class="about__images">
+        <div class="about__img about__img--1 reveal">
+          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=80" alt="Le chef dressant une assiette" loading="lazy">
+        </div>
+        <div class="about__img about__img--2 reveal" data-parallax="0.12">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80" alt="Viande grillée au feu de bois" loading="lazy">
+        </div>
+        <div class="about__badge">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="circle" d="M100,100 m-75,0 a75,75 0 1,1 150,0 a75,75 0 1,1 -150,0"/></defs>
+            <text><textPath href="#circle">Cuisine de feu · Cuisine de cœur · </textPath></text>
+          </svg>
+          <span>🔥</span>
+        </div>
+      </div>
+
+      <div class="about__text">
+        <p class="eyebrow reveal">Notre histoire</p>
+        <h2 class="title reveal">Tout commence <em>autour d'un foyer.</em></h2>
+        <p class="reveal">Chez Braise, le feu est notre premier commis. Chaque matin, le chef Lucas Moreau allume un foyer de chêne et de sarments de vigne qui brûlera jusqu'au dernier service. Légumes, poissons de ligne, viandes maturées : tout passe par la flamme, la braise ou la cendre.</p>
+        <p class="reveal">Nos produits viennent de moins de 150 km, choisis chez une poignée d'artisans que nous connaissons par leur prénom. La carte change au rythme des saisons, parfois même au fil de la semaine.</p>
+
+        <div class="stats">
+          <div class="stat reveal"><strong data-count="12">0</strong><span>producteurs partenaires</span></div>
+          <div class="stat reveal"><strong data-count="150">0</strong><span>km maximum</span></div>
+          <div class="stat reveal"><strong data-count="320">0</strong><span>références de vins</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Carte -->
+    <section class="section menu" id="carte">
+      <div class="section__head">
+        <p class="eyebrow reveal">La carte</p>
+        <h2 class="title reveal">Ce que la flamme <em>nous inspire</em></h2>
+      </div>
+
+      <div class="tabs reveal" role="tablist">
+        <button class="tab is-active" role="tab" aria-selected="true" data-tab="entrees">Entrées</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="plats">Plats</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="desserts">Desserts</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="vins">Vins</button>
+        <span class="tabs__indicator"></span>
+      </div>
+
+      <div class="menu__panels">
+        <div class="menu__panel is-active" data-panel="entrees" role="tabpanel">
+          <article class="dish"><div class="dish__row"><h3>Poireaux brûlés</h3><i></i><span>14 €</span></div><p>Vinaigrette noisette, œuf mollet fumé, cendre de poireau</p></article>
+          <article class="dish"><div class="dish__row"><h3>Tartare de bœuf maturé</h3><i></i><span>18 €</span></div><p>Huître de Normandie, câpres frites, pain grillé à la braise</p></article>
+          <article class="dish"><div class="dish__row"><h3>Burrata & tomates anciennes</h3><i></i><span>16 €</span></div><p>Pêches rôties, basilic pourpre, huile au feu de bois</p></article>
+          <article class="dish"><div class="dish__row"><h3>Carpaccio de Saint-Jacques <small>Signature</small></h3><i></i><span>22 €</span></div><p>Agrumes grillés, beurre noisette, caviar d'Aquitaine</p></article>
+        </div>
+
+        <div class="menu__panel" data-panel="plats" role="tabpanel">
+          <article class="dish"><div class="dish__row"><h3>Côte de bœuf pour deux <small>Signature</small></h3><i></i><span>94 €</span></div><p>Maturée 45 jours, pommes grenaille dans la cendre, sauce au poivre fumé</p></article>
+          <article class="dish"><div class="dish__row"><h3>Bar de ligne entier</h3><i></i><span>36 €</span></div><p>Cuit en croûte de sel, fenouil braisé, beurre blanc au yuzu</p></article>
+          <article class="dish"><div class="dish__row"><h3>Pigeon de Racan</h3><i></i><span>39 €</span></div><p>Cerises flambées, betterave à la braise, jus corsé</p></article>
+          <article class="dish"><div class="dish__row"><h3>Céleri rôti 6 heures</h3><i></i><span>26 €</span></div><p>Champignons sauvages, crème de noisette, truffe noire</p></article>
+        </div>
+
+        <div class="menu__panel" data-panel="desserts" role="tabpanel">
+          <article class="dish"><div class="dish__row"><h3>Ananas rôti à la flamme</h3><i></i><span>12 €</span></div><p>Rhum vieux, glace coco, citron vert</p></article>
+          <article class="dish"><div class="dish__row"><h3>Soufflé chocolat fumé <small>Signature</small></h3><i></i><span>15 €</span></div><p>Grand cru 70 %, sorbet cacao, fleur de sel</p></article>
+          <article class="dish"><div class="dish__row"><h3>Brioche perdue</h3><i></i><span>13 €</span></div><p>Caramel au beurre salé, glace vanille de Tahiti</p></article>
+          <article class="dish"><div class="dish__row"><h3>Fromages affinés</h3><i></i><span>14 €</span></div><p>Sélection de la Fromagerie Quatrehomme, confiture de figues</p></article>
+        </div>
+
+        <div class="menu__panel" data-panel="vins" role="tabpanel">
+          <article class="dish"><div class="dish__row"><h3>Champagne Vouette & Sorbée</h3><i></i><span>18 € / 110 €</span></div><p>Blanc d'argile, extra-brut — Côte des Bar</p></article>
+          <article class="dish"><div class="dish__row"><h3>Chenin — Domaine Huet</h3><i></i><span>12 € / 68 €</span></div><p>Vouvray sec Le Haut-Lieu — Loire</p></article>
+          <article class="dish"><div class="dish__row"><h3>Syrah — Domaine Jamet</h3><i></i><span>16 € / 95 €</span></div><p>Côte-Rôtie, notes de poivre et de fumée — Rhône</p></article>
+          <article class="dish"><div class="dish__row"><h3>Accord mets & vins</h3><i></i><span>65 €</span></div><p>Cinq verres choisis par notre sommelière pour le menu dégustation</p></article>
+        </div>
+      </div>
+
+      <div class="tasting reveal">
+        <div>
+          <p class="eyebrow">Menu dégustation</p>
+          <h3>« Au fil des braises » — 7 temps</h3>
+          <p>Laissez-vous guider par le chef. Servi à toute la table, le soir uniquement.</p>
+        </div>
+        <div class="tasting__price"><strong>89 €</strong><span>par personne</span></div>
+      </div>
+    </section>
+
+    <!-- Citation -->
+    <section class="quote">
+      <div class="quote__bg" data-parallax="0.25" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=80')"></div>
+      <blockquote class="reveal">
+        <p>« Le feu ne ment pas. Il révèle le produit tel qu'il est, ou il le trahit. »</p>
+        <cite>— Lucas Moreau, chef</cite>
+      </blockquote>
+    </section>
+
+    <!-- Galerie -->
+    <section class="section gallery" id="galerie">
+      <div class="section__head">
+        <p class="eyebrow reveal">Galerie</p>
+        <h2 class="title reveal">Un soir <em>chez nous</em></h2>
+      </div>
+      <div class="gallery__grid">
+        <figure class="g g--tall reveal"><img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80" alt="Salle du restaurant tamisée" loading="lazy"><figcaption>La salle</figcaption></figure>
+        <figure class="g reveal"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80" alt="Assiette de légumes de saison" loading="lazy"><figcaption>Saison</figcaption></figure>
+        <figure class="g reveal"><img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80" alt="Verres de vin rouge" loading="lazy"><figcaption>La cave</figcaption></figure>
+        <figure class="g g--wide reveal"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80" alt="Terrasse du restaurant le soir" loading="lazy"><figcaption>La terrasse</figcaption></figure>
+        <figure class="g reveal"><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80" alt="Dessert dressé" loading="lazy"><figcaption>Douceurs</figcaption></figure>
+        <figure class="g g--wide reveal"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80" alt="Le comptoir et la cuisine ouverte" loading="lazy"><figcaption>Le comptoir</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- Avis -->
+    <section class="section reviews" id="avis">
+      <div class="section__head">
+        <p class="eyebrow reveal">Ils en parlent</p>
+        <h2 class="title reveal">Ce que disent <em>nos convives</em></h2>
+      </div>
+      <div class="slider reveal">
+        <div class="slider__track">
+          <figure class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>« La côte de bœuf est tout simplement la meilleure que j'ai mangée à Paris. Service chaleureux, ambiance feutrée, on reviendra. »</blockquote>
+            <figcaption>Camille D. — <span>Google</span></figcaption>
+          </figure>
+          <figure class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>« Un menu dégustation inventif, des accords mets-vins parfaits. Une vraie expérience, pas juste un dîner. »</blockquote>
+            <figcaption>Thomas R. — <span>TheFork</span></figcaption>
+          </figure>
+          <figure class="review">
+            <div class="stars">★★★★★</div>
+            <blockquote>« Le soufflé au chocolat fumé mérite à lui seul le déplacement. Une adresse rare, à garder pour soi… ou presque. »</blockquote>
+            <figcaption>Inès B. — <span>Le Fooding</span></figcaption>
+          </figure>
+        </div>
+        <div class="slider__dots"></div>
+      </div>
+    </section>
+
+    <!-- Réservation -->
+    <section class="section reserve" id="reserver">
+      <div class="reserve__card">
+        <div class="reserve__intro">
+          <p class="eyebrow">Réservation</p>
+          <h2 class="title">Votre table <em>vous attend</em></h2>
+          <p>Réservez en ligne en quelques secondes. Pour les groupes de plus de 8 personnes ou une privatisation, appelez-nous directement.</p>
+          <a href="tel:+33143000000" class="reserve__phone">01 43 00 00 00</a>
+        </div>
+
+        <form class="form" novalidate>
+          <div class="field">
+            <input type="text" id="name" name="name" placeholder=" " required autocomplete="name">
+            <label for="name">Nom complet</label>
+          </div>
+          <div class="field">
+            <input type="email" id="email" name="email" placeholder=" " required autocomplete="email">
+            <label for="email">E-mail</label>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <input type="date" id="date" name="date" required>
+              <label for="date" class="is-static">Date</label>
+            </div>
+            <div class="field">
+              <select id="time" name="time" required>
+                <option value="" disabled selected>Choisir</option>
+                <option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option>
+                <option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option>
+              </select>
+              <label for="time" class="is-static">Heure</label>
+            </div>
+          </div>
+          <div class="field guests">
+            <span class="guests__label">Convives</span>
+            <div class="guests__ctrl">
+              <button type="button" data-step="-1" aria-label="Moins de convives">−</button>
+              <output id="guests">2</output>
+              <button type="button" data-step="1" aria-label="Plus de convives">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <textarea id="notes" name="notes" rows="2" placeholder=" "></textarea>
+            <label for="notes">Allergies, occasion spéciale… (optionnel)</label>
+          </div>
+          <button type="submit" class="btn btn--full">Confirmer la réservation</button>
+          <p class="form__msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Infos -->
+    <section class="section infos" id="infos">
+      <div class="info reveal">
+        <h3>Adresse</h3>
+        <p>42 rue de la Roquette<br>75011 Paris</p>
+        <a href="https://maps.google.com/?q=42+rue+de+la+Roquette+75011+Paris" target="_blank" rel="noopener">Itinéraire →</a>
+      </div>
+      <div class="info reveal">
+        <h3>Horaires</h3>
+        <p>Mar – Sam · 12h – 14h30<br>Mar – Sam · 19h – 23h<br><span class="muted">Fermé dimanche & lundi</span></p>
+        <p class="open-status"></p>
+      </div>
+      <div class="info reveal">
+        <h3>Contact</h3>
+        <p><a href="tel:+33143000000">01 43 00 00 00</a><br><a href="mailto:bonjour@braise.paris">bonjour@braise.paris</a></p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__big">Braise<span>.</span></div>
+    <div class="footer__bottom">
+      <p>© <span id="year"></span> Braise — Tous droits réservés</p>
+      <a href="#top">Retour en haut ↑</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
