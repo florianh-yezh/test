@@ -76,7 +76,7 @@ async function initCloud(){
     if (!u){ Cloud.state = "signedout"; setSync(); render(); return; }
     const allowed = (CFG.allowedEmails || []).map(x => x.toLowerCase());
     if (allowed.length && !allowed.includes((u.email || "").toLowerCase())){ Cloud.state = "denied"; setSync(); render(); return; }
-    Cloud.state = "on"; setSync(); subscribe(); render();
+    Cloud.state = "on"; showBanner(""); setSync(); subscribe(); render();
   });
 }
 function authMsg(e){
@@ -101,7 +101,14 @@ const metaRef = k => foyerRef().collection("meta").doc(k);
 const colRef = k => foyerRef().collection(k);
 
 function subscribe(){
-  const onErr = e => { console.warn(e); if (e && e.code === "permission-denied"){ Cloud.state = "denied"; setSync(); render(); } };
+  const onErr = e => {
+    console.warn(e);
+    if (e && e.code === "permission-denied" && Cloud.state !== "refused"){
+      Cloud.state = "refused"; Cloud.unsubs.forEach(f => f()); Cloud.unsubs = [];
+      setSync(); showBanner("Connectée, mais la base Firebase refuse la synchronisation : les règles Firestore ne sont pas publiées ou ne contiennent pas cette adresse. L'appli fonctionne en attendant sur ce téléphone.");
+      render();
+    }
+  };
   for (const k of ["profil", "valise"]){
     Cloud.unsubs.push(metaRef(k).onSnapshot(snap => {
       if (!snap.exists) return;
@@ -182,14 +189,14 @@ document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender
 
 function setSync(){
   const el = $("#sync");
-  const m = {local:["Sur ce téléphone", false], loading:["Connexion…", false], signedout:["Non connecté", false], denied:["Accès refusé", false], on:["Synchronisé", true]}[Cloud.state];
+  const m = {local:["Sur ce téléphone", false], loading:["Connexion…", false], signedout:["Non connecté", false], denied:["Accès refusé", false], refused:["Non synchronisé", false], on:["Synchronisé", true]}[Cloud.state];
   el.textContent = m[0]; el.classList.toggle("on", m[1]);
 }
 function showBanner(t){ const b = $("#banner"); b.textContent = t; b.hidden = !t; }
 
 function render(){
   $("#brandName").textContent = mamanName();
-  const gated = CLOUD && Cloud.state !== "on" && Cloud.state !== "local";
+  const gated = CLOUD && !["on", "local", "refused"].includes(Cloud.state);
   $("#tabs").hidden = gated; $("#top").hidden = gated; $("#disclaimer").hidden = gated;
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === UI.tab ? "page" : "false"));
   const v = $("#view");
@@ -226,7 +233,8 @@ function vGate(){
        <button class="btn gbtn" data-act="signin"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continuer avec Google</button>`;
   return `<section class="login"><div class="stack" style="align-items:center">
     <div class="flower">${flowerSVG(.75, {core:16})}</div>
-    <h1>Grossesse <span>${esc(mamanName())}</span></h1>${body}</div></section>`;
+    <h1>Grossesse <span>${esc(mamanName())}</span></h1>${body}
+    ${!isStandalone() ? `<button class="btn small ghost" data-act="install">📲 Installer l'appli sur le téléphone</button>` : ""}</div></section>`;
 }
 
 /* ---------- accueil ---------- */
@@ -316,7 +324,7 @@ function vAccueil(){
     <button class="card tile m" data-go="guide" data-sub="outils"><span class="ico">⏱️</span><div><h3>Contractions & mouvements</h3><p>Chrono et compteur</p></div></button>
     <button class="card tile r" data-go="guide" data-sub="valise"><span class="ico">🧳</span><div><h3>Valise maternité</h3><p>${valiseStats().done} sur ${valiseStats().total} prêts</p></div></button>
     <button class="card tile a" data-go="guide" data-sub="journal"><span class="ico">📔</span><div><h3>Journal</h3><p>Humeur, poids, souvenirs</p></div></button>
-    ${Install.evt ? `<button class="card tile m" data-act="install"><span class="ico">📲</span><div><h3>Installer l'appli</h3><p>Sur l'écran d'accueil du téléphone</p></div></button>` : ""}
+    ${Install.evt || !isStandalone() ? `<button class="card tile m" data-act="install"><span class="ico">📲</span><div><h3>Installer l'appli</h3><p>Sur l'écran d'accueil du téléphone</p></div></button>` : ""}
   </div>`;
   return h;
 }
@@ -410,7 +418,7 @@ function md(t){
   return out;
 }
 function vIA(){
-  const ready = !!CFG.assistantUrl && CLOUD && Cloud.state === "on";
+  const ready = !!CFG.assistantUrl && CLOUD && !!Cloud.user && (Cloud.state === "on" || Cloud.state === "refused");
   const msgs = chat.map(m => `<div class="msg ${m.role === "user" ? "me" : "ai"}${m.err ? " err" : ""}">${m.role === "user" ? esc(m.text).replace(/\n/g, "<br>") : md(m.text)}</div>`).join("");
   return `<div class="card aihead"><div class="orb" aria-hidden="true"></div><div style="min-width:0;flex:1"><h2 style="font-size:26px">L'assistante</h2>
     <p class="muted" style="font-size:13.5px">Elle connaît ta semaine de grossesse et répond selon les recommandations françaises. Elle ne remplace pas la sage-femme.</p></div>
@@ -605,6 +613,18 @@ function openSettings(){
   $("#sheet").hidden = false;
 }
 const closeSheet = () => { $("#sheet").hidden = true; };
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+function openInstallHelp(){
+  $("#sheetPanel").innerHTML = `<div class="stack">
+    <div class="row"><h2>Installer l'appli</h2><span class="spacer"></span><button type="button" class="iconbtn" data-act="closeSheet" aria-label="Fermer">✕</button></div>
+    <div class="card stack"><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px">
+      <li>Ouvre cette page dans <b>Chrome</b>, pas dans une fenêtre ouverte depuis une autre appli (s'il y a une croix ✕ en haut à gauche, touche les 3 points ⋮ puis <b>« Ouvrir dans Chrome »</b>).</li>
+      <li>Touche les <b>3 points ⋮</b> en haut à droite de Chrome.</li>
+      <li>Choisis <b>« Ajouter à l'écran d'accueil »</b> (ou « Installer l'application »), puis <b>Installer</b>.</li>
+      <li>Si Android demande l'autorisation de créer un raccourci sur l'écran d'accueil, accepte.</li></ol>
+      <p class="muted" style="font-size:13.5px">Si tu as installé un fichier APK auparavant, désinstalle-le d'abord : il peut s'ouvrir sur un écran noir.</p></div></div>`;
+  $("#sheet").hidden = false;
+}
 
 /* ================= Effets ================= */
 function burst(x, y, set = ["💜", "🌸", "✨", "💚"], n = 14){
@@ -732,7 +752,10 @@ document.addEventListener("click", e => {
   if (act === "signin"){ signIn(); return; }
   if (act === "signout"){ closeSheet(); Cloud.auth && Cloud.auth.signOut(); return; }
   if (act === "closeSheet"){ closeSheet(); return; }
-  if (act === "install"){ Install.evt && Install.evt.prompt(); Install.evt = null; return; }
+  if (act === "install"){
+    if (Install.evt){ Install.evt.prompt(); Install.evt = null; return; }
+    closeSheet(); openInstallHelp(); return;
+  }
   if (act === "clearchat"){ chat = []; lsSet("chat", chat); render(); return; }
   if (act === "aiNames"){ const fav = topNames().map(n => n.prenom).join(", "); go("ia"); ask(`Propose-nous 10 prénoms ${S.profil.sexe === "M" ? "de garçon" : S.profil.sexe === "F" ? "de fille" : "(filles et garçons)"} qui pourraient nous plaire${fav ? ", dans l'esprit de : " + fav : ""}, avec leur origine en quelques mots.`); return; }
   if (act === "tirage"){
