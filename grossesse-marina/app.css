@@ -338,3 +338,32 @@ nav.tabs button.ai .aib svg{stroke:#fff;animation:spin 12s linear infinite rever
 @media (max-width:430px){.brand h1{font-size:22px}.sync{font-size:0;gap:0;padding:8px}}
 .hearts{display:flex;gap:8px;flex-basis:100%;padding-left:42px}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---- bébé en 3D (plein écran, ambiance intra-utérine) ---- */
+body.in3d{overflow:hidden}
+body.in3d .app{padding:0;max-width:none}
+.b3d{position:fixed;inset:0;z-index:35;color:#FCEFF6;
+  background:radial-gradient(90% 70% at 50% 42%, #7A2A4E 0%, #4A1630 45%, #22091A 100%)}
+.b3d-canvas{position:absolute;inset:0;touch-action:none}
+.b3d-canvas canvas{display:block;width:100%!important;height:100%!important}
+.b3d-loading{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;padding-inline:24px;color:#F6D7E6}
+.b3d-loading .flower{width:120px;height:120px;margin:0 auto}
+.b3d-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;
+  background:linear-gradient(180deg, rgba(20,6,16,.55), transparent)}
+.b3d-top h2{font-size:26px;color:#FCEFF6}
+.b3d-top .eyebrow{color:#E7B8CF}
+.b3d-top .iconbtn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.18);color:#fff}
+.b3d-heart{--beat:.43s;flex:none;font-weight:700;color:#FF8FB3;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:8px 12px;font-size:14px;animation:hb var(--beat) ease-in-out infinite}
+@keyframes hb{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.06)}}
+.b3d-panel{position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;
+  background:rgba(40,12,30,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.b3d-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.b3d-stats > div{background:rgba(255,255,255,.08);border-radius:14px;padding:8px 10px;min-width:0}
+.b3d-stats span{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#E7B8CF;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b3d-stats b{font-family:var(--f-mono);font-weight:500;font-size:16px;color:#fff}
+.b3d-fruit b{font-size:20px;line-height:1.2}
+.b3d-txt{grid-column:1/-1;font-size:13.5px;color:#F6D7E6}
+.b3d-note{font-size:11.5px;color:#D9AFC4;text-align:center}
+.b3d input[type=range]{flex:1;min-width:0;accent-color:#FF8FB3;padding:0;border:0;background:transparent;box-shadow:none}
+.b3d-tile{background:radial-gradient(120% 120% at 0% 0%, #7A2A4E, #2A0D20)!important;border-color:transparent!important;color:#FCEFF6}
+.b3d-tile p{color:#E7B8CF!important}

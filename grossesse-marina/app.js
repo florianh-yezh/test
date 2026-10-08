@@ -219,7 +219,12 @@ function render(){
   $("#tabs").hidden = gated; $("#top").hidden = gated; $("#disclaimer").hidden = gated;
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === UI.tab ? "page" : "false"));
   const v = $("#view");
-  if (gated){ v.innerHTML = vGate(); return; }
+  if (gated){ leave3D(); v.innerHTML = vGate(); return; }
+  const is3D = UI.tab === "bebe3d";
+  document.body.classList.toggle("in3d", is3D);
+  $("#tabs").hidden = is3D; $("#top").hidden = is3D; $("#disclaimer").hidden = is3D;
+  if (is3D){ if (!$("#b3d")){ v.innerHTML = vBebe3D(); start3D(); } else update3DInfo(); return; }
+  leave3D();
   const fn = {accueil:vAccueil, rdv:vRdv, ia:vIA, prenoms:vPrenoms, guide:vGuide}[UI.tab] || vAccueil;
   v.innerHTML = fn();
   afterRender();
@@ -236,12 +241,23 @@ function countUp(el){
   const step = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
-function go(tab, sub){
+function go(tab, sub, fromPop){
+  const same = tab === UI.tab && (!sub || sub === UI.guideTab);
   if (sub) UI.guideTab = sub;
+  if (tab !== "guide" || sub) UI.week = tab === "guide" && sub === "semaines" ? UI.week : null;
   UI.tab = tab; saveUI(); buzz(8);
+  if (!fromPop && !same) history.pushState({tab, sub: UI.guideTab}, "");
   const run = () => { render(); window.scrollTo({top:0}); };
-  if (document.startViewTransition && !REDUCED) document.startViewTransition(run); else run();
+  if (document.startViewTransition && !REDUCED && tab !== "bebe3d") document.startViewTransition(run); else run();
 }
+// Touche retour d'Android : revient à l'écran précédent, ferme d'abord un panneau ouvert.
+function openSheetState(){ if (!(history.state && history.state.sheet)) history.pushState({tab: UI.tab, sub: UI.guideTab, sheet: true}, ""); }
+addEventListener("popstate", e => {
+  if (!$("#sheet").hidden){ $("#sheet").hidden = true; if (!(e.state && e.state.sheet)) return; }
+  const st = e.state || {tab: "accueil"};
+  if (st.sheet){ history.back(); return; }
+  go(st.tab || "accueil", st.sub, true);
+});
 
 /* ---------- écran de connexion ---------- */
 function vGate(){
@@ -335,6 +351,9 @@ function vAccueil(){
       ${favs.length ? favs.map(n => `<div class="row"><span class="sex ${esc(n.sexe)}">${sexLbl(n.sexe)}</span><span style="font-family:var(--f-display);font-size:23px">${esc(n.prenom)}</span><span class="spacer"></span><span style="color:var(--rose);font-size:13px;font-weight:600">${n.elle && n.lui ? "♥ ♥" : "♥"}</span></div>`).join("")
         : `<p class="muted">Ajoutez les prénoms que vous aimez : chacun met son cœur.</p>`}
     </div></div>
+  ${p ? `<button class="card tile b3d-tile" data-act="open3d" style="width:100%">
+    <span class="ico" style="background:rgba(255,255,255,.12)">${weekData(p.sa)[1]}</span>
+    <div style="min-width:0"><h3>Voir bébé en 3D</h3><p>Une illustration de bébé à ${Math.max(4, Math.min(41, p.sa))} SA, à faire tourner du bout du doigt.</p></div></button>` : ""}
   <button class="card tile" data-go="ia" style="width:100%;border-color:transparent;background:linear-gradient(135deg,var(--lav-soft),var(--mint-soft))">
     <div class="orb" aria-hidden="true"></div>
     <div style="min-width:0"><h3>Une question ? Demande à l'assistante</h3><p>« Est-ce que je peux manger du saumon fumé ? », « Pourquoi j'ai des crampes ? »…</p></div></button>
@@ -502,6 +521,7 @@ function gSemaines(){
     <div class="facts"><div><span>Taille</span><b>${fmtSize(w[3])}</b></div><div><span>Poids</span><b>${fmtWeight(w[4])}</b></div><div><span>Mois</span><b>${Math.max(1, Math.min(9, Math.floor((sel * 7 - 14) / 30.44) + 1))}</b></div></div>
   </section>
   <div class="duo"><div class="card"><h3><span class="dot"></span>Bébé</h3><p>${esc(w[5])}</p></div><div class="card"><h3><span class="dot mint"></span>${esc(mamanName())}</h3><p>${esc(w[6])}</p></div></div>
+  <button class="btn" data-act="open3d" data-sa="${sel}" style="width:100%">Voir bébé à ${sel} SA en 3D</button>
   <p class="muted" style="font-size:12.5px">Jusqu'à 19 SA la taille est mesurée de la tête aux fesses, ensuite de la tête aux pieds. Chaque bébé grandit à son rythme.</p>`;
 }
 function gAssiette(){
@@ -609,6 +629,63 @@ function weightChart(){
     <text x="${W - pr}" y="${H - 6}" font-size="11" fill="var(--muted)" text-anchor="end">${fmtShort(parseD(pts[pts.length - 1].date))}</text></svg></section>`;
 }
 
+/* ---------- bébé en 3D ---------- */
+const B3 = {sa: null, loading: false};
+function vBebe3D(){
+  const p = preg();
+  if (B3.sa === null) B3.sa = p ? Math.max(4, Math.min(41, p.sa)) : 20;
+  return `<section class="b3d" id="b3d">
+    <div class="b3d-canvas" id="b3dCanvas"></div>
+    <div class="b3d-loading" id="b3dLoading"><div class="flower">${flowerSVG(.6, {core:16})}</div><p>Préparation de la vue 3D…</p></div>
+    <header class="b3d-top">
+      <button class="iconbtn" data-act="back3d" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div style="min-width:0;flex:1"><div class="eyebrow">Illustration 3D</div><h2 id="b3dTitle">Bébé à ${B3.sa} SA</h2></div>
+      <div class="b3d-heart" id="b3dBpm" title="Rythme cardiaque moyen à ce stade">♥ <span class="mono">${window.Bebe3D ? Bebe3D.bpmAt(B3.sa) : "–"}</span></div>
+    </header>
+    <div class="b3d-panel">
+      <div class="b3d-stats" id="b3dStats">${b3Stats(B3.sa)}</div>
+      <div class="row" style="gap:12px;flex-wrap:nowrap">
+        <span class="mono" style="font-size:12px;opacity:.8">4</span>
+        <input type="range" id="b3dWeek" min="4" max="41" step="1" value="${B3.sa}" aria-label="Semaine d'aménorrhée">
+        <span class="mono" style="font-size:12px;opacity:.8">41</span>
+        ${p ? `<button class="btn small" data-act="b3now">Aujourd'hui</button>` : ""}
+      </div>
+      <p class="b3d-note">Fais glisser pour tourner autour, pince pour zoomer. Illustration artistique : ce n'est pas une image médicale.</p>
+    </div>
+  </section>`;
+}
+function b3Stats(sa){
+  const w = weekData(sa), p = preg(), cur = p && Math.max(4, Math.min(41, p.sa)) === sa;
+  return `<div><span>Taille</span><b>${fmtSize(w[3])}</b></div><div><span>Poids</span><b>${fmtWeight(w[4])}</b></div>
+    <div class="b3d-fruit"><span>Comme ${esc(w[2])}</span><b>${w[1]}</b></div>
+    <p class="b3d-txt">${cur ? "<b>Cette semaine</b> · " : ""}${esc(w[5])}</p>`;
+}
+function update3DInfo(){
+  const sa = B3.sa;
+  const t = $("#b3dTitle"); if (t) t.textContent = "Bébé à " + sa + " SA";
+  const s = $("#b3dStats"); if (s) s.innerHTML = b3Stats(sa);
+  const b = $("#b3dBpm"); if (b && window.Bebe3D) b.querySelector("span").textContent = Bebe3D.bpmAt(sa);
+  if (b) b.style.setProperty("--beat", (60 / (window.Bebe3D ? Bebe3D.bpmAt(sa) : 140)).toFixed(3) + "s");
+}
+async function start3D(){
+  if (B3.loading) return;
+  B3.loading = true;
+  try{
+    if (!window.THREE) await loadScript("https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js");
+    if (!window.THREE.OrbitControls) await loadScript("https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js");
+    if (!window.Bebe3D) await loadScript("bebe3d.js");
+    const box = $("#b3dCanvas"); if (!box || UI.tab !== "bebe3d") return;
+    Bebe3D.mount(box, B3.sa, {reduced: REDUCED});
+    const l = $("#b3dLoading"); if (l) l.hidden = true;
+    update3DInfo();
+  }catch(e){
+    console.warn(e);
+    const l = $("#b3dLoading");
+    if (l) l.innerHTML = `<p>La vue 3D n'a pas pu se charger. ${navigator.onLine === false ? "Il faut du réseau la première fois." : "Ton téléphone ne permet peut-être pas l'affichage 3D (WebGL)."}</p><button class="btn small" data-act="back3d">Retour</button>`;
+  }finally{ B3.loading = false; }
+}
+function leave3D(){ document.body.classList.remove("in3d"); if (window.Bebe3D && Bebe3D.isMounted()) Bebe3D.dispose(); }
+
 /* ---------- réglages ---------- */
 function applyTheme(){ const r = document.documentElement; if (UI.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", UI.theme); }
 function openSettings(){
@@ -629,9 +706,9 @@ function openSettings(){
     <div class="row"><button class="btn" type="submit">Enregistrer</button><span class="spacer"></span>
       <span class="muted" style="font-size:12.5px">${Cloud.state === "on" ? "Données partagées entre vous deux." : "Données gardées sur ce téléphone."}</span></div>
   </form>`;
-  $("#sheet").hidden = false;
+  $("#sheet").hidden = false; openSheetState();
 }
-const closeSheet = () => { $("#sheet").hidden = true; };
+const closeSheet = () => { if ($("#sheet").hidden) return; if (history.state && history.state.sheet) history.back(); else $("#sheet").hidden = true; };
 const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 function openInstallHelp(){
   $("#sheetPanel").innerHTML = `<div class="stack">
@@ -642,7 +719,7 @@ function openInstallHelp(){
       <li>Choisis <b>« Ajouter à l'écran d'accueil »</b> (ou « Installer l'application »), puis <b>Installer</b>.</li>
       <li>Si Android demande l'autorisation de créer un raccourci sur l'écran d'accueil, accepte.</li></ol>
       <p class="muted" style="font-size:13.5px">Si tu as installé un fichier APK auparavant, désinstalle-le d'abord : il peut s'ouvrir sur un écran noir.</p></div></div>`;
-  $("#sheet").hidden = false;
+  $("#sheet").hidden = false; openSheetState();
 }
 
 /* ================= Effets ================= */
@@ -751,7 +828,7 @@ document.addEventListener("click", e => {
   if (d.go){ go(d.go, d.sub); return; }
   if (d.ask){ go("ia"); ask(d.ask); return; }
   if (d.week){ UI.week = +d.week; saveUI(); buzz(6); render(); return; }
-  if (d.gt){ UI.guideTab = d.gt; UI.week = null; saveUI(); buzz(6); const run = () => render(); document.startViewTransition && !REDUCED ? document.startViewTransition(run) : run(); return; }
+  if (d.gt){ UI.week = null; go("guide", d.gt); return; }
   if (d.foodf){ UI.foodCat = d.foodf; saveUI(); render(); return; }
   if (d.namef){ UI.nameSex = d.namef; saveUI(); render(); return; }
   if (d.themeSet){ UI.theme = d.themeSet; saveUI(); applyTheme(); document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === UI.theme)); return; }
@@ -768,6 +845,9 @@ document.addEventListener("click", e => {
   const act = d.act;
   if (!act) return;
   if (act === "hero"){ go("guide", "semaines"); return; }
+  if (act === "open3d"){ B3.sa = d.sa ? +d.sa : null; go("bebe3d"); return; }
+  if (act === "back3d"){ history.state && history.state.tab === "bebe3d" ? history.back() : go("accueil"); return; }
+  if (act === "b3now"){ const p = preg(); if (p){ B3.sa = Math.max(4, Math.min(41, p.sa)); const r = $("#b3dWeek"); if (r) r.value = B3.sa; window.Bebe3D && Bebe3D.setWeek(B3.sa); update3DInfo(); } return; }
   if (act === "signin"){ signIn(); return; }
   if (act === "signout"){ closeSheet(); Cloud.auth && Cloud.auth.signOut(); return; }
   if (act === "closeSheet"){ closeSheet(); return; }
@@ -805,6 +885,7 @@ document.addEventListener("click", e => {
   }
 });
 document.addEventListener("input", e => {
+  if (e.target.id === "b3dWeek"){ B3.sa = +e.target.value; update3DInfo(); if (window.Bebe3D && Bebe3D.isMounted()){ cancelAnimationFrame(B3.raf); B3.raf = requestAnimationFrame(() => Bebe3D.setWeek(B3.sa)); } }
   if (e.target.id === "foodQ"){ UI.foodQ = e.target.value; const l = $("#foodList"); if (l) l.innerHTML = foodList(); }
   if (e.target.id === "aiIn"){ e.target.style.height = "auto"; e.target.style.height = Math.min(140, e.target.scrollHeight) + "px"; }
 });
@@ -812,6 +893,9 @@ let lastDay = fmtISO(today());
 setInterval(() => { const iso = fmtISO(today()); if (iso !== lastDay){ lastDay = iso; weekMilestone(); requestRender(); } }, 60000);
 
 /* ================= Démarrage ================= */
+if (UI.tab === "bebe3d") UI.tab = "accueil";
+history.replaceState({tab: "accueil", sub: UI.guideTab}, "");
+if (UI.tab !== "accueil") history.pushState({tab: UI.tab, sub: UI.guideTab}, "");
 applyTheme();
 setSync();
 render();
