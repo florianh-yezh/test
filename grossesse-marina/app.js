@@ -109,16 +109,35 @@ function subscribe(){
       render();
     }
   };
+  // Première synchro sur ce téléphone : on envoie ce qui avait été saisi hors ligne avant d'écraser par la base.
+  const migKey = "migrated:" + FOYER;
+  const pending = lsGet(migKey) ? null : clone(S);
+  const migrated = new Set();
+  const markDone = k => { migrated.add(k); if (migrated.size === KEYS.length) lsSet(migKey, true); };
   for (const k of ["profil", "valise"]){
-    Cloud.unsubs.push(metaRef(k).onSnapshot(snap => {
+    Cloud.unsubs.push(metaRef(k).onSnapshot({includeMetadataChanges:true}, snap => {
+      if (pending && !migrated.has(k) && !snap.metadata.fromCache){
+        const local = pending[k], server = snap.exists ? snap.data() : {};
+        const patch = {};
+        if (k === "profil"){ for (const f of Object.keys(local)) if (local[f] && local[f] !== DEFAULTS.profil[f] && !server[f]) patch[f] = local[f]; }
+        else {
+          for (const f of ["checked", "custom"]) for (const [key, v] of Object.entries(local[f] || {})) if (!(server[f] && key in server[f])) (patch[f] = patch[f] || {})[key] = v;
+        }
+        if (Object.keys(patch).length) cloudWrite(metaRef(k).set(patch, {merge:true}));
+        markDone(k);
+      }
       if (!snap.exists) return;
       S[k] = Object.assign(clone(DEFAULTS[k]), snap.data());
       lsSet(k, S[k]); requestRender();
     }, onErr));
   }
   for (const k of ["rdv", "prenoms", "journal"]){
-    Cloud.unsubs.push(colRef(k).onSnapshot(qs => {
+    Cloud.unsubs.push(colRef(k).onSnapshot({includeMetadataChanges:true}, qs => {
       const m = {}; qs.forEach(d => { m[d.id] = Object.assign({}, d.data(), {id:d.id}); });
+      if (pending && !migrated.has(k) && !qs.metadata.fromCache){
+        for (const [id, item] of Object.entries(pending[k] || {})) if (!m[id]){ m[id] = item; cloudWrite(colRef(k).doc(id).set(item)); }
+        markDone(k);
+      }
       S[k] = m; lsSet(k, m); requestRender();
     }, onErr));
   }
