@@ -118,55 +118,56 @@ function embryo(sa){
   return {model: M, eyeR: .09 + .03 * e, heartR: .22};
 }
 
-/* ---------- Fœtus (dès 10 SA) ---------- */
+/* ---------- Fœtus (dès 10 SA) : style « bébé qui dort », vu de face ---------- */
+// Repère : x vers la droite, y vers le haut, z vers la caméra. Le visage regarde la caméra.
 function fetus(sa){
   const f = smooth(clamp01((sa - 10) / 30));
-  const hr = lerp(.5, .37, f), L = lerp(.9, 1.15, f), g = lerp(.82, 1.15, f), ls = lerp(.55, 1, f), M = new Model();
-  const tilt = -.32, ct = Math.cos(tilt), st = Math.sin(tilt);
-  const hc = [.14, .55 * L + hr * .78, 0];
-  const H = (x, y, z) => [hc[0] + x * ct - y * st, hc[1] + x * st + y * ct, hc[2] + z];   // repère de la tête (penchée)
-  // Tête
-  M.ell(hc, hr * 1.05, hr * .97, hr * .9, .1, tilt);
-  M.ell(H(hr * .5, -hr * .55, 0), hr * .55, hr * .45, hr * .62, .14, tilt);                 // visage / mâchoire
-  M.sphere(H(hr * 1.0, -hr * .22, 0), hr * .12, .05);                                      // nez
+  const hr = lerp(.54, .44, f), g = lerp(.86, 1.12, f), ls = lerp(.62, 1, f), M = new Model();
+  const rx = hr, ry = hr * .96, rz = hr * .93;
+  const hc = [0, .5 + hr * .25, .02];
+  // point de la surface de la tête vu de face (u, v en fraction du rayon)
+  const onHead = (u, v, out = 0) => { const x = u * rx, y = v * ry, z = rz * Math.sqrt(Math.max(0, 1 - u * u - v * v)); return [hc[0] + x, hc[1] + y, hc[2] + z + out]; };
+  // Tête bien ronde, joues pleines
+  M.ell(hc, rx, ry, rz, .1);
+  for (const s of [-1, 1]) M.sphere(onHead(s * .42, -.4, -hr * .32), hr * .33 * lerp(.9, 1.05, f), .1);
+  M.sphere(onHead(0, -.12, -hr * .06), hr * .085, .04);                                   // petit nez
+  for (const s of [-1, 1]) M.ell([hc[0] + s * rx * .92, hc[1] - hr * .14, hc[2] - hr * .1], hr * .08, hr * .14, hr * .11, .04); // oreilles
+  // Cou et corps potelé
+  M.cap([0, hc[1] - hr * .8, -.02], [0, .1, -.04], .16 * g, .2 * g, .1);
+  M.ell([0, -.08, -.06], .33 * g, .4 * g, .28 * g, .12);
+  M.sphere([0, -.14, .06], .26 * g, .1);                                                   // ventre rond
+  M.sphere([0, -.44, -.08], .28 * g, .1);                                                  // fesses
+  // Bras repliés : la main contre la joue
   for (const s of [-1, 1]){
-    M.sphere(H(hr * .68, -hr * .45, s * hr * .38), hr * .26, .1);                          // joues
-    M.ell(H(-hr * .05, -hr * .12, s * hr * .9), hr * .16, hr * .24, hr * .07, .05, tilt);   // oreilles
-    M.dent(H(hr * .93, -hr * .02, s * hr * .33), hr * .07, hr * .05, hr * .13, .03, tilt);  // paupières
+    const sh = [s * .3 * g, .13, -.04];
+    const el = [s * (.42 * g), -.1 * ls - .02, .16 * ls + .06];
+    const hd = [s * hr * .62, hc[1] - hr * .5, hc[2] + rz * .62];
+    M.sphere(sh, .13 * g, .07);
+    M.chain([sh, el], [.105 * g, .09 * g], .05);
+    M.chain([el, hd], [.09 * g, .072 * g], .05);
+    M.ell(hd, .095 * g * Math.max(.85, ls), .085 * g * Math.max(.85, ls), .075 * g, .05);   // menotte
   }
-  M.groove(H(hr * .97, -hr * .5, -hr * .16), H(hr * .97, -hr * .5, hr * .16), hr * .03, .03); // bouche
-  // Cou, tronc, ventre, fesses
-  M.cap(H(-hr * .05, -hr * .65, 0), [.02, .5 * L, 0], .16 * g, .15 * g, .1);
-  M.chain([[.02, .52 * L, 0], [-.12, .26 * L, 0], [-.2, -.05 * L, 0], [-.17, -.38 * L, 0], [-.06, -.6 * L, 0]], [.15 * g, .3 * g, .33 * g, .35 * g, .3 * g], .14);
-  M.sphere([.04, -.3 * L, 0], .3 * g, .14);
-  M.sphere([-.13, -.56 * L, 0], .27 * g, .12);
-  // Bras : la main près du visage
-  for (const s of [-1, 1]){
-    const sh = [-.04, .32 * L, s * .26 * g];
-    const el = [sh[0] + .28 * ls, sh[1] - .3 * ls, sh[2] + s * .1 * ls];
-    const wr = [el[0] + .22 * ls, el[1] + .4 * ls, el[2] - s * .12 * ls];
-    M.sphere(sh, .14 * g, .1);
-    M.chain([sh, el, wr], [.1 * g, .08 * g, .06 * g], .06);
-    M.ell([wr[0] + .04 * ls, wr[1] + .07 * ls, wr[2]], .07 * g * Math.max(.75, ls), .1 * g * Math.max(.75, ls), .055 * g, .05, -.5);
-    if (sa >= 13) M.cap([wr[0] + .02, wr[1] + .02, wr[2] - s * .03], [wr[0] + .07 * ls, wr[1] + .06 * ls, wr[2] - s * .06 * ls], .028 * g, .022 * g, .03); // pouce
-  }
-  // Jambes repliées
+  // Jambes repliées : genoux écartés devant le ventre, chevilles croisées
   const feet = [];
   for (const s of [-1, 1]){
-    const hp = [-.1, -.5 * L, s * .2 * g];
-    const kn = [hp[0] + .55 * ls, hp[1] + .3 * ls, hp[2] + s * .1 * ls];
-    const ak = [kn[0] - .1 * ls, kn[1] - .52 * ls, kn[2] - s * .2 * ls];
-    M.chain([hp, kn], [.17 * g, .11 * g], .08);
-    M.chain([kn, ak], [.105 * g, .07 * g], .06);
-    const ft = [ak[0] + .09 * ls, ak[1] - .03 * ls, ak[2]];
-    M.ell(ft, .15 * g * ls + .02, .055 * g + .01, .07 * g, .05);
+    const hp = [s * .17 * g, -.38, -.02];
+    const kn = [s * .31 * g, -.16, .42 * ls + .08];
+    const ak = [-s * .05, -.56, .46 * ls + .1 + (s > 0 ? .04 : -.02)];
+    M.chain([hp, kn], [.15 * g, .12 * g], .06);
+    M.chain([kn, ak], [.11 * g, .08 * g], .05);
+    const ft = [ak[0] - s * .1 * ls, ak[1] - .02, ak[2] + .05];
+    M.ell(ft, .12 * g * Math.max(.85, ls), .07 * g, .1 * g * Math.max(.85, ls), .05);
     feet.push(ft);
   }
-  M.marks.eyes = [H(hr * .9, -hr * .03, hr * .33), H(hr * .9, -hr * .03, -hr * .33)];
-  M.marks.heart = [.05, .12 * L, 0];
-  M.marks.belly = [.2 * g + .1, -.36 * L, 0];
+  M.marks.eyes = [[9, 9, 9], [9, 9, 9]];
+  M.marks.heart = [0, .02, .1];
+  M.marks.belly = [0, -.2, .3 * g + .06];
   M.marks.feet = feet;
-  return {model: M, eyeR: hr * lerp(.18, .12, f), heartR: .3};
+  // Détails du visage posés sur la surface (convertis en coordonnées monde par polygonize)
+  M.marks.eyeP = [-1, 1].map(s => onHead(s * .36, .05)); M.marks.eyeN = [-1, 1].map(s => onHead(s * .36, .05, 1));
+  M.marks.mouth = [onHead(0, -.34), onHead(0, -.34, 1)];
+  M.marks.blushP = [-1, 1].map(s => onHead(s * .5, -.24)); M.marks.blushN = [-1, 1].map(s => onHead(s * .5, -.24, 1));
+  return {model: M, eyeR: .01, heartR: .3, face: {hr}};
 }
 
 /* ================= Matériaux ================= */
@@ -218,7 +219,8 @@ function skinMat(c){
 function skinColors(sa){
   const t = smooth(clamp01((sa - 5) / 34));
   const mix = (a, b) => "#" + new T.Color(a).lerp(new T.Color(b), t).getHexString();
-  return {core: mix("#d2714f", "#e59a80"), deep: mix("#7d321f", "#a5583f"), rim: mix("#f4ae90", "#f9cdb9"), eyeDark: sa < 10 ? .75 : .5, opacity: .97};
+  if (sa >= 10) return {core: "#f3b9a0", deep: "#cf8468", rim: "#ffe3d6", eyeDark: 0, opacity: 1};
+  return {core: mix("#d2714f", "#e59a80"), deep: mix("#7d321f", "#a5583f"), rim: mix("#f4ae90", "#f9cdb9"), eyeDark: .75, opacity: .97};
 }
 const SHELL_VERT = `varying vec3 vN; varying vec3 vV;
 void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }`;
@@ -286,7 +288,7 @@ function mount(container, sa, opts = {}){
 
   const controls = new T.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = false;
-  controls.autoRotate = !opts.reduced; controls.autoRotateSpeed = .5;
+  controls.autoRotate = false;
 
   // Halo lumineux (bloom) si disponible
   let composer = null, bloom = null;
@@ -300,7 +302,7 @@ function mount(container, sa, opts = {}){
   }
 
   S = {container, renderer, scene, camera, controls, composer, bloom, points, speeds, sa: null, group: null, skin: null,
-    res: opts.res || (Math.min(W(), H()) < 700 ? 76 : 88), raf: 0, reduced: !!opts.reduced, t0: performance.now(), nextKick: 2.5, kick: null};
+    res: opts.res || (Math.min(W(), H()) < 700 ? 84 : 96), raf: 0, reduced: !!opts.reduced, t0: performance.now(), nextKick: 2.5, kick: null};
   S.onResize = () => {
     if (!S) return;
     const w = W(), h = H(), half = T.MathUtils.degToRad(camera.fov / 2);
@@ -332,13 +334,26 @@ function setWeek(sa){
   u.uHeart.value.copy(marks.heart); u.uHeartR.value = spec.heartR * scale;
   u.uFoot1.value.copy(marks.feet[0]); u.uFoot2.value.copy(marks.feet[1]); u.uFootR.value = .18 * scale;
   const group = new T.Group();
-  const body = new T.Mesh(geo, skin); body.renderOrder = 2; body.scale.setScalar(1.15); group.add(body);
+  const body = new T.Mesh(geo, skin); body.renderOrder = 2; const bs = sa >= 10 ? 1.35 : 1.15; body.scale.setScalar(bs); body.userData.bs = bs; group.add(body);
 
+  // Visage du fœtus : yeux fermés, sourire, joues roses
+  if (spec.face){
+    const hr = spec.face.hr * scale;
+    const lineMat = new T.MeshBasicMaterial({color: 0x9a5646});
+    const place = (m, p, n, roll) => { m.position.copy(p).add(n.clone().sub(p).normalize().multiplyScalar(hr * .012)); m.lookAt(n); m.rotateZ(roll); body.add(m); };
+    marks.eyeP.forEach((p, i) => place(new T.Mesh(new T.TorusGeometry(hr * .13, hr * .022, 8, 28, Math.PI), lineMat), p, marks.eyeN[i], Math.PI));
+    place(new T.Mesh(new T.TorusGeometry(hr * .085, hr * .02, 8, 24, Math.PI), lineMat), marks.mouth[0], marks.mouth[1], Math.PI);
+    const bc = document.createElement("canvas"); bc.width = bc.height = 64;
+    const bx = bc.getContext("2d"), bg = bx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    bg.addColorStop(0, "rgba(240,120,120,.55)"); bg.addColorStop(1, "rgba(240,120,120,0)"); bx.fillStyle = bg; bx.fillRect(0, 0, 64, 64);
+    const blushMat = new T.MeshBasicMaterial({map: new T.CanvasTexture(bc), transparent: true, depthWrite: false});
+    marks.blushP.forEach((p, i) => { const m = new T.Mesh(new T.PlaneGeometry(hr * .5, hr * .36), blushMat); m.renderOrder = 4; place(m, p, marks.blushN[i], 0); });
+  }
   // Cordon + placenta, ou vésicule vitelline chez l'embryon
-  const belly = marks.belly.clone().multiplyScalar(1.15);
+  const belly = marks.belly.clone().multiplyScalar(bs);
   const cordMat = skinMat({core: "#e39a7d", deep: "#b0644d", rim: "#fbd6c6", opacity: .92});
   if (sa >= 10){
-    const pl = new T.Vector3(1.9, .2, -3.2);
+    const pl = new T.Vector3(1.6, -1.6, -2.6);
     const pts = [];
     for (let i = 0; i <= 12; i++){ const t = i / 12, p = belly.clone().lerp(pl, t), o = Math.sin(t * Math.PI);
       p.add(new T.Vector3(.35 * o + Math.sin(t * 8) * .1, -.45 * o + Math.cos(t * 8) * .08, .35 * o)); pts.push(p); }
@@ -357,7 +372,7 @@ function setWeek(sa){
     uniforms: {uColor: {value: new T.Color("#ffffff")}, uPow: {value: 3.0}, uAmp: {value: .1}}}));
   shell.renderOrder = 3; group.add(shell);
 
-  group.rotation.y = -.55;
+  group.rotation.y = sa >= 10 ? 0 : -.55;
   S.scene.add(group); S.group = group; S.body = body; S.skin = skin;
   return {bpm: bpmAt(sa)};
 }
@@ -372,6 +387,8 @@ function loop(){
   if (!S.reduced){
     S.body.position.y = Math.sin(t * .7) * .06;
     S.body.rotation.z = Math.sin(t * .45) * .035;
+    if (S.sa < 10) S.group.rotation.y = -.55 + Math.sin(t * .3) * .5;
+    if (S.sa >= 10){ S.group.rotation.y = Math.sin(t * .35) * .38; const br = 1 + Math.sin(t * 1.6) * .008, bs = S.body.userData.bs; S.body.scale.set(bs * br, bs / br, bs * br); }
     if (S.sa >= 10){
       if (!S.kick && t > S.nextKick) S.kick = {i: Math.random() < .5 ? 1 : 2, t};
       if (S.kick){
