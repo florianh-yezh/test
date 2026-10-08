@@ -636,7 +636,7 @@ function vBebe3D(){
   if (B3.sa === null) B3.sa = p ? Math.max(4, Math.min(41, p.sa)) : 20;
   return `<section class="b3d" id="b3d">
     <div class="b3d-canvas" id="b3dCanvas"></div>
-    <div class="b3d-loading" id="b3dLoading"><div class="flower">${flowerSVG(.6, {core:16})}</div><p>Préparation de la vue 3D…</p></div>
+    <div class="b3d-loading" id="b3dLoading"><div class="flower">${flowerSVG(.6, {core:16})}</div><p>Bébé prend forme…</p></div>
     <header class="b3d-top">
       <button class="iconbtn" data-act="back3d" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div style="min-width:0;flex:1"><div class="eyebrow">Illustration 3D</div><h2 id="b3dTitle">Bébé à ${B3.sa} SA</h2></div>
@@ -671,8 +671,8 @@ async function start3D(){
   if (B3.loading) return;
   B3.loading = true;
   try{
-    if (!window.THREE) await loadScript("https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js");
-    if (!window.THREE.OrbitControls) await loadScript("https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js");
+    if (!window.THREE) await loadScript("vendor/three.min.js");
+    if (!window.THREE.OrbitControls) await loadScript("vendor/three-addons.js");
     if (!window.Bebe3D) await loadScript("bebe3d.js");
     const box = $("#b3dCanvas"); if (!box || UI.tab !== "bebe3d") return;
     Bebe3D.mount(box, B3.sa, {reduced: REDUCED});

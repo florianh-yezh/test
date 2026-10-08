@@ -1,9 +1,9 @@
 // Service worker : garde l'appli disponible hors connexion.
 // Pense à changer VERSION à chaque mise à jour des fichiers pour que les téléphones la récupèrent.
-const VERSION = "gm-v8";
+const VERSION = "gm-v9";
 const SHELL = ["./", "index.html", "app.css", "app.js", "data.js", "bebe3d.js", "config.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
-const RUNTIME_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com", "cdn.jsdelivr.net"];
+const RUNTIME_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
