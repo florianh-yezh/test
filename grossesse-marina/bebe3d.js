@@ -195,12 +195,12 @@ void main(){
   float fres = pow(1.0 - ndv, 2.2);
   vec3 L1 = normalize(vec3(0.45, 0.75, 0.55)), L2 = normalize(vec3(-0.7, -0.3, 0.5));
   float w1 = dot(N, L1) * 0.5 + 0.5, w2 = max(dot(N, L2), 0.0);
-  vec3 col = mix(uDeep, uCore, w1 * w1);
+  vec3 col = mix(uDeep, uCore, smoothstep(0.05, 0.95, w1));
   col += uCore * 0.22 * w2;
-  col = mix(col, uRim, fres * 0.8);
-  col += uRim * pow(fres, 5.0) * 0.9;
-  float spec = pow(max(dot(reflect(-L1, N), V), 0.0), 40.0);
-  col += vec3(1.0, 0.92, 0.94) * spec * 0.5;
+  col = mix(col, uRim, fres * 0.55);
+  col += uRim * pow(fres, 4.0) * 0.25;
+  float spec = pow(max(dot(reflect(-L1, N), V), 0.0), 18.0);
+  col += vec3(1.0, 0.95, 0.9) * spec * 0.12;
   float de = min(distance(vL, uEye1), distance(vL, uEye2));
   col = mix(col, uDeep * 0.22, uEyeDark * (1.0 - smoothstep(uEyeR * 0.45, uEyeR, de)));
   float dh = distance(vL, uHeart);
@@ -218,7 +218,7 @@ function skinMat(c){
 function skinColors(sa){
   const t = smooth(clamp01((sa - 5) / 34));
   const mix = (a, b) => "#" + new T.Color(a).lerp(new T.Color(b), t).getHexString();
-  return {core: mix("#d0283c", "#e0727a"), deep: mix("#6e0815", "#8c2a3a"), rim: mix("#ffc7cf", "#ffe3e6"), eyeDark: sa < 10 ? .72 : .55, opacity: lerp(.82, .9, t)};
+  return {core: mix("#d2714f", "#e59a80"), deep: mix("#7d321f", "#a5583f"), rim: mix("#f4ae90", "#f9cdb9"), eyeDark: sa < 10 ? .75 : .5, opacity: .97};
 }
 const SHELL_VERT = `varying vec3 vN; varying vec3 vV;
 void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = -mv.xyz; gl_Position = projectionMatrix * mv; }`;
@@ -247,11 +247,11 @@ let S = null;
 function bgTexture(){
   const c = document.createElement("canvas"); c.width = 512; c.height = 1024;
   const x = c.getContext("2d"), g = x.createRadialGradient(256, 420, 30, 256, 480, 620);
-  g.addColorStop(0, "#b3121f"); g.addColorStop(.45, "#6d0712"); g.addColorStop(1, "#1d0205");
+  g.addColorStop(0, "#fff6ef"); g.addColorStop(.45, "#fbe0d2"); g.addColorStop(1, "#f0c4ae");
   x.fillStyle = g; x.fillRect(0, 0, 512, 1024);
   for (let i = 0; i < 70; i++){ // taches floues
     const px = Math.random() * 512, py = Math.random() * 1024, r = 6 + Math.random() * 40, gg = x.createRadialGradient(px, py, 0, px, py, r);
-    gg.addColorStop(0, `rgba(255,120,130,${.05 + Math.random() * .08})`); gg.addColorStop(1, "rgba(255,120,130,0)");
+    gg.addColorStop(0, `rgba(255,255,255,${.06 + Math.random() * .1})`); gg.addColorStop(1, "rgba(255,255,255,0)");
     x.fillStyle = gg; x.fillRect(px - r, py - r, r * 2, r * 2);
   }
   return new T.CanvasTexture(c);
@@ -279,9 +279,9 @@ function mount(container, sa, opts = {}){
   const pg = new T.BufferGeometry(); pg.setAttribute("position", new T.BufferAttribute(pp, 3));
   const dot = document.createElement("canvas"); dot.width = dot.height = 64;
   const dc = dot.getContext("2d"), grd = dc.createRadialGradient(32, 32, 0, 32, 32, 32);
-  grd.addColorStop(0, "rgba(255,230,235,1)"); grd.addColorStop(.35, "rgba(255,150,165,.45)"); grd.addColorStop(1, "rgba(255,150,165,0)");
+  grd.addColorStop(0, "rgba(255,255,255,1)"); grd.addColorStop(.4, "rgba(255,235,225,.45)"); grd.addColorStop(1, "rgba(255,235,225,0)");
   dc.fillStyle = grd; dc.fillRect(0, 0, 64, 64);
-  const points = new T.Points(pg, new T.PointsMaterial({size: .045, map: new T.CanvasTexture(dot), transparent: true, opacity: .6, depthWrite: false, blending: T.AdditiveBlending}));
+  const points = new T.Points(pg, new T.PointsMaterial({size: .035, map: new T.CanvasTexture(dot), transparent: true, opacity: .45, depthWrite: false}));
   scene.add(points);
 
   const controls = new T.OrbitControls(camera, renderer.domElement);
@@ -290,11 +290,11 @@ function mount(container, sa, opts = {}){
 
   // Halo lumineux (bloom) si disponible
   let composer = null, bloom = null;
-  if (T.EffectComposer && T.UnrealBloomPass){
+  if (opts.bloom && T.EffectComposer && T.UnrealBloomPass){
     try{
       composer = new T.EffectComposer(renderer);
       composer.addPass(new T.RenderPass(scene, camera));
-      bloom = new T.UnrealBloomPass(new T.Vector2(W() / 2, H() / 2), .85, .55, .62);
+      bloom = new T.UnrealBloomPass(new T.Vector2(W() / 2, H() / 2), .22, .9, .9);
       composer.addPass(bloom);
     }catch(e){ composer = null; }
   }
@@ -332,30 +332,29 @@ function setWeek(sa){
   u.uHeart.value.copy(marks.heart); u.uHeartR.value = spec.heartR * scale;
   u.uFoot1.value.copy(marks.feet[0]); u.uFoot2.value.copy(marks.feet[1]); u.uFootR.value = .18 * scale;
   const group = new T.Group();
-  const body = new T.Mesh(geo, skin); body.renderOrder = 2; body.scale.setScalar(1.3); group.add(body);
+  const body = new T.Mesh(geo, skin); body.renderOrder = 2; body.scale.setScalar(1.15); group.add(body);
 
   // Cordon + placenta, ou vésicule vitelline chez l'embryon
-  const belly = marks.belly.clone().multiplyScalar(1.3);
-  const cordMat = skinMat({core: "#c9364a", deep: "#5e0712", rim: "#ffd3da", opacity: .9});
+  const belly = marks.belly.clone().multiplyScalar(1.15);
+  const cordMat = skinMat({core: "#e39a7d", deep: "#b0644d", rim: "#fbd6c6", opacity: .92});
   if (sa >= 10){
-    const pl = new T.Vector3(-1.2, -.75, -1.35);
+    const pl = new T.Vector3(1.9, .2, -3.2);
     const pts = [];
     for (let i = 0; i <= 12; i++){ const t = i / 12, p = belly.clone().lerp(pl, t), o = Math.sin(t * Math.PI);
       p.add(new T.Vector3(.35 * o + Math.sin(t * 8) * .1, -.45 * o + Math.cos(t * 8) * .08, .35 * o)); pts.push(p); }
     group.add(new T.Mesh(cordGeo(pts, .045), cordMat));
-    const placenta = new T.Mesh(new T.SphereGeometry(.75, 48, 32), skinMat({core: "#8e1426", deep: "#3a0309", rim: "#ff8f9f", opacity: .95}));
-    placenta.scale.set(1, 1, .32); placenta.position.copy(pl); placenta.lookAt(0, 0, 0); group.add(placenta);
   } else {
-    const ys = new T.Vector3(-1.05, -.55, .25);
+    const ys = new T.Vector3(.95, -.55, .35);
     const pts = [belly.clone(), belly.clone().lerp(ys, .35).add(new T.Vector3(0, -.2, .1)), belly.clone().lerp(ys, .7).add(new T.Vector3(0, -.12, 0)), ys.clone().add(new T.Vector3(.2, .05, 0))];
     group.add(new T.Mesh(cordGeo(pts, .055), cordMat));
-    const y = new T.Mesh(new T.SphereGeometry(.3, 40, 30), skinMat({core: "#e8828e", deep: "#9a2a3a", rim: "#fff0f2", opacity: .55}));
+    const y = new T.Mesh(new T.SphereGeometry(.34, 40, 30), skinMat({core: "#de8462", deep: "#a24f36", rim: "#f6bea4", opacity: .97}));
+    y.scale.set(1, .85, .85);
     y.position.copy(ys); group.add(y);
   }
   // Membrane de la poche : seul le bord brille
   const shell = new T.Mesh(new T.SphereGeometry(2.7, 64, 48), new T.ShaderMaterial({vertexShader: SHELL_VERT, fragmentShader: SHELL_FRAG,
     transparent: true, depthWrite: false, blending: T.AdditiveBlending,
-    uniforms: {uColor: {value: new T.Color("#ff9fb0")}, uPow: {value: 3.0}, uAmp: {value: .55}}}));
+    uniforms: {uColor: {value: new T.Color("#ffffff")}, uPow: {value: 3.0}, uAmp: {value: .1}}}));
   shell.renderOrder = 3; group.add(shell);
 
   group.rotation.y = -.55;

@@ -34,15 +34,20 @@ function toast(msg){
 const DEFAULTS = {
   profil: {maman:"Marina", papa:"", nom:"", mode:"ddr", ddr:"", terme:"", sexe:""},
   rdv: {}, prenoms: {}, journal: {},
-  valise: {checked:{}, custom:{}}
+  valise: {checked:{}, custom:{}},
+  // fonctionnalités ajoutées (voir extras.js)
+  lettres: {}, questions: {}, symptomes: {}, taches: {}, achats: {}, photos: {},
+  vitamines: {jours:{}}, duel: {lui:{}, elle:{}}
 };
+const METAS = ["profil", "valise", "vitamines", "duel"];
+const NOLOCAL = new Set(["photos"]);   // les photos restent dans le cache Firebase, pas dans le stockage du navigateur
 const KEYS = Object.keys(DEFAULTS);
 const S = {};
 for (const k of KEYS){
-  const v = lsGet(k);
+  const v = NOLOCAL.has(k) ? null : lsGet(k);
   S[k] = (v && typeof v === "object" && !Array.isArray(v)) ? Object.assign(clone(DEFAULTS[k]), v) : clone(DEFAULTS[k]);
 }
-const UI = Object.assign({tab:"accueil", guideTab:"semaines", foodCat:"all", foodQ:"", nameSex:"all", week:null, theme:"auto"}, lsGet("ui") || {});
+const UI = Object.assign({tab:"accueil", guideTab:"hub", foodCat:"all", foodQ:"", nameSex:"all", week:null, theme:"auto"}, lsGet("ui") || {});
 const saveUI = () => lsSet("ui", UI);
 const values = col => Object.values(S[col] || {});
 
@@ -114,31 +119,31 @@ function subscribe(){
   const pending = lsGet(migKey) ? null : clone(S);
   const migrated = new Set();
   const markDone = k => { migrated.add(k); if (migrated.size === KEYS.length) lsSet(migKey, true); };
-  for (const k of ["profil", "valise"]){
+  for (const k of METAS){
     Cloud.unsubs.push(metaRef(k).onSnapshot({includeMetadataChanges:true}, snap => {
       if (pending && !migrated.has(k) && !snap.metadata.fromCache){
         const local = pending[k], server = snap.exists ? snap.data() : {};
         const patch = {};
         if (k === "profil"){ for (const f of Object.keys(local)) if (local[f] && local[f] !== DEFAULTS.profil[f] && !server[f]) patch[f] = local[f]; }
         else {
-          for (const f of ["checked", "custom"]) for (const [key, v] of Object.entries(local[f] || {})) if (!(server[f] && key in server[f])) (patch[f] = patch[f] || {})[key] = v;
+          for (const f of Object.keys(local)) if (local[f] && typeof local[f] === "object") for (const [key, v] of Object.entries(local[f])) if (!(server[f] && key in server[f])) (patch[f] = patch[f] || {})[key] = v;
         }
         if (Object.keys(patch).length) cloudWrite(metaRef(k).set(patch, {merge:true}));
         markDone(k);
       }
       if (!snap.exists) return;
       S[k] = Object.assign(clone(DEFAULTS[k]), snap.data());
-      lsSet(k, S[k]); requestRender();
+      lsSet(k, S[k]); if (k === "profil") applyTheme(); requestRender();
     }, onErr));
   }
-  for (const k of ["rdv", "prenoms", "journal"]){
+  for (const k of KEYS.filter(k => !METAS.includes(k))){
     Cloud.unsubs.push(colRef(k).onSnapshot({includeMetadataChanges:true}, qs => {
       const m = {}; qs.forEach(d => { m[d.id] = Object.assign({}, d.data(), {id:d.id}); });
       if (pending && !migrated.has(k) && !qs.metadata.fromCache){
         for (const [id, item] of Object.entries(pending[k] || {})) if (!m[id]){ m[id] = item; cloudWrite(colRef(k).doc(id).set(item)); }
         markDone(k);
       }
-      S[k] = m; lsSet(k, m); requestRender();
+      S[k] = m; saveLocal(k); requestRender();
     }, onErr));
   }
 }
@@ -146,16 +151,19 @@ const live = () => Cloud.state === "on" && Cloud.fs;
 function cloudWrite(p){ if (p && p.catch) p.catch(e => { console.warn(e); toast(e && e.code === "permission-denied" ? "Accès refusé par la base : vérifie les règles Firestore." : "Enregistré sur le téléphone, synchronisation plus tard."); }); }
 
 /* opérations sur les données (local immédiat + Firestore) */
-function putItem(col, item){ S[col][item.id] = item; lsSet(col, S[col]); if (live()) cloudWrite(colRef(col).doc(item.id).set(item)); }
-function patchItem(col, id, patch){ if (!S[col][id]) return; Object.assign(S[col][id], patch); lsSet(col, S[col]); if (live()) cloudWrite(colRef(col).doc(id).set(patch, {merge:true})); }
-function delItem(col, id){ delete S[col][id]; lsSet(col, S[col]); if (live()) cloudWrite(colRef(col).doc(id).delete()); }
+const saveLocal = k => { if (!NOLOCAL.has(k)) lsSet(k, S[k]); };
+function putItem(col, item){ S[col][item.id] = item; saveLocal(col); if (live()) cloudWrite(colRef(col).doc(item.id).set(item)); }
+function patchItem(col, id, patch){ if (!S[col][id]) return; Object.assign(S[col][id], patch); saveLocal(col); if (live()) cloudWrite(colRef(col).doc(id).set(patch, {merge:true})); }
+function delItem(col, id){ delete S[col][id]; saveLocal(col); if (live()) cloudWrite(colRef(col).doc(id).delete()); }
 function setProfil(p){ S.profil = Object.assign(S.profil, p); lsSet("profil", S.profil); if (live()) cloudWrite(metaRef("profil").set(p, {merge:true})); }
-function valiseSet(field, key, val){
-  const v = S.valise; v[field] = v[field] || {};
+// Modifie une entrée d'un dictionnaire dans un document « meta » (valise, vitamines, duel…) ; null la supprime.
+function metaSet(k, field, key, val){
+  const v = S[k]; v[field] = v[field] || {};
   if (val === null) delete v[field][key]; else v[field][key] = (typeof val === "object" && v[field][key]) ? Object.assign(v[field][key], val) : val;
-  lsSet("valise", v);
-  if (live()) cloudWrite(metaRef("valise").set({[field]:{[key]: val === null ? Cloud.FieldValue.delete() : val}}, {merge:true}));
+  lsSet(k, v);
+  if (live()) cloudWrite(metaRef(k).set({[field]:{[key]: val === null ? Cloud.FieldValue.delete() : val}}, {merge:true}));
 }
+const valiseSet = (field, key, val) => metaSet("valise", field, key, val);
 
 /* ================= Calculs de grossesse ================= */
 function ddr(){
@@ -232,6 +240,7 @@ function render(){
 function afterRender(){
   if (UI.tab === "guide" && UI.guideTab === "semaines"){ const cur = document.querySelector('.wk[aria-pressed="true"]'); if (cur) cur.scrollIntoView({inline:"center", block:"nearest"}); }
   if (UI.tab === "guide" && UI.guideTab === "outils") tick();
+  if (window.GMX && GMX.afterRender) GMX.afterRender();
   if (UI.tab === "ia" && chat.length){ const f = $("#aiForm"); if (f) f.scrollIntoView({block:"center"}); }
   document.querySelectorAll("[data-count]").forEach(countUp);
 }
@@ -330,7 +339,8 @@ const sexLbl = s => s === "X" ? "F/G" : s === "F" ? "F" : "G";
 
 function vAccueil(){
   const p = preg();
-  let h = p ? heroHTML(p) : setupHTML();
+  let h = (window.GMX && GMX.homeTop ? GMX.homeTop(p) : "") + (p ? heroHTML(p) : setupHTML());
+  if (window.GMX && GMX.homeAfterHero) h += GMX.homeAfterHero(p);
   if (p){
     const w = weekData(p.sa);
     h += `<div class="duo">
@@ -354,6 +364,7 @@ function vAccueil(){
   ${p ? `<button class="card tile b3d-tile" data-act="open3d" style="width:100%">
     <span class="ico" style="background:rgba(255,255,255,.12)">${weekData(p.sa)[1]}</span>
     <div style="min-width:0"><h3>Voir bébé en 3D</h3><p>Une illustration de bébé à ${Math.max(4, Math.min(41, p.sa))} SA, à faire tourner du bout du doigt.</p></div></button>` : ""}
+  ${window.GMX && GMX.homeCards ? GMX.homeCards(p) : ""}
   <button class="card tile" data-go="ia" style="width:100%;border-color:transparent;background:linear-gradient(135deg,var(--lav-soft),var(--mint-soft))">
     <div class="orb" aria-hidden="true"></div>
     <div style="min-width:0"><h3>Une question ? Demande à l'assistante</h3><p>« Est-ce que je peux manger du saumon fumé ? », « Pourquoi j'ai des crampes ? »…</p></div></button>
@@ -393,6 +404,7 @@ function vRdv(){
   const p = preg();
   return `<div class="sectionhead"><h2>Agenda</h2><span class="spacer"></span>${p ? `<button class="btn small mint" data-act="genplan">✨ Suivi type</button>` : ""}
     <p class="muted">Consultations, échographies, analyses et démarches. ${p ? "« Suivi type » ajoute les étapes françaises avec des dates indicatives à ajuster." : "Renseigne une date dans les réglages pour générer le suivi type."}</p></div>
+  <div class="row"><button class="btn small ghost" data-gt-go="questions">❓ Questions à poser (${values("questions").filter(q => !q.faite).length})</button><button class="btn small ghost" data-gt-go="vitamines">🔔 Rappels sur le téléphone</button></div>
   <form class="card stack" id="rdvForm">
     <h3>Nouveau rendez-vous</h3>
     <label class="f">Intitulé<input type="text" id="rdvTitre" required maxlength="120" placeholder="Échographie du 2e trimestre"></label>
@@ -427,6 +439,7 @@ function vPrenoms(){
       <div class="sugg">${sugg.slice(0, 14).map(n => `<button type="button" data-sugg="${esc(n)}" data-sx="${sugSex}">+ ${esc(n)}</button>`).join("")}</div>
       <button type="button" class="btn small ghost" data-act="aiNames" style="margin-top:10px">✨ Demander d'autres idées à l'assistante</button></div>
   </form>
+  <button class="card tile duel-tile" data-gt-go="duel" style="width:100%"><span class="ico">💞</span><div style="min-width:0"><h3>Duel de prénoms</h3><p>Chacun swipe de son côté : quand vous aimez le même, c'est un match !</p></div></button>
   <div class="seg">${[["all", "Tous"], ["fav", "Coups de cœur communs"], ["F", "Fille"], ["M", "Garçon"], ["X", "Mixte"]].map(([k, l]) => `<button data-namef="${k}" aria-pressed="${f === k}">${l}</button>`).join("")}</div>
   <section class="card"><div class="list">${items.length ? items.map(n => `<div class="namecard">
       <span class="sex ${esc(n.sexe)}">${sexLbl(n.sexe)}</span>
@@ -501,11 +514,23 @@ function valiseStats(){
   Object.values(S.valise.custom || {}).forEach(c => { total++; if (c.ok) done++; });
   return {total, done};
 }
+const HUB = [
+  ["Grossesse", [["semaines", "📅", "Semaine par semaine"], ["compte", "⏳", "Compte à rebours"], ["tutos", "📖", "Tutos"], ["assiette", "🥗", "Je peux manger… ?"]]],
+  ["Souvenirs", [["album", "📸", "Album du ventre"], ["echos", "🩻", "Échographies"], ["lettres", "💌", "Lettres à bébé"], ["fairepart", "🎀", "Faire-part"]]],
+  ["À deux", [["duel", "💞", "Duel de prénoms"], ["papa", "👨", "Espace papa"], ["achats", "🛒", "Liste & budget"]]],
+  ["Au quotidien", [["symptomes", "🌡️", "Symptômes"], ["questions", "❓", "Questions sage-femme"], ["vitamines", "💊", "Vitamines & rappels"], ["journal", "📔", "Journal & poids"]]],
+  ["Préparer l'arrivée", [["urgence", "🚨", "C'est le moment !"], ["valise", "🧳", "Valise maternité"], ["outils", "⏱️", "Contractions & mouvements"]]]
+];
+function vHub(){
+  return `<div class="sectionhead"><h2>Guide & outils</h2></div>` + HUB.map(([t, items]) => `<section class="stack" style="gap:10px"><div class="eyebrow">${t}</div>
+    <div class="hubgrid">${items.map(([k, ic, l]) => `<button class="card hubtile" data-gt="${k}"><span>${ic}</span><b>${l}</b></button>`).join("")}</div></section>`).join("");
+}
 function vGuide(){
   const g = UI.guideTab;
-  const seg = `<div class="seg">${[["semaines", "Semaines"], ["assiette", "Assiette"], ["tutos", "Tutos"], ["outils", "Outils"], ["valise", "Valise"], ["journal", "Journal"]].map(([k, l]) => `<button data-gt="${k}" aria-pressed="${g === k}">${l}</button>`).join("")}</div>`;
-  const fn = {semaines:gSemaines, assiette:gAssiette, tutos:gTutos, outils:gOutils, valise:gValise, journal:gJournal}[g] || gSemaines;
-  return seg + fn();
+  if (!g || g === "hub") return vHub();
+  const all = Object.assign({semaines:gSemaines, assiette:gAssiette, tutos:gTutos, outils:gOutils, valise:gValise, journal:gJournal}, window.GMX ? GMX.views : {});
+  const fn = all[g] || gSemaines;
+  return `<button class="btn small ghost backhub" data-gt="hub">← Guide & outils</button>` + fn();
 }
 function gSemaines(){
   const p = preg(), cur = p ? Math.max(4, Math.min(41, p.sa)) : null;
@@ -640,7 +665,7 @@ function vBebe3D(){
     <header class="b3d-top">
       <button class="iconbtn" data-act="back3d" aria-label="Retour"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div style="min-width:0;flex:1"><div class="eyebrow">Illustration 3D</div><h2 id="b3dTitle">Bébé à ${B3.sa} SA</h2></div>
-      <div class="b3d-heart" id="b3dBpm" title="Rythme cardiaque moyen à ce stade">♥ <span class="mono">${window.Bebe3D ? Bebe3D.bpmAt(B3.sa) : "–"}</span></div>
+      <button class="b3d-heart" id="b3dBpm" data-act="heart" title="Écouter le cœur (rythme moyen à ce stade)">♥ <span class="mono">${window.Bebe3D ? Bebe3D.bpmAt(B3.sa) : "–"}</span> 🔊</button>
     </header>
     <div class="b3d-panel">
       <div class="b3d-stats" id="b3dStats">${b3Stats(B3.sa)}</div>
@@ -661,7 +686,7 @@ function b3Stats(sa){
     <p class="b3d-txt">${cur ? "<b>Cette semaine</b> · " : ""}${esc(w[5])}</p>`;
 }
 function update3DInfo(){
-  const sa = B3.sa;
+  const sa = B3.sa; window.B3SA = sa;
   const t = $("#b3dTitle"); if (t) t.textContent = "Bébé à " + sa + " SA";
   const s = $("#b3dStats"); if (s) s.innerHTML = b3Stats(sa);
   const b = $("#b3dBpm"); if (b && window.Bebe3D) b.querySelector("span").textContent = Bebe3D.bpmAt(sa);
@@ -684,10 +709,16 @@ async function start3D(){
     if (l) l.innerHTML = `<p>La vue 3D n'a pas pu se charger. ${navigator.onLine === false ? "Il faut du réseau la première fois." : "Ton téléphone ne permet peut-être pas l'affichage 3D (WebGL)."}</p><button class="btn small" data-act="back3d">Retour</button>`;
   }finally{ B3.loading = false; }
 }
-function leave3D(){ document.body.classList.remove("in3d"); if (window.Bebe3D && Bebe3D.isMounted()) Bebe3D.dispose(); }
+function leave3D(){ window.B3SA = null; document.body.classList.remove("in3d"); if (window.Bebe3D && Bebe3D.isMounted()) Bebe3D.dispose(); }
 
 /* ---------- réglages ---------- */
-function applyTheme(){ const r = document.documentElement; if (UI.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", UI.theme); }
+function applyTheme(){
+  const r = document.documentElement;
+  if (UI.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", UI.theme);
+  let pal = UI.palette || "lavande";
+  if (pal === "sexe") pal = S.profil.sexe === "F" ? "rose" : S.profil.sexe === "M" ? "bleu" : "lavande";
+  if (pal === "lavande") r.removeAttribute("data-palette"); else r.setAttribute("data-palette", pal);
+}
 function openSettings(){
   const p = S.profil;
   $("#sheetPanel").innerHTML = `<form id="setForm" class="stack">
@@ -699,9 +730,17 @@ function openSettings(){
       <label class="f">Sexe du bébé<select id="sSexe"><option value="" ${!p.sexe ? "selected" : ""}>Surprise / on ne sait pas</option><option value="F" ${p.sexe === "F" ? "selected" : ""}>Une fille</option><option value="M" ${p.sexe === "M" ? "selected" : ""}>Un garçon</option></select></label></div>
     <div class="card stack"><h3>Vous</h3>
       <div class="row"><label class="f">Maman<input type="text" id="sMaman" value="${esc(p.maman)}" maxlength="30"></label><label class="f">Partenaire<input type="text" id="sPapa" value="${esc(p.papa)}" placeholder="Prénom" maxlength="30"></label></div>
-      <label class="f">Nom de famille du bébé<input type="text" id="sNom" value="${esc(p.nom)}" maxlength="40"></label></div>
+      <label class="f">Nom de famille du bébé<input type="text" id="sNom" value="${esc(p.nom)}" maxlength="40"></label>
+      <label class="f">Téléphone du partenaire (pour le prévenir)<input type="tel" id="sTelPapa" value="${esc(p.telPapa || "")}" placeholder="06 12 34 56 78" maxlength="20"></label>
+      ${CLOUD && Cloud.user && myRole() ? "" : `<label class="f">Sur ce téléphone, c'est…<select id="sRole"><option value="">—</option><option value="elle" ${UI.role === "elle" ? "selected" : ""}>${esc(p.maman || "Marina")}</option><option value="lui" ${UI.role === "lui" ? "selected" : ""}>${esc(p.papa || "le partenaire")}</option></select></label>`}</div>
+    <div class="card stack"><h3>Maternité</h3>
+      <label class="f">Nom<input type="text" id="sMatNom" value="${esc(p.matNom || "")}" placeholder="Maternité de…" maxlength="80"></label>
+      <label class="f">Adresse<input type="text" id="sMatAdr" value="${esc(p.matAdr || "")}" placeholder="Adresse complète" maxlength="160"></label>
+      <label class="f">Téléphone des urgences obstétricales<input type="tel" id="sMatTel" value="${esc(p.matTel || "")}" placeholder="02 97 …" maxlength="20"></label></div>
     <div class="card stack"><h3>Apparence</h3>
-      <div class="seg">${[["auto", "Automatique"], ["light", "Clair"], ["dark", "Sombre"]].map(([k, l]) => `<button type="button" data-theme-set="${k}" aria-pressed="${UI.theme === k}">${l}</button>`).join("")}</div></div>
+      <div class="seg">${[["auto", "Automatique"], ["light", "Clair"], ["dark", "Sombre"]].map(([k, l]) => `<button type="button" data-theme-set="${k}" aria-pressed="${UI.theme === k}">${l}</button>`).join("")}</div>
+      <div class="eyebrow" style="margin-top:4px">Couleurs</div>
+      <div class="seg">${[["lavande", "Lavande & menthe"], ["sexe", "Selon le sexe"], ["rose", "Rose"], ["bleu", "Bleu"]].map(([k, l]) => `<button type="button" data-palette-set="${k}" aria-pressed="${(UI.palette || "lavande") === k}">${l}</button>`).join("")}</div></div>
     ${CLOUD && Cloud.user ? `<div class="card row"><div style="min-width:0;flex:1"><div class="eyebrow">Compte</div><div style="overflow-wrap:anywhere">${esc(Cloud.user.email)}</div></div><button type="button" class="btn small ghost" data-act="signout">Se déconnecter</button></div>` : ""}
     <div class="row"><button class="btn" type="submit">Enregistrer</button><span class="spacer"></span>
       <span class="muted" style="font-size:12.5px">${Cloud.state === "on" ? "Données partagées entre vous deux." : "Données gardées sur ce téléphone."}</span></div>
@@ -792,9 +831,11 @@ document.addEventListener("submit", e => {
   const btn = e.target.querySelector('button[type="submit"]');
   if (id === "setForm"){
     const mode = val("sMode"), d = val("sDate");
-    const patch = {mode, sexe: val("sSexe"), maman: val("sMaman").trim() || "Marina", papa: val("sPapa").trim(), nom: val("sNom").trim()};
+    const patch = {mode, sexe: val("sSexe"), maman: val("sMaman").trim() || "Marina", papa: val("sPapa").trim(), nom: val("sNom").trim(),
+      telPapa: val("sTelPapa").trim(), matNom: val("sMatNom").trim(), matAdr: val("sMatAdr").trim(), matTel: val("sMatTel").trim()};
+    if (document.getElementById("sRole")){ UI.role = val("sRole"); saveUI(); }
     if (mode === "terme") patch.terme = d; else patch.ddr = d;
-    setProfil(patch); closeSheet(); render(); toast("Réglages enregistrés");
+    setProfil(patch); applyTheme(); closeSheet(); render(); toast("Réglages enregistrés");
   } else if (id === "quickSetup"){
     const mode = val("qsMode"), d = val("qsDate"); if (!d) return;
     setProfil(mode === "terme" ? {mode, terme:d} : {mode, ddr:d});
@@ -816,6 +857,8 @@ document.addEventListener("submit", e => {
     const item = {id:uid(), date:val("jDate"), poids:isNaN(poids) ? null : Math.round(poids * 10) / 10, mood, note};
     if (Cloud.user) item.auteur = (Cloud.user.displayName || "").split(" ")[0];
     putItem("journal", item); UI.mood = null; render(); toast("Entrée enregistrée");
+  } else if (window.GMX && GMX.submits[id]){
+    GMX.submits[id](e.target, val);
   } else if (id === "aiForm"){
     const t = val("aiIn"); ask(t);
   }
@@ -831,6 +874,7 @@ document.addEventListener("click", e => {
   if (d.gt){ UI.week = null; go("guide", d.gt); return; }
   if (d.foodf){ UI.foodCat = d.foodf; saveUI(); render(); return; }
   if (d.namef){ UI.nameSex = d.namef; saveUI(); render(); return; }
+  if (d.paletteSet){ UI.palette = d.paletteSet; saveUI(); applyTheme(); document.querySelectorAll("[data-palette-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.paletteSet === UI.palette)); return; }
   if (d.themeSet){ UI.theme = d.themeSet; saveUI(); applyTheme(); document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === UI.theme)); return; }
   if (d.mood !== undefined){ UI.mood = +d.mood; buzz(6); document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mood === d.mood)); return; }
   if (d.rdvdone){ const r = S.rdv[d.rdvdone]; if (r){ if (!r.fait) burst(...centerOf(el), ["✅", "💚", "✨"], 10); patchItem("rdv", r.id, {fait:!r.fait}); render(); } return; }
@@ -844,6 +888,7 @@ document.addEventListener("click", e => {
   if (d.jdel){ delItem("journal", d.jdel); render(); return; }
   const act = d.act;
   if (!act) return;
+  if (window.GMX && GMX.actions[act]){ GMX.actions[act](el, d, e); return; }
   if (act === "hero"){ go("guide", "semaines"); return; }
   if (act === "open3d"){ B3.sa = d.sa ? +d.sa : null; go("bebe3d"); return; }
   if (act === "back3d"){ history.state && history.state.tab === "bebe3d" ? history.back() : go("accueil"); return; }
@@ -884,13 +929,27 @@ document.addEventListener("click", e => {
     render(); toast(n ? n + " étapes ajoutées" : "Le suivi type est déjà dans l'agenda");
   }
 });
+document.addEventListener("change", e => { if (window.GMX && GMX.onChange) GMX.onChange(e); });
 document.addEventListener("input", e => {
+  if (window.GMX && GMX.onInput) GMX.onInput(e);
   if (e.target.id === "b3dWeek"){ B3.sa = +e.target.value; update3DInfo(); if (window.Bebe3D && Bebe3D.isMounted()){ cancelAnimationFrame(B3.raf); B3.raf = requestAnimationFrame(() => Bebe3D.setWeek(B3.sa)); } }
   if (e.target.id === "foodQ"){ UI.foodQ = e.target.value; const l = $("#foodList"); if (l) l.innerHTML = foodList(); }
   if (e.target.id === "aiIn"){ e.target.style.height = "auto"; e.target.style.height = Math.min(140, e.target.scrollHeight) + "px"; }
 });
 let lastDay = fmtISO(today());
 setInterval(() => { const iso = fmtISO(today()); if (iso !== lastDay){ lastDay = iso; weekMilestone(); requestRender(); } }, 60000);
+
+/* ================= API pour les fonctionnalités d'extras.js ================= */
+function myRole(){
+  const em = (Cloud.user && Cloud.user.email || "").toLowerCase();
+  const roles = CFG.roles || {};
+  for (const k in roles) if (k.toLowerCase() === em) return roles[k];
+  return UI.role || "";
+}
+function openSheet(html){ $("#sheetPanel").innerHTML = html; $("#sheet").hidden = false; openSheetState(); }
+if (window.GMX) GMX.init({S, UI, CFG, saveUI, values, putItem, patchItem, delItem, setProfil, metaSet, render, requestRender, go, toast, burst, centerOf, buzz,
+  esc, uid, clone, fmtISO, parseD, today, addDays, diffDays, fmtMid, fmtShort, preg, ddr, weekData, mamanName, papaName, flowerSVG, md,
+  lsGet, lsSet, live, colRef: k => colRef(k), Cloud, myRole, openSheet, closeSheet, REDUCED, ask: t => { go("ia"); ask(t); }, gcalLink});
 
 /* ================= Démarrage ================= */
 if (UI.tab === "bebe3d") UI.tab = "accueil";
