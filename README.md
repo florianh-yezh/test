@@ -7,16 +7,18 @@ Ouvrir `index.html` dans un navigateur.
 - `styles.css` — design aux couleurs du restaurant (rouge bordeaux, Kaushan Script + Alegreya Sans)
 - `script.js` — réservation (bande de la couverture + formulaire), statut ouvert/fermé selon les horaires, dépliage des pages
 - `images/` — logo, photos du restaurant (`galerie/`) et photos des clients issues des avis Google (`avis/`)
-- `galerie.html`, `galerie.css`, `galerie.js` — page Galerie (filtres, visionneuse plein écran, glisser au doigt)
+- `galerie.html`, `galerie.css`, `galerie.js` — page Galerie (filtres) ; `sections-render.js` — affichage du livre d'or et de la galerie (partagé avec l'admin) ; `visionneuse.js` — photo en plein écran (flèches, clavier, glisser au doigt)
 - `data/menus.json` — contenu des menus ; `menus-render.js` — leur affichage (partagé avec l'admin)
 - `admin.html`, `admin.css`, `admin.js` — page de gestion de la carte ; `api/menus.php` + `api/config.php` — enregistrement sur l'hébergeur
 
 Direction de design : « le menu plié » (voir `DESIGN.md`, `PRODUCT.md` et `.impeccable/`), réalisée avec les skills Impeccable et UI/UX Pro Max installés dans `.claude/skills/`.
 
-## Avis et galerie
+## Avis et galerie (modifiables dans l'admin)
 
-- **Livre d'or** (page principale, avant la réservation) : 6 avis Google réels, sans les noms, avec un lien vers tous les avis Google. Pour en ajouter ou en retirer : bloc `<!-- Livre d'or -->` dans `index.html`.
-- **Galerie** (`galerie.html`) : 21 photos classées en « Les assiettes », « La salle » et « Vu par nos clients ». Les photos de clients proviennent de leurs avis Google ; leur affichage a été validé par le restaurant.
+- **Livre d'or** (page principale, avant la réservation) : avis Google sans les noms, avec les photos des clients (agrandies au toucher). Contenu : `data/avis.json`, onglet **Livre d'or** de l'admin (texte, note, moment, photos, ordre, lien vers la fiche Google).
+- **Galerie** (`galerie.html`) : photos classées en « Les assiettes », « La salle » et « Vu par nos clients ». Contenu : `data/galerie.json`, onglet **Galerie** de l'admin (ajout depuis le téléphone, légende, catégorie, ordre, suppression).
+- Les photos ajoutées depuis l'admin sont réduites sur l'appareil (1600 px, JPEG), vérifiées par le serveur puis rangées dans `images/uploads/` (dossier qui doit être modifiable par PHP). Une photo retirée d'un avis ou de la galerie reste sur le serveur.
+- Les photos de clients proviennent de leurs avis Google ; leur affichage a été validé par le restaurant.
 
 ## Modifier la carte (page de gestion)
 
@@ -33,7 +35,7 @@ Le site les affiche avec la mise en page de la double page « Menus » : plus be
 1. Envoyez tous les fichiers du site (FTP ou gestionnaire de fichiers de l'hébergeur), dossiers `api/` et `data/` compris.
 2. Ouvrez `admin.html`, onglet **Mot de passe** → « Créer ou changer le mot de passe » : tapez votre mot de passe deux fois, puis **Générer les lignes pour config.php**.
 3. Collez ces trois lignes dans `api/config.php` (à la place de `salt`, `hash`, `iterations`) et renvoyez ce fichier. Le mot de passe n'y est jamais écrit, seulement son empreinte.
-4. Le dossier `data/` doit être modifiable par PHP (c'est le cas par défaut chez la plupart des hébergeurs).
+4. Les dossiers `data/` et `images/uploads/` doivent être modifiables par PHP (c'est le cas par défaut chez la plupart des hébergeurs).
 
 Sécurité : 5 mauvais mots de passe bloquent la publication 15 minutes pour cette adresse ; le serveur vérifie et nettoie la carte avant de l'enregistrer ; `config.php`, les archives et le compteur d'essais sont protégés par `.htaccess` (hébergements Apache).
 `admin.html` n'est pas indexée (`noindex` + `robots.txt`). Pour la cacher davantage : renommez-la avec un nom difficile à deviner, et/ou protégez-la par mot de passe dans l'espace client de l'hébergeur.

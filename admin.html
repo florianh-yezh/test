@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Gestion de la carte — Ar'Ty Mad</title>
+  <title>Gestion du site — Ar'Ty Mad</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Kaushan+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="galerie.css">
   <link rel="stylesheet" href="admin.css">
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 </head>
@@ -43,15 +44,16 @@
       <div class="adm-panel" id="panel"></div>
     </div>
 
-    <aside class="adm-preview" aria-label="Aperçu de la double page Menus">
+    <aside class="adm-preview" aria-label="Aperçu">
       <p class="adm-preview__label">Aperçu, tel qu'il apparaîtra sur le site</p>
       <div class="adm-preview__table">
-        <section class="spread spread--menus is-open" id="preview"></section>
+        <div id="preview"></div>
       </div>
     </aside>
   </main>
 
   <script src="menus-render.js"></script>
+  <script src="sections-render.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>

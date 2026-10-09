@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "lienGoogle": "https://www.google.com/maps/search/?api=1&query=Ar%27Ty+Mad+Lorient",
+  "avis": [
+    {
+      "note": 5,
+      "texte": "Restaurant conseillé par le gérant de l'hôtel Rex ou nous séjournions et quelle belle surprise ! Un lieu où le plaisir des yeux et au niveau du plaisir gustatif. le service est impeccable et assuré par la très sympathique propriétaire des lieux. Au fourneaux son mari qui cuisine des très bons produits frais. Nous avons dîné deux soirs de suite tellement nous avons apprécié les plats et le vin. Le rapport qualité prix est imbattable. Je recommande vivement ce restaurant !",
+      "contexte": "Dîner",
+      "photos": [
+        {
+          "src": "images/avis/veloute-oeuf.jpg",
+          "alt": "Velouté vert, œuf poché et radis"
+        },
+        {
+          "src": "images/avis/poisson-risotto.jpg",
+          "alt": "Poisson, persillade et risotto"
+        },
+        {
+          "src": "images/avis/cafe-gourmand.jpg",
+          "alt": "Café gourmand"
+        }
+      ]
+    },
+    {
+      "note": 5,
+      "texte": "Cela fait des années que je fréquente ce restaurant, et suis toujours très content. C'est tres bon , produits frais et cuisinés. La serveuse est très agréable. Merci à tous",
+      "contexte": "Déjeuner",
+      "photos": []
+    },
+    {
+      "note": 5,
+      "texte": "Très agréable restaurant, service sympathique et attentionné. Cuisine raffinée et originale pour un rapport qualité prix excellent. Je recommande vivement ce restaurant comme on en rencontre trop rarement.",
+      "contexte": "",
+      "photos": []
+    },
+    {
+      "note": 5,
+      "texte": "Nous avons dîné dans ce restaurant le soir de la Saint-Valentin. De l'entrée au dessert nous nous sommes régalés, c'était délicieux. Ambiance calme et service attentionné. Je recommande +++",
+      "contexte": "Dîner",
+      "photos": [
+        {
+          "src": "images/avis/foie-gras.jpg",
+          "alt": "Foie gras, pain grillé et chutney"
+        },
+        {
+          "src": "images/avis/viande.jpg",
+          "alt": "Pièce de viande, sauce et petits pois"
+        },
+        {
+          "src": "images/avis/dessert-framboise.jpg",
+          "alt": "Dessert framboise et meringue"
+        }
+      ]
+    },
+    {
+      "note": 5,
+      "texte": "Incontestablement le meilleur rapport qualité prix pour déjeuner ou dîner sur Lorient . Établissement agréable traditionnel dans sa déco , nappes en tissu, pain toujours frais . Cuisine plutôt moderne avec des ingrédients de qualités et surtout beaucoup de fraîcheur… assiette présentées avec beaucoup de soin , Accueil toujours souriant et discret . Très belle adresse qui mérite vraiment d'être connue.",
+      "contexte": "Dîner",
+      "photos": []
+    },
+    {
+      "note": 5,
+      "texte": "Un très bon moment passé dans ce restaurant. L'accueil est chaleureux et le service attentionné. Les plats sont bien présentés et savoureux, avec des produits de qualité. Nous avons apprécié le menu tant par la qualité des produits et du tarif qui est très raisonnable. Une belle adresse que nous recommandons.",
+      "contexte": "Dîner",
+      "photos": [
+        {
+          "src": "images/avis/moelleux-chocolat.jpg",
+          "alt": "Moelleux au chocolat et boule de glace"
+        },
+        {
+          "src": "images/avis/poisson-legumes.jpg",
+          "alt": "Poissons, sauce et petits légumes"
+        },
+        {
+          "src": "images/avis/cassolette.jpg",
+          "alt": "Cassolette gratinée"
+        }
+      ]
+    }
+  ]
+}

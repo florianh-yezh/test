@@ -282,6 +282,22 @@
     ArtyMenus.load().then((data) => { ArtyMenus.render(data, $('#menus')); describeMenus(data); }).catch(() => {});
   }
 
+  // ---------- Livre d'or : avis gérés depuis admin.html, photos agrandies au toucher ----------
+  const livre = $('#avis');
+  if (livre && window.ArtyAvis) {
+    let avisData = null;
+    ArtyAvis.load().then((data) => { avisData = data; ArtyAvis.render(data, livre); }).catch(() => {});
+    livre.addEventListener('click', (e) => {
+      const btn = e.target.closest('.avis__photo');
+      if (!btn || !window.ArtyViewer) return;
+      const i = +btn.dataset.avis;
+      // Sans données chargées (secours), on reconstruit la liste depuis la page.
+      const list = avisData ? ArtyAvis.photos(avisData, i)
+        : [...btn.parentElement.querySelectorAll('img')].map((im) => ({ src: im.src, alt: im.alt, caption: im.alt }));
+      ArtyViewer.open(list, +btn.dataset.photo, btn);
+    });
+  }
+
   // ---------- Dépliage des doubles pages ----------
   const spreads = $$('.spread');
   if ('IntersectionObserver' in window) {

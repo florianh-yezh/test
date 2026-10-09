@@ -5,3 +5,6 @@ api/.tentatives.json
 data/archives/*.json
 data/menus.json.tmp
 data/reglages.json.tmp
+images/uploads/*
+!images/uploads/.htaccess
+!images/uploads/.gitkeep

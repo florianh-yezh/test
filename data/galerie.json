@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "photos": [
+    {
+      "src": "images/galerie/plat-viande.jpg",
+      "legende": "Un plat du moment",
+      "categorie": "assiettes",
+      "alt": "Viande, bacon croustillant, polenta grillée, champignons et petits pois"
+    },
+    {
+      "src": "images/galerie/dessert-mille-feuille.jpg",
+      "legende": "Le mille-feuille",
+      "categorie": "assiettes",
+      "alt": "Mille-feuille au sucre glace, quenelle de glace et dés de fruits"
+    },
+    {
+      "src": "images/galerie/devanture.jpg",
+      "legende": "La devanture, le soir",
+      "categorie": "salle",
+      "alt": "Devanture du restaurant le soir : enseigne lumineuse et porte rouge"
+    },
+    {
+      "src": "images/galerie/plat-saint-jacques.jpg",
+      "legende": "Un plat de la mer",
+      "categorie": "assiettes",
+      "alt": "Saint-Jacques et poisson, purée orange et tuile dentelle"
+    },
+    {
+      "src": "images/galerie/mises-en-bouche.jpg",
+      "legende": "Les mises en bouche",
+      "categorie": "assiettes",
+      "alt": "Mises en bouche en coupelles, décorées de fleurs comestibles"
+    },
+    {
+      "src": "images/galerie/salle-tableaux.jpg",
+      "legende": "La salle et ses tableaux",
+      "categorie": "salle",
+      "alt": "La salle : tables nappées de blanc, chaises bleues et tableaux aux murs"
+    },
+    {
+      "src": "images/galerie/entree-feuillete.jpg",
+      "legende": "Une entrée",
+      "categorie": "assiettes",
+      "alt": "Feuilleté sur salade et lamelle de poire caramélisée"
+    },
+    {
+      "src": "images/galerie/table-dressee.jpg",
+      "legende": "Une table dressée",
+      "categorie": "salle",
+      "alt": "Table pour deux, serviettes rouges et chemin de table"
+    },
+    {
+      "src": "images/couscous.jpg",
+      "legende": "Le couscous du jeudi et du vendredi",
+      "categorie": "assiettes",
+      "alt": "Couscous : semoule, merguez et côte d'agneau"
+    },
+    {
+      "src": "images/galerie/salle-fenetres.jpg",
+      "legende": "La salle, côté fenêtres",
+      "categorie": "salle",
+      "alt": "La salle côté fenêtres, chaises bleues et nappes blanches"
+    },
+    {
+      "src": "images/salle.jpg",
+      "legende": "La grande tablée des repas de groupe",
+      "categorie": "salle",
+      "alt": "Longue table dressée pour un repas de groupe"
+    },
+    {
+      "src": "images/avis/veloute-oeuf.jpg",
+      "legende": "Velouté et œuf poché",
+      "categorie": "clients",
+      "alt": "Velouté vert, œuf poché et radis"
+    },
+    {
+      "src": "images/avis/foie-gras.jpg",
+      "legende": "Foie gras maison",
+      "categorie": "clients",
+      "alt": "Foie gras, pain grillé et chutney"
+    },
+    {
+      "src": "images/avis/poisson-risotto.jpg",
+      "legende": "Poisson et risotto",
+      "categorie": "clients",
+      "alt": "Poisson, persillade et risotto"
+    },
+    {
+      "src": "images/avis/viande.jpg",
+      "legende": "Pièce de viande",
+      "categorie": "clients",
+      "alt": "Pièce de viande, sauce et petits pois"
+    },
+    {
+      "src": "images/avis/dessert-framboise.jpg",
+      "legende": "Dessert framboise",
+      "categorie": "clients",
+      "alt": "Dessert framboise et meringue"
+    },
+    {
+      "src": "images/avis/poisson-legumes.jpg",
+      "legende": "Poissons et petits légumes",
+      "categorie": "clients",
+      "alt": "Poissons, sauce et petits légumes"
+    },
+    {
+      "src": "images/avis/cassolette.jpg",
+      "legende": "Cassolette gratinée",
+      "categorie": "clients",
+      "alt": "Cassolette gratinée"
+    },
+    {
+      "src": "images/avis/dessert-ananas.jpg",
+      "legende": "Dessert à l'ananas",
+      "categorie": "clients",
+      "alt": "Carpaccio d'ananas, écume et glace"
+    },
+    {
+      "src": "images/avis/moelleux-chocolat.jpg",
+      "legende": "Moelleux au chocolat",
+      "categorie": "clients",
+      "alt": "Moelleux au chocolat et boule de glace"
+    },
+    {
+      "src": "images/avis/cafe-gourmand.jpg",
+      "legende": "Café gourmand",
+      "categorie": "clients",
+      "alt": "Café gourmand"
+    }
+  ]
+}

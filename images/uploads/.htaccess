@@ -1,0 +1,5 @@
+# Photos envoyées depuis l'admin : aucun script ne doit pouvoir s'exécuter ici.
+<FilesMatch "\.(?i:php\d?|phtml|phar|cgi|pl|py|sh)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes -ExecCGI

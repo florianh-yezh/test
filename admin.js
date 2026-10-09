@@ -1,11 +1,18 @@
-// Ar'Ty Mad — gestion de la carte.
-// Modifie data/menus.json et l'enregistre sur l'hébergeur via api/menus.php (protégé par mot de passe) ;
-// le site l'affiche avec la mise en page habituelle.
+// Ar'Ty Mad — page de gestion : carte (data/menus.json), livre d'or (data/avis.json) et galerie (data/galerie.json).
+// Tout est enregistré sur l'hébergeur via api/menus.php (protégé par mot de passe) ;
+// le site affiche ces fichiers avec sa mise en page habituelle.
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const { esc } = window.ArtyMenus;
 
   const DRAFT_KEY = 'artymad-admin-brouillon';
+  // Contenus gérés, chacun avec sa version en ligne et son brouillon.
+  const DOCS = {
+    menus: { file: 'data/menus.json', action: 'save', draft: DRAFT_KEY, label: 'La carte', loader: (u) => ArtyMenus.load(u) },
+    avis: { file: 'data/avis.json', action: 'avis', draft: 'artymad-admin-avis', label: "Le livre d'or", loader: (u) => ArtyAvis.load(u) },
+    galerie: { file: 'data/galerie.json', action: 'galerie', draft: 'artymad-admin-galerie', label: 'La galerie', loader: (u) => ArtyGalerie.load(u) },
+  };
+  const CATEGORIES = [['assiettes', 'Les assiettes'], ['salle', 'La salle'], ['clients', 'Vu par nos clients']];
   const PASS_KEY = 'artymad-admin-acces';
   const API = 'api/menus.php';
 
@@ -22,8 +29,8 @@
     set(v) { try { v ? sessionStorage.setItem(PASS_KEY, v) : sessionStorage.removeItem(PASS_KEY); } catch { /* sans mémoire */ } },
   };
   let password = session.get();
-  let state = null;      // carte en cours de modification
-  let published = null;  // dernière version en ligne (JSON texte)
+  let state = null;      // carte en cours de modification (alias de DOCS.menus.state)
+  let published = null;  // dernière version en ligne de la carte (JSON texte)
   let reglages = { version: 1, reservationEnLigne: false }; // data/reglages.json, enregistré à chaque changement
   let tab = 'm0';
 
@@ -33,7 +40,10 @@
   const preview = $('#preview');
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const serialize = (o) => JSON.stringify(o, null, 2) + '\n';
-  const isDirty = () => published !== null && serialize(state) !== published;
+  const syncMenus = () => { DOCS.menus.state = state; DOCS.menus.published = published; };
+  const docDirty = (d) => d.published != null && d.state != null && serialize(d.state) !== d.published;
+  const isDirty = () => { syncMenus(); return Object.values(DOCS).some(docDirty); };
+  const docOfTab = () => (tab === 'avis' ? 'avis' : tab === 'galerie' ? 'galerie' : 'menus');
 
   // ---------- Statut et messages ----------
   const refreshState = (savedNow = false) => {
@@ -55,13 +65,31 @@
   };
   const hush = () => { notice.hidden = true; notice.innerHTML = ''; };
 
-  // ---------- Aperçu ----------
+  // ---------- Aperçu : la section du site correspondant à l'onglet ----------
   let previewTimer;
-  const changed = () => {
-    store.set(DRAFT_KEY, state);
+  const previewLabel = $('.adm-preview__label');
+  const renderPreview = () => {
+    const k = docOfTab();
+    if (k === 'avis' && DOCS.avis.state) {
+      previewLabel.textContent = "Aperçu du livre d'or, tel qu'il apparaîtra sur le site";
+      preview.innerHTML = '<section class="spread livre is-open"></section>';
+      ArtyAvis.render(DOCS.avis.state, $('section', preview));
+    } else if (k === 'galerie' && DOCS.galerie.state) {
+      previewLabel.textContent = 'Aperçu de la page Galerie';
+      preview.innerHTML = '<ul class="g-grid adm-g-grid"></ul>';
+      ArtyGalerie.render(DOCS.galerie.state, $('ul', preview));
+    } else if (state) {
+      previewLabel.textContent = "Aperçu des menus, tel qu'il apparaîtra sur le site";
+      preview.innerHTML = '<section class="spread spread--menus is-open"></section>';
+      ArtyMenus.render(state, $('section', preview));
+    }
+  };
+  const changed = (k = docOfTab()) => {
+    syncMenus();
+    store.set(DOCS[k].draft, DOCS[k].state);
     refreshState();
     clearTimeout(previewTimer);
-    previewTimer = setTimeout(() => ArtyMenus.render(state, preview), 120);
+    previewTimer = setTimeout(renderPreview, 120);
   };
 
   // ---------- Onglets ----------
@@ -71,6 +99,8 @@
       ...state.menus.map((m, i) => [`m${i}`, m.nom || `Menu ${i + 1}`]),
       ['enfant', state.enfant.nom || 'Menu enfant'],
       ['note', 'Mention sous les menus'],
+      ['avis', "Livre d'or"],
+      ['galerie', 'Galerie'],
       ['reglages', 'Réglages'],
       ['acces', 'Mot de passe'],
     ];
@@ -83,6 +113,7 @@
     tab = b.dataset.tab;
     renderTabs();
     renderPanel();
+    renderPreview();
   });
 
   // ---------- Champs ----------
@@ -147,6 +178,74 @@
       <label class="adm-field"><span>Texte</span><textarea rows="2" data-n="note">${esc(state.note)}</textarea>
         <small>S'affiche en petit sous la double page.</small></label>`;
 
+  const avisPanel = () => {
+    const d = DOCS.avis.state;
+    return `
+      <h2>Le livre d'or</h2>
+      <p>Les avis affichés sur la page principale, sans les noms. Les photos s'agrandissent au toucher.</p>
+      ${field('Lien « Voir tous nos avis sur Google »', d.lienGoogle, 'data-lien="1" inputmode="url"', 'Adresse de votre fiche Google. Laisser vide pour masquer le bouton.')}
+      ${d.avis.map((a, i) => `
+        <fieldset class="adm-section" data-v="${i}">
+          <div class="adm-section__head">
+            <p class="adm-section__title">Avis ${i + 1}</p>
+            <button type="button" class="icon-btn" data-act="v-up" ${i === 0 ? 'disabled' : ''} aria-label="Monter l'avis ${i + 1}">${icon('up')}</button>
+            <button type="button" class="icon-btn" data-act="v-down" ${i === d.avis.length - 1 ? 'disabled' : ''} aria-label="Descendre l'avis ${i + 1}">${icon('down')}</button>
+            <button type="button" class="icon-btn icon-btn--danger" data-act="v-del" aria-label="Supprimer l'avis ${i + 1}">${icon('trash')}</button>
+          </div>
+          <div class="adm-row">
+            <label class="adm-field"><span>Note</span>
+              <select data-av="note">
+                ${[5, 4, 3, 2, 1].map((n) => `<option value="${n}" ${a.note === n ? 'selected' : ''}>${'★'.repeat(n)} ${n}/5</option>`).join('')}
+                <option value="" ${a.note == null ? 'selected' : ''}>Sans étoiles</option>
+              </select>
+            </label>
+            <label class="adm-field"><span>Moment</span>
+              <select data-av="contexte">
+                ${['', 'Déjeuner', 'Dîner'].map((c) => `<option value="${c}" ${a.contexte === c ? 'selected' : ''}>${c || 'Non précisé'}</option>`).join('')}
+              </select>
+            </label>
+          </div>
+          <label class="adm-field"><span>Texte de l'avis</span><textarea rows="3" data-av="texte">${esc(a.texte)}</textarea>
+            <small>Recopiez l'avis tel quel, sans le nom du client.</small></label>
+          <div class="adm-photos">
+            ${(a.photos || []).map((p, j) => `
+              <div class="adm-photo" data-ph="${j}">
+                <img src="${esc(p.src)}" alt="">
+                <input type="text" value="${esc(p.alt)}" data-avp="alt" aria-label="Description de la photo ${j + 1}" placeholder="Ce que montre la photo">
+                <button type="button" class="icon-btn icon-btn--danger" data-act="vp-del" aria-label="Retirer la photo ${j + 1}">${icon('trash')}</button>
+              </div>`).join('')}
+          </div>
+          <button type="button" class="link-btn" data-act="vp-add">${icon('plus')} Ajouter des photos</button>
+        </fieldset>`).join('')}
+      <button type="button" class="link-btn" data-act="v-add">${icon('plus')} Ajouter un avis</button>`;
+  };
+
+  const galeriePanel = () => {
+    const d = DOCS.galerie.state;
+    return `
+      <h2>La galerie</h2>
+      <p>${d.photos.length} photo${d.photos.length > 1 ? 's' : ''} sur la page Galerie. Les nouvelles photos sont réduites sur cet appareil avant l'envoi.</p>
+      <button type="button" class="btn" data-act="g-add">${icon('plus')} Ajouter des photos</button>
+      <ol class="adm-gallery">
+        ${d.photos.map((p, i) => `
+          <li class="adm-gitem" data-g="${i}">
+            <img src="${esc(p.src)}" alt="">
+            <div class="adm-gitem__fields">
+              <input type="text" value="${esc(p.legende)}" data-gl="legende" aria-label="Légende de la photo ${i + 1}" placeholder="Légende (ex. : Le mille-feuille)">
+              <select data-gl="categorie" aria-label="Catégorie de la photo ${i + 1}">
+                ${CATEGORIES.map(([v, l]) => `<option value="${v}" ${p.categorie === v ? 'selected' : ''}>${l}</option>`).join('')}
+              </select>
+              <input type="text" value="${esc(p.alt)}" data-gl="alt" aria-label="Description de la photo ${i + 1}" placeholder="Description pour les malvoyants (facultatif)">
+            </div>
+            <span class="adm-tools">
+              <button type="button" class="icon-btn" data-act="g-up" ${i === 0 ? 'disabled' : ''} aria-label="Monter la photo ${i + 1}">${icon('up')}</button>
+              <button type="button" class="icon-btn" data-act="g-down" ${i === d.photos.length - 1 ? 'disabled' : ''} aria-label="Descendre la photo ${i + 1}">${icon('down')}</button>
+              <button type="button" class="icon-btn icon-btn--danger" data-act="g-del" aria-label="Supprimer la photo ${i + 1}">${icon('trash')}</button>
+            </span>
+          </li>`).join('')}
+      </ol>`;
+  };
+
   const reglagesPanel = () => {
     const on = reglages.reservationEnLigne === true;
     return `
@@ -168,7 +267,7 @@
 
   const accessPanel = () => `
       <h2>Mot de passe</h2>
-      <p>Il protège la publication de la carte. Il est oublié à la fermeture de l'onglet.</p>
+      <p>Il protège la publication (carte, livre d'or, galerie, photos). Il est oublié à la fermeture de l'onglet.</p>
       <label class="adm-field"><span>Mot de passe de gestion</span>
         <input type="password" data-a="password" value="${esc(password)}" autocomplete="current-password">
       </label>
@@ -192,7 +291,7 @@
         <button type="button" class="btn btn--ghost" data-act="copy" hidden>Copier les lignes</button>
       </details>
       <div class="adm-actions">
-        <button type="button" class="btn btn--ghost" data-act="download">Télécharger le fichier menus.json</button>
+        <button type="button" class="btn btn--ghost" data-act="download">Télécharger une copie des contenus</button>
         <button type="button" class="btn btn--ghost" data-act="revert">Annuler mes modifications</button>
       </div>`;
 
@@ -200,6 +299,8 @@
     if (tab.startsWith('m')) panel.innerHTML = menuPanel(+tab.slice(1));
     else if (tab === 'enfant') panel.innerHTML = enfantPanel();
     else if (tab === 'note') panel.innerHTML = notePanel();
+    else if (tab === 'avis') panel.innerHTML = DOCS.avis.state ? avisPanel() : '<h2>Le livre d\'or</h2><p>Avis introuvables en ligne.</p>';
+    else if (tab === 'galerie') panel.innerHTML = DOCS.galerie.state ? galeriePanel() : '<h2>La galerie</h2><p>Galerie introuvable en ligne.</p>';
     else if (tab === 'reglages') panel.innerHTML = reglagesPanel();
     else panel.innerHTML = accessPanel();
     panel.querySelectorAll('textarea').forEach(autosize);
@@ -214,6 +315,21 @@
     t.classList.remove('is-invalid');
     if (t.dataset.a === 'password') { password = t.value; session.set(password); return; }
     if (t.dataset.s) return;
+    if (t.dataset.lien) { DOCS.avis.state.lienGoogle = t.value; changed('avis'); return; }
+    if (t.dataset.av) {
+      const a = DOCS.avis.state.avis[+t.closest('[data-v]').dataset.v];
+      a[t.dataset.av] = t.dataset.av === 'note' ? (t.value ? +t.value : null) : t.value;
+      changed('avis'); return;
+    }
+    if (t.dataset.avp) {
+      const a = DOCS.avis.state.avis[+t.closest('[data-v]').dataset.v];
+      a.photos[+t.closest('[data-ph]').dataset.ph].alt = t.value;
+      changed('avis'); return;
+    }
+    if (t.dataset.gl) {
+      DOCS.galerie.state.photos[+t.closest('[data-g]').dataset.g][t.dataset.gl] = t.value;
+      changed('galerie'); return;
+    }
     if (t.dataset.e) state.enfant[t.dataset.e] = t.value;
     else if (t.dataset.n) state.note = t.value;
     else if (tab.startsWith('m')) {
@@ -225,7 +341,7 @@
       if (t.dataset.k === 'nom') { renderTabs(); $('h2', panel).textContent = t.value || 'Menu'; }
     }
     if (t.dataset.e === 'nom') renderTabs();
-    changed();
+    changed('menus');
   });
 
   const move = (arr, i, d) => { const j = i + d; if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; };
@@ -272,8 +388,52 @@
     }
     if (act === 'download') { download(); return; }
     if (act === 'revert') {
-      if (!confirm('Revenir à la carte actuellement en ligne ? Vos modifications non publiées seront perdues.')) return;
-      state = JSON.parse(published); store.del(DRAFT_KEY); renderTabs(); renderPanel(); changed(); hush(); return;
+      if (!confirm('Revenir aux contenus actuellement en ligne (carte, livre d\'or, galerie) ? Vos modifications non publiées seront perdues.')) return;
+      Object.entries(DOCS).forEach(([k, d]) => { if (d.published) { d.state = JSON.parse(d.published); store.del(d.draft); } });
+      state = DOCS.menus.state;
+      renderTabs(); renderPanel(); refreshState(); renderPreview(); hush(); return;
+    }
+
+    // Livre d'or
+    if (act.startsWith('v')) {
+      const list = DOCS.avis.state.avis;
+      const vi = +b.closest('[data-v]')?.dataset.v;
+      if (act === 'v-add') list.push({ note: 5, texte: '', contexte: '', photos: [] });
+      if (act === 'v-up') move(list, vi, -1);
+      if (act === 'v-down') move(list, vi, 1);
+      if (act === 'v-del') {
+        if (list[vi].texte.trim() && !confirm(`Supprimer l'avis ${vi + 1} ?`)) return;
+        list.splice(vi, 1);
+      }
+      if (act === 'vp-del') list[vi].photos.splice(+b.closest('[data-ph]').dataset.ph, 1);
+      if (act === 'vp-add') {
+        const added = await pickAndUpload(b);
+        if (!added.length) return;
+        list[vi].photos.push(...added.map((src) => ({ src, alt: '' })));
+      }
+      renderPanel(); changed('avis');
+      if (act === 'v-add') $(`[data-v="${list.length - 1}"] textarea`, panel)?.focus();
+      return;
+    }
+
+    // Galerie
+    if (act.startsWith('g')) {
+      const list = DOCS.galerie.state.photos;
+      const gi = +b.closest('[data-g]')?.dataset.g;
+      if (act === 'g-up') move(list, gi, -1);
+      if (act === 'g-down') move(list, gi, 1);
+      if (act === 'g-del') {
+        if (!confirm(`Retirer la photo ${gi + 1}${list[gi].legende ? ` « ${list[gi].legende} »` : ''} de la galerie ?`)) return;
+        list.splice(gi, 1);
+      }
+      if (act === 'g-add') {
+        const added = await pickAndUpload(b);
+        if (!added.length) return;
+        list.unshift(...added.map((src) => ({ src, legende: '', categorie: 'assiettes', alt: '' })));
+      }
+      renderPanel(); changed('galerie');
+      if (act === 'g-add') $('[data-g="0"] [data-gl="legende"]', panel)?.focus();
+      return;
     }
 
     const m = state.menus[+tab.slice(1)];
@@ -312,6 +472,56 @@
     });
     return problems;
   };
+
+  // ---------- Photos : choix, réduction sur l'appareil, envoi ----------
+  const pickFiles = () => new Promise((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*'; input.multiple = true;
+    input.addEventListener('change', () => resolve([...input.files]));
+    input.click();
+  });
+
+  // Réduit la photo à 1600 px maximum et la convertit en JPEG (≈ 200 à 500 Ko).
+  async function shrink(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = url; });
+      const scale = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      return c.toDataURL('image/jpeg', 0.82);
+    } finally { URL.revokeObjectURL(url); }
+  }
+
+  async function pickAndUpload(btn) {
+    if (!password) {
+      tab = 'acces'; renderTabs(); renderPanel();
+      say('error', "<p>Pour ajouter des photos, saisissez d'abord le mot de passe de gestion.</p>");
+      $('[data-a="password"]', panel).focus();
+      return [];
+    }
+    const files = await pickFiles();
+    if (!files.length) return [];
+    const label = btn.innerHTML;
+    btn.disabled = true;
+    const done = [];
+    try {
+      for (const [n, f] of files.entries()) {
+        btn.textContent = `Envoi de la photo ${n + 1} sur ${files.length}…`;
+        let data;
+        try { data = await shrink(f); } catch { throw new Error(`« ${f.name} » n'est pas une photo lisible.`); }
+        done.push((await send({ action: 'upload', data: { image: data } })).src);
+      }
+      say('ok', `<p>${done.length} photo${done.length > 1 ? 's ajoutées' : ' ajoutée'}. Pensez à cliquer sur « Publier sur le site ».</p>`);
+    } catch (err) {
+      if (err.status === 401) { password = ''; session.set(''); }
+      say('error', `<p><strong>Envoi interrompu.</strong> ${esc(err.message)}</p>${done.length ? `<p>${done.length} photo(s) déjà ajoutée(s).</p>` : ''}`);
+    } finally {
+      btn.disabled = false; btn.innerHTML = label;
+    }
+    return done;
+  }
 
   // ---------- Serveur (api/menus.php) ----------
   async function send(body) {
@@ -362,7 +572,7 @@
       if (sel) { const el = $(sel, panel); el.classList.add('is-invalid'); el.focus(); }
       return;
     }
-    if (!isDirty()) { say('ok', '<p>Rien à publier : le site affiche déjà cette carte.</p>'); return; }
+    if (!isDirty()) { say('ok', '<p>Rien à publier : le site est déjà à jour.</p>'); return; }
     if (!password) {
       tab = 'acces'; renderTabs(); renderPanel();
       say('error', '<p>Pour publier, saisissez le mot de passe de gestion.</p>');
@@ -371,28 +581,38 @@
     }
     const btn = $('#publish');
     btn.disabled = true; btn.textContent = 'Publication…';
+    const done = [];
     try {
-      const res = await send({ action: 'save', data: state });
-      // Le serveur nettoie la carte (espaces, plats vides) : on repart de ce qu'il a enregistré.
-      state = res.data;
-      published = serialize(state);
-      renderTabs(); renderPanel();
-      ArtyMenus.render(state, preview);
-      store.del(DRAFT_KEY);
+      syncMenus();
+      for (const [k, d] of Object.entries(DOCS)) {
+        if (!docDirty(d)) continue;
+        const res = await send({ action: d.action, data: d.state });
+        // Le serveur nettoie les données (espaces, éléments vides) : on repart de ce qu'il a enregistré.
+        d.state = res.data;
+        d.published = serialize(d.state);
+        store.del(d.draft);
+        done.push(d.label);
+      }
+      state = DOCS.menus.state; published = DOCS.menus.published;
+      renderTabs(); renderPanel(); renderPreview();
       refreshState(true);
-      say('ok', '<p><strong>Carte publiée.</strong> Elle est déjà visible sur le site.</p>');
+      say('ok', `<p><strong>Publié :</strong> ${done.map(esc).join(', ')}. C'est déjà visible sur le site.</p>`);
     } catch (err) {
       if (err.status === 401) { password = ''; session.set(''); }
-      say('error', `<p><strong>La carte n'a pas été publiée.</strong></p><p>${esc(err.message)}</p>`);
+      state = DOCS.menus.state; published = DOCS.menus.published;
+      refreshState();
+      say('error', `<p><strong>Publication incomplète.</strong>${done.length ? ` Déjà publié : ${done.map(esc).join(', ')}.` : ''}</p><p>${esc(err.message)}</p>`);
     } finally {
       btn.disabled = false; btn.textContent = 'Publier sur le site';
     }
   });
 
   function download() {
+    syncMenus();
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([serialize(state)], { type: 'application/json' }));
-    a.download = 'menus.json';
+    const all = Object.fromEntries(Object.entries(DOCS).map(([k, d]) => [k, d.state]));
+    a.href = URL.createObjectURL(new Blob([serialize(all)], { type: 'application/json' }));
+    a.download = 'artymad-contenus.json';
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
@@ -418,14 +638,25 @@
       state = draft;
       say('ok', '<p>Vos modifications non publiées ont été retrouvées.</p>', {
         label: 'Repartir de la carte en ligne',
-        run: () => { state = JSON.parse(published); store.del(DRAFT_KEY); renderTabs(); renderPanel(); changed(); hush(); },
+        run: () => { state = JSON.parse(published); store.del(DRAFT_KEY); renderTabs(); renderPanel(); changed('menus'); hush(); },
       });
     } else {
       state = JSON.parse(published);
       store.del(DRAFT_KEY);
     }
+    syncMenus();
+    // Livre d'or et galerie : même logique de brouillon que la carte.
+    for (const k of ['avis', 'galerie']) {
+      const d = DOCS[k];
+      try { d.published = serialize(await d.loader(`${d.file}?t=${Date.now()}`)); } catch { continue; }
+      const dr = store.get(d.draft);
+      if (dr && serialize(dr) !== d.published) {
+        d.state = dr;
+        say('ok', `<p>Vos modifications non publiées (${esc(d.label.toLowerCase())}) ont été retrouvées.</p>`);
+      } else { d.state = JSON.parse(d.published); store.del(d.draft); }
+    }
     renderTabs(); renderPanel(); refreshState();
-    ArtyMenus.render(state, preview);
+    renderPreview();
   }
 
   // ---------- Bascule Modifier / Aperçu (mobile) ----------
