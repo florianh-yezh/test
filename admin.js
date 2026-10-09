@@ -1,12 +1,13 @@
 // Ar'Ty Mad — gestion de la carte.
-// Modifie data/menus.json et le publie sur GitHub ; le site l'affiche avec la mise en page habituelle.
+// Modifie data/menus.json et l'enregistre sur l'hébergeur via api/menus.php (protégé par mot de passe) ;
+// le site l'affiche avec la mise en page habituelle.
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const { esc } = window.ArtyMenus;
 
   const DRAFT_KEY = 'artymad-admin-brouillon';
-  const GH_KEY = 'artymad-admin-github';
-  const GH_DEFAULT = { owner: 'florianh-yezh', repo: 'test', branch: 'site-artymad', path: 'data/menus.json', token: '' };
+  const PASS_KEY = 'artymad-admin-acces';
+  const API = 'api/menus.php';
 
   // localStorage peut être indisponible (navigation privée) : on continue sans.
   const store = {
@@ -15,10 +16,14 @@
     del(k) { try { localStorage.removeItem(k); } catch { /* idem */ } },
   };
 
-  let gh = { ...GH_DEFAULT, ...(store.get(GH_KEY) || {}) };
+  // Le mot de passe n'est gardé que le temps de la session (fermer l'onglet l'efface).
+  const session = {
+    get() { try { return sessionStorage.getItem(PASS_KEY) || ''; } catch { return ''; } },
+    set(v) { try { v ? sessionStorage.setItem(PASS_KEY, v) : sessionStorage.removeItem(PASS_KEY); } catch { /* sans mémoire */ } },
+  };
+  let password = session.get();
   let state = null;      // carte en cours de modification
   let published = null;  // dernière version en ligne (JSON texte)
-  let sha = null;        // version du fichier sur GitHub
   let tab = 'm0';
 
   const stateEl = $('#state');
@@ -65,7 +70,7 @@
       ...state.menus.map((m, i) => [`m${i}`, m.nom || `Menu ${i + 1}`]),
       ['enfant', state.enfant.nom || 'Menu enfant'],
       ['note', 'Mention sous les menus'],
-      ['github', 'Connexion GitHub'],
+      ['acces', 'Mot de passe'],
     ];
     tabsEl.innerHTML = items.map(([id, label]) =>
       `<button type="button" role="tab" aria-selected="${id === tab}" data-tab="${id}">${esc(label)}</button>`).join('');
@@ -140,32 +145,30 @@
       <label class="adm-field"><span>Texte</span><textarea rows="2" data-n="note">${esc(state.note)}</textarea>
         <small>S'affiche en petit sous la double page.</small></label>`;
 
-  const githubPanel = () => `
-      <h2>Connexion GitHub</h2>
-      <p>« Publier » enregistre la carte dans votre dépôt GitHub ; le site se met à jour tout seul en une à deux minutes. La clé reste uniquement sur cet appareil.</p>
-      <label class="adm-field"><span>Clé d'accès GitHub</span>
-        <input type="password" data-g="token" value="${esc(gh.token)}" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+  const accessPanel = () => `
+      <h2>Mot de passe</h2>
+      <p>Il protège la publication de la carte. Il est oublié à la fermeture de l'onglet.</p>
+      <label class="adm-field"><span>Mot de passe de gestion</span>
+        <input type="password" data-a="password" value="${esc(password)}" autocomplete="current-password">
       </label>
-      <div class="adm-row">
-        ${field('Compte', gh.owner, 'data-g="owner"')}
-        ${field('Dépôt', gh.repo, 'data-g="repo"')}
-      </div>
-      <div class="adm-row">
-        ${field('Branche', gh.branch, 'data-g="branch"')}
-        ${field('Fichier', gh.path, 'data-g="path"')}
-      </div>
       <div class="adm-actions">
-        <button type="button" class="btn" data-act="gh-save">Enregistrer et charger la carte en ligne</button>
-        <button type="button" class="btn btn--ghost" data-act="gh-forget">Oublier la clé sur cet appareil</button>
+        <button type="button" class="btn" data-act="login">Vérifier le mot de passe</button>
+        <button type="button" class="btn btn--ghost" data-act="logout">Oublier</button>
       </div>
       <details class="adm-help">
-        <summary>Comment obtenir une clé d'accès ?</summary>
+        <summary>Créer ou changer le mot de passe (installation)</summary>
         <ol>
-          <li>Sur github.com, ouvrez <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>.</li>
-          <li><strong>Generate new token</strong> ; dans « Repository access », choisissez <strong>Only select repositories</strong> puis le dépôt <code>${esc(gh.repo)}</code>.</li>
-          <li>Dans « Permissions », mettez <strong>Contents</strong> sur <strong>Read and write</strong>. Rien d'autre.</li>
-          <li>Copiez la clé (elle commence par <code>github_pat_</code>) et collez-la ci-dessus.</li>
+          <li>Choisissez un mot de passe d'au moins 10 caractères et tapez-le deux fois ci-dessous.</li>
+          <li>Copiez les trois lignes générées dans <code>api/config.php</code>, à la place des lignes <code>salt</code>, <code>hash</code> et <code>iterations</code>.</li>
+          <li>Renvoyez <code>api/config.php</code> sur l'hébergeur. Le mot de passe n'y figure pas, seulement son empreinte.</li>
         </ol>
+        <div class="adm-row adm-setup">
+          <label class="adm-field"><span>Nouveau mot de passe</span><input type="password" data-s="p1" autocomplete="new-password"></label>
+          <label class="adm-field"><span>Encore une fois</span><input type="password" data-s="p2" autocomplete="new-password"></label>
+        </div>
+        <button type="button" class="btn btn--ghost" data-act="gen">Générer les lignes pour config.php</button>
+        <pre class="adm-code" id="gen-out" hidden></pre>
+        <button type="button" class="btn btn--ghost" data-act="copy" hidden>Copier les lignes</button>
       </details>
       <div class="adm-actions">
         <button type="button" class="btn btn--ghost" data-act="download">Télécharger le fichier menus.json</button>
@@ -176,7 +179,7 @@
     if (tab.startsWith('m')) panel.innerHTML = menuPanel(+tab.slice(1));
     else if (tab === 'enfant') panel.innerHTML = enfantPanel();
     else if (tab === 'note') panel.innerHTML = notePanel();
-    else panel.innerHTML = githubPanel();
+    else panel.innerHTML = accessPanel();
     panel.querySelectorAll('textarea').forEach(autosize);
   };
 
@@ -187,7 +190,8 @@
     const t = e.target;
     if (t.tagName === 'TEXTAREA') autosize(t);
     t.classList.remove('is-invalid');
-    if (t.dataset.g) { gh[t.dataset.g] = t.value.trim(); return; }
+    if (t.dataset.a === 'password') { password = t.value; session.set(password); return; }
+    if (t.dataset.s) return;
     if (t.dataset.e) state.enfant[t.dataset.e] = t.value;
     else if (t.dataset.n) state.note = t.value;
     else if (tab.startsWith('m')) {
@@ -209,8 +213,18 @@
     if (!b) return;
     const act = b.dataset.act;
 
-    if (act === 'gh-save') { store.set(GH_KEY, gh); await loadPublished(true); return; }
-    if (act === 'gh-forget') { gh.token = ''; store.set(GH_KEY, { ...gh, token: '' }); renderPanel(); say('ok', '<p>Clé effacée de cet appareil.</p>'); return; }
+    if (act === 'login') {
+      try { await send({ action: 'check' }); say('ok', '<p>Mot de passe correct : vous pouvez publier.</p>'); }
+      catch (err) { say('error', `<p>${esc(err.message)}</p>`); }
+      return;
+    }
+    if (act === 'logout') { password = ''; session.set(''); renderPanel(); say('ok', '<p>Mot de passe oublié sur cet onglet.</p>'); return; }
+    if (act === 'gen') { await generate(); return; }
+    if (act === 'copy') {
+      const txt = $('#gen-out', panel).textContent;
+      try { await navigator.clipboard.writeText(txt); b.textContent = 'Lignes copiées'; } catch { say('error', '<p>Copie impossible : sélectionnez le texte à la main.</p>'); }
+      return;
+    }
     if (act === 'download') { download(); return; }
     if (act === 'revert') {
       if (!confirm('Revenir à la carte actuellement en ligne ? Vos modifications non publiées seront perdues.')) return;
@@ -254,28 +268,43 @@
     return problems;
   };
 
-  // ---------- GitHub ----------
-  const api = (path, opts = {}) => fetch(`https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}/${path}`, {
-    ...opts,
-    headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${gh.token}`, 'X-GitHub-Api-Version': '2022-11-28', ...(opts.headers || {}) },
-  });
-  const contentsPath = () => `contents/${gh.path.split('/').map(encodeURIComponent).join('/')}`;
-  const b64encode = (str) => { const bytes = new TextEncoder().encode(str); let bin = ''; bytes.forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin); };
-  const b64decode = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, '')), (c) => c.charCodeAt(0)));
-  const ghError = (status) => ({
-    401: 'La clé GitHub est refusée : elle est peut-être expirée ou mal copiée.',
-    403: "La clé n'a pas le droit d'écrire dans ce dépôt (permission « Contents : Read and write »).",
-    404: 'Dépôt, branche ou fichier introuvable : vérifiez la connexion GitHub.',
-    409: "Le fichier a changé entre-temps sur GitHub. Rechargez la carte en ligne puis refaites vos modifications.",
-    422: 'GitHub a refusé la modification. Rechargez la page et réessayez.',
-  }[status] || `GitHub a répondu une erreur (${status}). Réessayez dans un instant.`);
+  // ---------- Serveur (api/menus.php) ----------
+  async function send(body) {
+    if (!password) throw new Error("Saisissez d'abord le mot de passe de gestion.");
+    let res;
+    try {
+      res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Password': password },
+        body: JSON.stringify(body),
+      });
+    } catch {
+      throw new Error("Le serveur ne répond pas. Ouvrez cette page depuis le site en ligne (hébergement avec PHP).");
+    }
+    let json = {};
+    try { json = await res.json(); } catch {
+      throw new Error("Le serveur n'a pas répondu comme prévu : le dossier api/ est-il bien envoyé sur l'hébergeur (avec PHP 8.1 ou plus) ?");
+    }
+    if (!res.ok) throw Object.assign(new Error(json.error || `Erreur du serveur (${res.status}).`), { status: res.status });
+    return json;
+  }
 
-  async function fetchFromGitHub() {
-    const res = await api(`${contentsPath()}?ref=${encodeURIComponent(gh.branch)}`);
-    if (!res.ok) throw Object.assign(new Error(ghError(res.status)), { status: res.status });
-    const json = await res.json();
-    sha = json.sha;
-    return b64decode(json.content);
+  // Empreinte du mot de passe (PBKDF2-SHA256), calculée sur cet appareil, identique à hash_pbkdf2() côté PHP.
+  async function generate() {
+    const p1 = $('[data-s="p1"]', panel).value;
+    const p2 = $('[data-s="p2"]', panel).value;
+    if (p1.length < 10) { say('error', '<p>Choisissez un mot de passe d\'au moins 10 caractères.</p>'); return; }
+    if (p1 !== p2) { say('error', '<p>Les deux mots de passe ne sont pas identiques.</p>'); return; }
+    const iterations = 150000;
+    const hex = (buf) => [...new Uint8Array(buf)].map((x) => x.toString(16).padStart(2, '0')).join('');
+    const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(p1), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(salt), iterations }, key, 256);
+    const out = $('#gen-out', panel);
+    out.textContent = `    'salt'       => '${salt}',\n    'hash'       => '${hex(bits).slice(0, 64)}',\n    'iterations' => ${iterations},`;
+    out.hidden = false;
+    $('[data-act="copy"]', panel).hidden = false;
+    hush();
   }
 
   $('#publish').addEventListener('click', async () => {
@@ -289,30 +318,27 @@
       return;
     }
     if (!isDirty()) { say('ok', '<p>Rien à publier : le site affiche déjà cette carte.</p>'); return; }
-    if (!gh.token) {
-      tab = 'github'; renderTabs(); renderPanel();
-      say('error', "<p>Pour publier, collez d'abord votre clé d'accès GitHub (une seule fois sur cet appareil).</p>");
-      $('[data-g="token"]', panel).focus();
+    if (!password) {
+      tab = 'acces'; renderTabs(); renderPanel();
+      say('error', '<p>Pour publier, saisissez le mot de passe de gestion.</p>');
+      $('[data-a="password"]', panel).focus();
       return;
     }
     const btn = $('#publish');
     btn.disabled = true; btn.textContent = 'Publication…';
     try {
-      if (!sha) await fetchFromGitHub().catch((err) => { if (err.status !== 404) throw err; });
-      const body = serialize(state);
-      const res = await api(contentsPath(), {
-        method: 'PUT',
-        body: JSON.stringify({ message: 'Carte mise à jour depuis la page de gestion', content: b64encode(body), branch: gh.branch, ...(sha ? { sha } : {}) }),
-      });
-      if (!res.ok) throw Object.assign(new Error(ghError(res.status)), { status: res.status });
-      sha = (await res.json()).content.sha;
-      published = body;
+      const res = await send({ action: 'save', data: state });
+      // Le serveur nettoie la carte (espaces, plats vides) : on repart de ce qu'il a enregistré.
+      state = res.data;
+      published = serialize(state);
+      renderTabs(); renderPanel();
+      ArtyMenus.render(state, preview);
       store.del(DRAFT_KEY);
       refreshState(true);
-      say('ok', '<p><strong>Carte publiée.</strong> Le site sera à jour d\'ici une à deux minutes.</p>');
+      say('ok', '<p><strong>Carte publiée.</strong> Elle est déjà visible sur le site.</p>');
     } catch (err) {
-      say('error', `<p><strong>La carte n'a pas été publiée.</strong></p><p>${esc(err.message)}</p>`,
-        err.status === 409 ? { label: 'Recharger la carte en ligne', run: () => loadPublished(true) } : null);
+      if (err.status === 401) { password = ''; session.set(''); }
+      say('error', `<p><strong>La carte n'a pas été publiée.</strong></p><p>${esc(err.message)}</p>`);
     } finally {
       btn.disabled = false; btn.textContent = 'Publier sur le site';
     }
@@ -327,39 +353,24 @@
   }
 
   // ---------- Chargement ----------
-  async function loadPublished(fromGitHubOnly = false) {
-    let text = null;
-    if (gh.token) {
-      try { text = await fetchFromGitHub(); } catch (err) {
-        say('error', `<p><strong>Impossible de lire la carte sur GitHub.</strong></p><p>${esc(err.message)}</p>`);
-        if (fromGitHubOnly) return;
-      }
+  async function loadPublished() {
+    let text;
+    try { text = serialize(await ArtyMenus.load(`data/menus.json?t=${Date.now()}`)); } catch {
+      say('error', "<p>La carte en ligne est introuvable. Ouvrez cette page depuis le site publié.</p>");
+      return;
     }
-    if (text === null) {
-      try { text = serialize(await ArtyMenus.load()); } catch {
-        say('error', "<p>La carte en ligne est introuvable. Ouvrez cette page depuis le site publié, ou connectez GitHub.</p>");
-        tab = 'github';
-        state = state || { menus: [], enfant: {}, note: '' };
-        renderTabs(); renderPanel();
-        return;
-      }
-    }
-    published = serialize(JSON.parse(text));
+    published = text;
     const draft = store.get(DRAFT_KEY);
     if (draft && serialize(draft) !== published) {
       state = draft;
-      say('ok', fromGitHubOnly
-        ? '<p>Connexion réussie. Vos modifications sont conservées : il reste à cliquer sur « Publier sur le site ».</p>'
-        : '<p>Vos modifications non publiées ont été retrouvées.</p>', {
+      say('ok', '<p>Vos modifications non publiées ont été retrouvées.</p>', {
         label: 'Repartir de la carte en ligne',
         run: () => { state = JSON.parse(published); store.del(DRAFT_KEY); renderTabs(); renderPanel(); changed(); hush(); },
       });
     } else {
       state = JSON.parse(published);
       store.del(DRAFT_KEY);
-      if (fromGitHubOnly) say('ok', '<p>Connexion réussie : la carte en ligne est chargée.</p>');
     }
-    if (tab === 'github' && !fromGitHubOnly) tab = 'm0';
     renderTabs(); renderPanel(); refreshState();
     ArtyMenus.render(state, preview);
   }

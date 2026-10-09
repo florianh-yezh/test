@@ -140,3 +140,12 @@
   .adm-dish { grid-template-columns: 1fr; }
   .adm-tools { justify-content: flex-end; }
 }
+
+.adm-setup { margin: 1rem 0 .8rem; }
+.adm-code {
+  margin-top: .8rem; padding: .8rem 1rem;
+  background: var(--ink); color: #fff; border-radius: 4px;
+  font: 400 .9rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre; overflow-x: auto;
+}
+.adm-help .btn { margin-top: .4rem; }

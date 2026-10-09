@@ -1,0 +1,5 @@
+# Seul menus.php est appelable ; réglages et compteurs restent privés.
+<FilesMatch "^(config\.php|\..*)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes
