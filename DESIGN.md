@@ -6,6 +6,8 @@ colors:
   bordeaux-deep: "#640006"
   bordeaux-night: "#45000a"
   vermillon: "#b8121b"
+  nappe: "#f5f1f0"
+  line: "#e6dcda"
   paper: "#fffaf8"
   paper-edge: "#f4e7e3"
   ink: "#3a2422"
@@ -75,17 +77,18 @@ components:
 
 ## Overview
 
-Le site est **la carte du restaurant qu'on déplie** : une couverture bordeaux, des doubles pages de papier posées sur la nappe rouge sombre, un encart de saison, et le dos de la carte pour réserver. Tout le reste découle de cet objet : feuillets blancs, pli central ombré, photos tirées comme des tirages posés sur la page, titres à l'encre rouge manuscrite.
+Le site est **la carte du restaurant qu'on déplie** : une couverture blanche à l'encre rouge, des doubles pages posées sur la nappe blanche du restaurant, un encart de saison, et le dos de la carte pour réserver. Le rouge bordeaux n'apparaît en grand qu'à l'ouverture (écran du logo) ; ensuite il reste l'encre de la carte.
 
 Contraintes de marque imposées par le restaurant : rouge bordeaux, logo, titres en écriture manuscrite. L'action principale (réserver) est utilisable dès la couverture.
 
 ## Colors
 
-Stratégie **engagée** : le bordeaux occupe la majorité de la surface (couverture, nappe, dos) ; le papier ne sert qu'aux feuillets.
+Stratégie **retenue** (révisée à la demande du client, « trop de rouge ») : nappe et papier dominent, le bordeaux est un accent d'environ 10 % : logo, nom, titres, prix, boutons, en-tête du tableau des horaires. Seul l'écran d'ouverture est entièrement rouge.
 
 - **bordeaux** `#8b0000` : couverture, dos, boutons principaux, titres sur papier.
-- **bordeaux-deep** `#640006` : la « nappe » sous les doubles pages.
-- **bordeaux-night** `#45000a` : bouton de la bande de réservation, barre mobile, barres de défilement.
+- **nappe** `#f5f1f0` : fond de page sous les feuillets et au dos.
+- **line** `#e6dcda` : filets, bordures, séparations.
+- **bordeaux-deep** / **bordeaux-night** : réserves sombres, plus utilisées en surface.
 - **vermillon** `#b8121b` : intertitres de menus, « ou » entre les plats, erreurs, anneau de focus.
 - **paper** `#fffaf8` / **paper-edge** `#f4e7e3` : feuillets et pages photo. Jamais de crème jaune.
 - **ink** `#3a2422` / **ink-soft** `#6a4f4b` : texte sur papier.
@@ -106,7 +109,7 @@ Stratégie **engagée** : le bordeaux occupe la majorité de la surface (couvert
 
 ## Elevation & Depth
 
-Une seule logique : du papier posé sur une nappe. Ombres neutres, décalées et floues (`0 30px 60px -30px rgba(0,0,0,.55)` pour les feuillets), ombre de pli en dégradé bordeaux transparent au centre des doubles pages. Les tirages photo et l'encart enfant sont légèrement inclinés (−2° à 1,5°).
+Une seule logique : du papier posé sur une nappe blanche. Ombres neutres très douces (`0 24px 50px -32px rgba(58,36,34,.4)` + filet de 1px pour les feuillets), ombre de pli en dégradé bordeaux transparent au centre des doubles pages. Les tirages photo et l'encart enfant sont légèrement inclinés (−2° à 1,5°).
 
 ## Shapes
 
@@ -119,11 +122,13 @@ Coins droits presque nets (4px) partout ; pastille arrondie uniquement pour le b
 - **Tampon du jour** : « Ouvert jusqu'à… », « Aujourd'hui, ouverture à… » ou « Fermé, réouverture… », calculé sur les vrais horaires.
 - **Menu** : titre + prix sur une ligne, filet, intertitres, plats séparés par « ou » manuscrit, mention dessert en pied.
 - **Encart** (menu enfant) : fiche blanche inclinée qui chevauche le bas de la double page.
+- **Écran d'ouverture** : fond bordeaux, logo puis nom qui montent, rideau qui se lève (~1,5 s, ignoré en mouvement réduit) ; le tampon du jour apparaît ensuite.
 - **Dépliage** : chaque double page s'ouvre sur son pli en entrant à l'écran ; contenu lisible dès l'état initial, désactivé en mouvement réduit.
 
 ## Do's and Don'ts
 
-- Do : garder le bordeaux comme surface dominante et le papier pour les feuillets.
+- Do : laisser la nappe et le papier dominer ; le bordeaux reste l'encre (environ 10 %).
+- Don't : grands aplats rouges hors de l'écran d'ouverture.
 - Do : ne montrer que du vrai (plats, prix, photos, histoire).
 - Do : icônes SVG au trait de la planche `<symbol>` de la page.
 - Don't : étiquette ou « sur-titre » au-dessus d'un titre.

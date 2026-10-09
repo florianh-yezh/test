@@ -3,6 +3,18 @@
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
+  // ---------- Ouverture : le logo, puis la page ----------
+  const loader = $('.loader');
+  const reveal = () => {
+    loader.classList.add('is-done');
+    document.documentElement.classList.remove('is-loading');
+  };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) reveal();
+  else {
+    window.addEventListener('load', () => setTimeout(reveal, 900));
+    setTimeout(reveal, 3000); // filet de sécurité si une ressource tarde
+  }
+
   // ---------- Horaires ----------
   // Créneaux en minutes depuis minuit, indexés par getDay() (0 = dimanche).
   const MIDI = { open: 720, close: 810, last: 795 };

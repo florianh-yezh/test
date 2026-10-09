@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ar'Ty Mad — Cuisine traditionnelle à Lorient</title>
   <meta name="description" content="Ar'Ty Mad, institution lorientaise depuis les années 60, près de la gare. Cuisine simple, inventive, goûteuse et faite maison. Menus à 23 € et 35 €, couscous le jeudi et le vendredi, repas de groupe. Réservez en ligne.">
-  <meta name="theme-color" content="#8b0000">
+  <meta name="theme-color" content="#ffffff">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Kaushan+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js', 'is-loading');</script>
 </head>
 <body>
 
@@ -22,6 +22,11 @@
     <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8V6.6c0-.7.4-1.1 1.1-1.1H17V2.5h-2.7C11.6 2.5 10.6 4.3 10.6 6.5V8H8.4v3.2h2.2V21.5H14V11.2h2.6L17 8z" fill="currentColor"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
+
+  <div class="loader" aria-hidden="true">
+    <img src="images/logo.svg" alt="" class="loader__logo" width="92" height="92">
+    <span class="loader__name">Ar'Ty Mad</span>
+  </div>
 
   <a class="skip" href="#reserver">Aller à la réservation</a>
 
@@ -62,7 +67,7 @@
         <span>Couverts</span>
         <select name="guests" id="qb-guests"></select>
       </label>
-      <button type="submit" class="btn btn--ink">
+      <button type="submit" class="btn">
         Réserver
         <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
       </button>
@@ -247,9 +252,10 @@
 
     <div class="back__infos" id="infos">
       <div class="hours">
-        <h2 class="title title--light">Nos horaires</h2>
+        <h2 class="title">Nos horaires</h2>
         <table>
           <caption class="visually-hidden">Horaires d'ouverture</caption>
+          <thead><tr><th scope="col">Jours</th><th scope="col">Horaires</th></tr></thead>
           <tbody>
             <tr data-day="1"><th scope="row">Lundi</th><td>Fermé</td></tr>
             <tr data-day="2"><th scope="row">Mardi</th><td>12h00 – 13h30</td></tr>
@@ -263,7 +269,7 @@
       </div>
 
       <div class="contact">
-        <h2 class="title title--light">Nous trouver</h2>
+        <h2 class="title">Nous trouver</h2>
         <p>Contactez-nous pour réserver une table ou organiser votre événement spécial. Nous serons ravis de vous accueillir dans notre univers culinaire.</p>
         <address>
           <strong>Ar'Ty Mad</strong><br>

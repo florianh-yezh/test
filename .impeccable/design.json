@@ -244,7 +244,7 @@
     "northStar": "Le menu plié",
     "overview": "La carte du restaurant qu'on déplie à table : couverture bordeaux, doubles pages de papier sur la nappe, réservation sur la couverture et au dos.",
     "keyCharacteristics": [
-      "Bordeaux dominant",
+      "Nappe et papier dominants, bordeaux en accent (~10 %)",
       "Titres manuscrits Kaushan Script",
       "Feuillets et pli central",
       "Réservation utilisable dès la couverture"
@@ -262,7 +262,7 @@
       }
     ],
     "dos": [
-      "Bordeaux en surface dominante",
+      "Bordeaux en accent, jamais en grand aplat hors de l'écran d'ouverture",
       "Icônes SVG au trait"
     ],
     "donts": [
