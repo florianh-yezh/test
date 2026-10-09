@@ -246,6 +246,12 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  // ---------- Menus : contenu géré depuis admin.html ----------
+  // En cas d'échec (fichier absent, ouverture hors ligne), le HTML de secours reste affiché.
+  if (window.ArtyMenus) {
+    ArtyMenus.load().then((data) => ArtyMenus.render(data, $('#menus'))).catch(() => {});
+  }
+
   // ---------- Dépliage des doubles pages ----------
   const spreads = $$('.spread');
   if ('IntersectionObserver' in window) {

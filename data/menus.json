@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "menus": [
+    {
+      "nom": "Menu Plaisir",
+      "prix": "23 €",
+      "rubriques": [
+        {
+          "titre": "Entrées",
+          "plats": [
+            "Crumble de pétoncle et parmesan, crème citronnée et pesto de roquette",
+            "Foie gras maison, toast et chutney mangues",
+            "Suggestion de l'ardoise"
+          ]
+        },
+        {
+          "titre": "Plats",
+          "plats": [
+            "Mahi Mahi sauce au safran et agrumes, purée de patate douce",
+            "Pluma de cochon sauce aigre douce, crème de petit pois à la menthe et écrasée de pommes de terre à la ciboulette",
+            "Suggestion de l'ardoise"
+          ]
+        }
+      ],
+      "pied": "Dessert au choix dans notre carte"
+    },
+    {
+      "nom": "Menu Saveur",
+      "prix": "35 €",
+      "rubriques": [
+        {
+          "titre": "Entrées",
+          "plats": [
+            "Foie gras maison, toast et chutney mangues",
+            "Noix de Saint-Jacques sauce au safran et agrumes, crumble parmesan"
+          ]
+        },
+        {
+          "titre": "Plats",
+          "plats": [
+            "Filet de Saint-Pierre, crème de petit pois à la menthe et pesto de roquette, écrasée de pommes de terre à la ciboulette",
+            "Pièce de bœuf sauce aux poivrons caramélisés, purée de patate douce"
+          ]
+        }
+      ],
+      "pied": "Dessert au choix dans notre carte"
+    }
+  ],
+  "enfant": {
+    "nom": "Menu enfant",
+    "prix": "12 €",
+    "condition": "Moins de 10 ans.",
+    "contenu": "Plat + dessert + 1 sirop à l'eau, au choix dans le menu plaisir.",
+    "citation": "« Je mange comme les grands, mais en petit. »"
+  },
+  "note": "Prix net, boisson non comprise · Dessert au choix dans notre carte"
+}

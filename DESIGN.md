@@ -14,6 +14,11 @@ colors:
   ink-soft: "#6a4f4b"
   on-red: "#fff3f1"
   on-red-soft: "#f2c9c4"
+  white: "#ffffff"
+  field-border: "#d9c3be"
+  muted-dot: "#b9aaa7"
+  success: "#2f8a4c"
+  success-bg: "#f1faf3"
 typography:
   display:
     fontFamily: "Kaushan Script, cursive"
@@ -35,6 +40,18 @@ typography:
     fontSize: "1.3rem"
     fontWeight: 400
     lineHeight: 1.6
+  ui:
+    fontFamily: "Alegreya Sans, Segoe UI, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 500
+  ui-small:
+    fontFamily: "Alegreya Sans, Segoe UI, system-ui, sans-serif"
+    fontSize: "0.9rem"
+    fontWeight: 400
+  admin-title:
+    fontFamily: "Kaushan Script, cursive"
+    fontSize: "2rem"
+    fontWeight: 400
   label:
     fontFamily: "Alegreya Sans, Segoe UI, system-ui, sans-serif"
     fontSize: "0.95rem"
@@ -43,6 +60,7 @@ typography:
 rounded:
   sheet: "4px"
   control: "4px"
+  panel: "6px"
   pill: "999px"
 spacing:
   gutter: "clamp(1rem, 4vw, 3rem)"
@@ -123,6 +141,7 @@ Coins droits presque nets (4px) partout ; pastille arrondie uniquement pour le b
 - **Menu** : titre + prix sur une ligne, filet, intertitres, plats séparés par « ou » manuscrit, mention dessert en pied.
 - **Encart** (menu enfant) : fiche blanche inclinée qui chevauche le bas de la double page.
 - **Écran d'ouverture** : fond bordeaux, logo puis nom qui montent, rideau qui se lève (~1,5 s, ignoré en mouvement réduit) ; le tampon du jour apparaît ensuite.
+- **Page de gestion** (`admin.html`, non indexée) : onglets en pastilles, panneaux blancs (rayon `panel`), champs à bordure `field-border`, statut « Modifications non publiées » en vermillon, « Publié » en vert `success`. L'aperçu réutilise exactement le rendu du site (`menus-render.js`).
 - **Dépliage** : chaque double page s'ouvre sur son pli en entrant à l'écran ; contenu lisible dès l'état initial, désactivé en mouvement réduit.
 
 ## Do's and Don'ts

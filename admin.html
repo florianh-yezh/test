@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gestion de la carte — Ar'Ty Mad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Kaushan+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+</head>
+<body class="adm-body">
+
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14m6-6-6 6-6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <header class="adm-bar">
+    <a href="index.html" class="adm-brand" title="Voir le site">
+      <img src="images/logo.svg" alt="" width="36" height="36">
+      <span>Ar'Ty Mad</span>
+    </a>
+    <p class="adm-state" id="state" role="status" aria-live="polite">Chargement…</p>
+    <button type="button" class="btn adm-publish" id="publish">Publier sur le site</button>
+  </header>
+
+  <div class="adm-notice" id="notice" role="alert" hidden></div>
+
+  <div class="adm-switch" role="tablist" aria-label="Affichage">
+    <button type="button" role="tab" aria-selected="true" data-view="edit">Modifier</button>
+    <button type="button" role="tab" aria-selected="false" data-view="preview">Aperçu</button>
+  </div>
+
+  <main class="adm" data-view="edit">
+    <div class="adm-editor">
+      <nav class="adm-tabs" role="tablist" aria-label="Que modifier ?" id="tabs"></nav>
+      <div class="adm-panel" id="panel"></div>
+    </div>
+
+    <aside class="adm-preview" aria-label="Aperçu de la double page Menus">
+      <p class="adm-preview__label">Aperçu, tel qu'il apparaîtra sur le site</p>
+      <div class="adm-preview__table">
+        <section class="spread spread--menus is-open" id="preview"></section>
+      </div>
+    </aside>
+  </main>
+
+  <script src="menus-render.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
