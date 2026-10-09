@@ -108,7 +108,7 @@
 .adm-preview__label { font-size: .9rem; color: var(--ink-soft); margin-bottom: .6rem; }
 .adm-preview__table { background: var(--nappe); border-radius: 6px; padding: 1rem 0 2rem; max-height: calc(100vh - 120px); overflow: auto; }
 .adm-preview .spread { width: 100%; --page-pad: clamp(1.1rem, 2.2vw, 2rem); font-size: 1rem; }
-.adm-preview .menu__head .price { font-size: 2rem; }
+.adm-preview .menu__head .price { font-size: 1.7rem; min-width: 4.6rem; height: 4.6rem; }
 .adm-preview .title { font-size: 2rem; }
 
 /* ---------- Responsive ---------- */

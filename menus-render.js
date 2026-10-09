@@ -18,6 +18,7 @@ window.ArtyMenus = (() => {
           ${r.plats.filter((p) => p.trim()).map((p) => `<li>${esc(p)}</li>`).join('\n          ')}
         </ul>`).join('')}
         ${m.pied ? `<p class="menu__dessert">${esc(m.pied)}</p>` : ''}
+        <div class="menu__mark" aria-hidden="true"><img src="images/logo.svg" alt=""><span>Ar'Ty Mad</span></div>
       </article>`;
 
   const html = (data) => {

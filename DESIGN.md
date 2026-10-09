@@ -40,6 +40,23 @@ typography:
     fontSize: "1.3rem"
     fontWeight: 400
     lineHeight: 1.6
+  menu-title:
+    fontFamily: "Kaushan Script, cursive"
+    fontSize: "clamp(2.6rem, 4.4vw, 3.4rem)"
+    fontWeight: 400
+  menu-price:
+    fontFamily: "Kaushan Script, cursive"
+    fontSize: "1.9rem"
+    fontWeight: 400
+  menu-section:
+    fontFamily: "Alegreya Sans, Segoe UI, system-ui, sans-serif"
+    fontSize: "0.85rem"
+    fontWeight: 700
+    letterSpacing: "0.24em"
+  menu-footer:
+    fontFamily: "Kaushan Script, cursive"
+    fontSize: "1.45rem"
+    fontWeight: 400
   ui:
     fontFamily: "Alegreya Sans, Segoe UI, system-ui, sans-serif"
     fontSize: "1rem"
@@ -138,7 +155,8 @@ Coins droits presque nets (4px) partout ; pastille arrondie uniquement pour le b
 - **Bande de réservation** (couverture) : Jour (14 prochains jours ouverts), Service, Couverts, bouton « Réserver » qui pré-remplit le formulaire du dos.
 - **Formulaire de réservation** : labels visibles, aide sous le champ, erreurs au départ du champ et effacées dès la correction, récapitulatif d'erreurs focalisable. Midi/Soir en contrôle segmenté ; le soir n'est actif que vendredi et samedi. Aucun faux message de confirmation tant qu'aucun service n'est branché (`data-endpoint`).
 - **Tampon du jour** : « Ouvert jusqu'à… », « Aujourd'hui, ouverture à… » ou « Fermé, réouverture… », calculé sur les vrais horaires.
-- **Menu** : titre + prix sur une ligne, filet, intertitres, plats séparés par « ou » manuscrit, mention dessert en pied.
+- **Menu** (« la carte classique ») : tout centré dans un liseré intérieur ; nom en manuscrit, prix dans un **sceau rouge** (rond, s'allonge en ovale pour un prix long comme « 15€90 »), petite vague d'ornement ; rubriques en capitales espacées entre deux filets ; plats centrés séparés par « ou » manuscrit ; phrase dessert en pied.
+- **Filigrane** : logo + « Ar'Ty Mad » en grand derrière les plats, incliné de −14°, opacité 5,5 %, décoratif (`aria-hidden`), dimensionné sur la largeur de la page (unités `cqi`).
 - **Encart** (menu enfant) : fiche blanche inclinée qui chevauche le bas de la double page.
 - **Écran d'ouverture** : fond bordeaux, logo puis nom qui montent, rideau qui se lève (~1,5 s, ignoré en mouvement réduit) ; le tampon du jour apparaît ensuite.
 - **Page de gestion** (`admin.html`, non indexée) : onglets en pastilles, panneaux blancs (rayon `panel`), champs à bordure `field-border`, statut « Modifications non publiées » en vermillon, « Publié » en vert `success`. L'aperçu réutilise exactement le rendu du site (`menus-render.js`).

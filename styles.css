@@ -269,19 +269,44 @@ strong { font-weight: 700; }
 .photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .photo figcaption { font-family: var(--script); color: var(--bordeaux); font-size: 1.25rem; text-align: center; padding: .55rem 0 .7rem; }
 
-/* menus */
+/* menus : la carte classique (centrée, prix dans un sceau, filigrane logo + nom) */
 .spread--menus { grid-template-rows: auto auto auto; }
-.menu__head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-bottom: 1rem; margin-bottom: .4rem; border-bottom: 1px solid var(--rule); }
-.menu__head .title { margin: 0; }
-.menu__head .price { font-size: clamp(2.2rem, 4vw, 3rem); }
-.menu h4 { margin: 1.6rem 0 .5rem; font-size: .95rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--vermillon); }
-.choices { list-style: none; }
-.choices li { color: var(--ink); line-height: 1.45; }
-.choices li + li::before {
-  content: "ou"; display: block; margin: .35rem 0;
-  font-family: var(--script); font-size: 1.05rem; color: var(--vermillon);
+.menu { container-type: inline-size; overflow: hidden; text-align: center; padding-top: calc(var(--page-pad) + .9rem); padding-bottom: calc(var(--page-pad) + .9rem); }
+.menu::before { content: ""; position: absolute; inset: 14px; border: 1px solid var(--rule); pointer-events: none; }
+.menu > * { position: relative; z-index: 1; }
+.menu__head { display: flex; flex-direction: column; align-items: center; gap: .9rem; padding-bottom: .4rem; }
+.menu__head .title { margin: 0; font-size: clamp(2.6rem, 4.4vw, 3.4rem); }
+.menu__head .price {
+  display: grid; place-items: center;
+  min-width: 5.2rem; height: 5.2rem; padding: 0 .7rem; border-radius: 999px;
+  background: var(--bordeaux); color: #fff;
+  font-size: 1.9rem; line-height: 1;
+  box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--bordeaux);
+  transform: rotate(-8deg);
 }
-.menu__dessert { margin-top: 2rem; padding-top: 1rem; border-top: 1px dashed var(--rule); font-family: var(--script); font-size: 1.3rem; color: var(--bordeaux) !important; text-align: center; max-width: none !important; }
+.menu__head::after {
+  content: ""; width: 140px; height: 16px; margin-top: .4rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 16'%3E%3Cpath d='M2 8h46M92 8h46' stroke='%23b8121b' stroke-width='1'/%3E%3Cpath d='M56 8c4-6 10-6 14 0s10 6 14 0' fill='none' stroke='%238b0000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.menu h4 { display: flex; align-items: center; gap: 1rem; margin: 2rem 0 .9rem; font-size: .85rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase; color: var(--vermillon); }
+.menu h4::before, .menu h4::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.choices { list-style: none; }
+.choices li { max-width: 34ch; margin-inline: auto; font-size: 1.12rem; color: var(--ink); line-height: 1.45; }
+.choices li + li::before {
+  content: "ou"; display: block; margin: .45rem 0;
+  font-family: var(--script); font-size: .95rem; color: var(--vermillon);
+}
+.menu__dessert { margin-top: 2.2rem; font-family: var(--script); font-size: 1.45rem; color: var(--bordeaux) !important; text-align: center; max-width: none !important; }
+
+/* filigrane : logo + nom, à peine visibles derrière les plats */
+.menu > .menu__mark {
+  position: absolute; z-index: 0; left: 50%; top: 58%;
+  display: grid; justify-items: center; gap: .6rem;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  opacity: .055; pointer-events: none; user-select: none;
+}
+.menu__mark img { width: clamp(110px, 16vw, 170px); width: clamp(80px, 28cqi, 170px); height: auto; filter: saturate(.6); }
+.menu__mark span { font-family: var(--script); font-size: clamp(3.4rem, 7vw, 5.4rem); font-size: clamp(2.2rem, 13cqi, 5.4rem); line-height: 1; color: var(--bordeaux); white-space: nowrap; }
 
 .slip {
   grid-column: 1 / -1;
@@ -426,7 +451,6 @@ strong { font-weight: 700; }
   .tabs { display: none; }
   .cover { min-height: auto; padding-top: 2.4rem; }
   .row { grid-template-columns: 1fr; }
-  .menu__head { flex-wrap: wrap; }
   .facts div { grid-template-columns: 1fr; gap: .1rem; }
   .hours tr.is-today th::after { display: block; width: max-content; margin: .35rem 0 0; }
 
