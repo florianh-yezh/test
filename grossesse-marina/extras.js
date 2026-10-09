@@ -620,6 +620,34 @@ GMX.actions.heart = () => {
 };
 document.addEventListener("visibilitychange", () => { if (document.hidden && Heart.on){ heartStop(); document.querySelectorAll("[data-act=heart]").forEach(b => b.classList.remove("playing")); } });
 
+
+/* ================= Modèle 3D importé ================= */
+GMX.actions.b3model = () => {
+  const has = window.Bebe3D && Bebe3D.hasModel();
+  A.openSheet(`<div class="stack"><div class="row"><h2>Modèle 3D réaliste</h2><span class="spacer"></span><button type="button" class="iconbtn" data-act="closeSheet" aria-label="Fermer">✕</button></div>
+    <div class="card stack"><p>Tu peux remplacer le bébé dessiné (à partir de 10 SA) par un vrai modèle 3D, par exemple un modèle de fœtus téléchargé sur <b>Sketchfab</b> au format <b>.glb</b>.</p>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px">
+        <li>Sur sketchfab.com, cherche « fetus » et filtre sur <b>Downloadable</b>.</li>
+        <li>Choisis un modèle sous licence libre (CC BY ou CC0), puis <b>Download 3D Model → glTF Binary (.glb)</b>. Un compte gratuit est demandé.</li>
+        <li>Reviens ici et importe le fichier.</li></ol>
+      <label class="btn"><input type="file" accept=".glb,model/gltf-binary" data-model-file hidden>📦 Importer un fichier .glb</label>
+      <label class="f">Crédit de l'auteur (obligatoire pour une licence CC BY)<input type="text" id="mdlCredit" value="${esc(A.lsGet("modelCredit") || "")}" maxlength="120" placeholder="« Fetus » par Nom de l'auteur, CC BY"></label>
+      ${has ? `<button class="btn ghost" data-act="b3modelClear">Revenir au bébé dessiné</button>` : ""}
+      <p class="muted" style="font-size:12.5px">Le modèle est gardé sur ce téléphone : Marina doit l'importer aussi sur le sien. Pour l'avoir sur les deux automatiquement, ajoute le fichier au dépôt GitHub sous le nom grossesse-marina/models/foetus.glb.</p></div></div>`);
+};
+GMX.actions.b3modelClear = async () => { await Bebe3D.clearModel(); A.closeSheet(); A.toast("Retour au bébé dessiné"); };
+document.addEventListener("change", async e => {
+  if (e.target.id === "mdlCredit"){ A.lsSet("modelCredit", e.target.value.trim()); return; }
+  if (!e.target.hasAttribute || !e.target.hasAttribute("data-model-file")) return;
+  const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+  if (!window.Bebe3D){ A.toast("Ouvre d'abord la vue 3D"); return; }
+  A.toast("Chargement du modèle…");
+  try{
+    await Bebe3D.setModel(await f.arrayBuffer());
+    A.closeSheet(); A.toast("Modèle 3D importé 🎉");
+  }catch(err){ console.warn(err); A.toast("Ce fichier n'a pas pu être lu : il faut un modèle au format .glb"); }
+});
+
 /* ================= Navigation interne & rendu ================= */
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest("[data-gt-go]");

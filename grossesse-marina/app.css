@@ -508,3 +508,5 @@ body.in3d .app{padding:0;max-width:none}
 .match-name{font-family:var(--f-display);font-size:56px;background:linear-gradient(90deg,var(--rose),var(--lav),var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent;animation:breathe 2.4s ease-in-out infinite}
 button.b3d-heart{cursor:pointer;font:inherit;font-weight:700}
 .stack > label.f{flex:none}
+
+.linkbtn{border:0;background:none;color:inherit;text-decoration:underline;font:inherit;cursor:pointer;padding:0}

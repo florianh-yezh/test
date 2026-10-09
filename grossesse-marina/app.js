@@ -675,7 +675,7 @@ function vBebe3D(){
         <span class="mono" style="font-size:12px;opacity:.8">41</span>
         ${p ? `<button class="btn small" data-act="b3now">Aujourd'hui</button>` : ""}
       </div>
-      <p class="b3d-note">Fais glisser pour tourner autour, pince pour zoomer. Illustration artistique : ce n'est pas une image médicale.</p>
+      <p class="b3d-note"><span id="b3dCredit"></span>Fais glisser pour tourner autour, pince pour zoomer. Illustration : ce n'est pas une image médicale. <button class="linkbtn" data-act="b3model">📦 Modèle 3D</button></p>
     </div>
   </section>`;
 }
@@ -691,6 +691,8 @@ function update3DInfo(){
   const s = $("#b3dStats"); if (s) s.innerHTML = b3Stats(sa);
   const b = $("#b3dBpm"); if (b && window.Bebe3D) b.querySelector("span").textContent = Bebe3D.bpmAt(sa);
   if (b) b.style.setProperty("--beat", (60 / (window.Bebe3D ? Bebe3D.bpmAt(sa) : 140)).toFixed(3) + "s");
+  const cr = $("#b3dCredit");
+  if (cr){ const c = lsGet("modelCredit"); cr.textContent = window.Bebe3D && Bebe3D.hasModel() && sa >= 10 && c ? "Modèle 3D : " + c + ". " : ""; }
 }
 async function start3D(){
   if (B3.loading) return;
@@ -702,6 +704,7 @@ async function start3D(){
     const box = $("#b3dCanvas"); if (!box || UI.tab !== "bebe3d") return;
     Bebe3D.mount(box, B3.sa, {reduced: REDUCED});
     const l = $("#b3dLoading"); if (l) l.hidden = true;
+    Bebe3D.loadSavedModel().then(ok => { if (ok) update3DInfo(); });
     update3DInfo();
   }catch(e){
     console.warn(e);

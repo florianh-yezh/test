@@ -244,6 +244,52 @@ function cordGeo(points, r){
   return g;
 }
 
+/* ================= Modèle 3D importé (.glb) ================= */
+// Un vrai modèle (ex. téléchargé sur Sketchfab) remplace le fœtus dessiné à partir de 10 SA.
+let CUSTOM = null;
+const IDB = {
+  db(){ return new Promise((ok, ko) => { const r = indexedDB.open("gm-models", 1); r.onupgradeneeded = () => r.result.createObjectStore("m"); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); }); },
+  async get(k){ const d = await IDB.db(); return new Promise((ok, ko) => { const r = d.transaction("m").objectStore("m").get(k); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); }); },
+  async set(k, v){ const d = await IDB.db(); return new Promise((ok, ko) => { const t = d.transaction("m", "readwrite"); t.objectStore("m").put(v, k); t.oncomplete = ok; t.onerror = () => ko(t.error); }); },
+  async del(k){ const d = await IDB.db(); return new Promise(ok => { const t = d.transaction("m", "readwrite"); t.objectStore("m").delete(k); t.oncomplete = ok; t.onerror = ok; }); }
+};
+function parseGLB(buf){
+  return new Promise((ok, ko) => new T.GLTFLoader().parse(buf, "", g => ok({scene: g.scene, animations: g.animations || []}), ko));
+}
+async function setModel(buf, save = true){
+  const m = await parseGLB(buf);
+  if (CUSTOM) disposeTree(CUSTOM.scene);
+  CUSTOM = m;
+  if (save){ try{ await IDB.set("foetus", buf); }catch(e){} }
+  if (S && S.sa >= 10){ const sa = S.sa; S.sa = null; setWeek(sa); }
+}
+async function clearModel(){
+  try{ await IDB.del("foetus"); }catch(e){}
+  if (CUSTOM){ const keep = CUSTOM; CUSTOM = null; if (S && S.sa >= 10){ const sa = S.sa; S.sa = null; setWeek(sa); } disposeTree(keep.scene); }
+}
+async function loadSavedModel(){
+  if (CUSTOM) return true;
+  try{ const b = await IDB.get("foetus"); if (b){ await setModel(b, false); return true; } }catch(e){}
+  try{ const r = await fetch("models/foetus.glb"); if (r.ok){ await setModel(await r.arrayBuffer(), false); return true; } }catch(e){}
+  return false;
+}
+function buildCustom(sa){
+  const group = new T.Group(), pivot = new T.Group(), sc = CUSTOM.scene;
+  sc.position.set(0, 0, 0); sc.scale.set(1, 1, 1); sc.rotation.set(0, 0, 0); sc.updateMatrixWorld(true);
+  const box = new T.Box3().setFromObject(sc), size = box.getSize(new T.Vector3()), c = box.getCenter(new T.Vector3());
+  sc.position.sub(c);
+  const k = 2.5 / Math.max(size.x, size.y, size.z) * lerp(.85, 1, smooth(clamp01((sa - 10) / 30)));
+  pivot.add(sc); pivot.scale.setScalar(k); pivot.userData.bs = k; pivot.userData.custom = true;
+  group.add(pivot);
+  group.add(new T.HemisphereLight(0xfff3ec, 0xc8907c, .7));
+  const key = new T.DirectionalLight(0xfff2e8, .9); key.position.set(2, 3, 4); group.add(key);
+  const fill = new T.DirectionalLight(0xffd8cb, .55); fill.position.set(-3, 1, 2); group.add(fill);
+  const rim = new T.DirectionalLight(0xffffff, .7); rim.position.set(0, 2.5, -4); group.add(rim);
+  S.mixer = null;
+  if (CUSTOM.animations.length){ S.mixer = new T.AnimationMixer(sc); CUSTOM.animations.forEach(a => S.mixer.clipAction(a).play()); }
+  return {group, pivot};
+}
+
 /* ================= Scène ================= */
 let S = null;
 function bgTexture(){
@@ -256,7 +302,8 @@ function bgTexture(){
     gg.addColorStop(0, `rgba(255,255,255,${.06 + Math.random() * .1})`); gg.addColorStop(1, "rgba(255,255,255,0)");
     x.fillStyle = gg; x.fillRect(px - r, py - r, r * 2, r * 2);
   }
-  return new T.CanvasTexture(c);
+  const tex = new T.CanvasTexture(c); tex.encoding = T.sRGBEncoding;
+  return tex;
 }
 
 function mount(container, sa, opts = {}){
@@ -264,6 +311,7 @@ function mount(container, sa, opts = {}){
   const W = () => container.clientWidth || innerWidth, H = () => container.clientHeight || innerHeight;
   const renderer = new T.WebGLRenderer({antialias: true, powerPreference: "high-performance"});
   renderer.setPixelRatio(Math.min(1.75, devicePixelRatio || 1));
+  renderer.outputEncoding = T.sRGBEncoding;
   renderer.setSize(W(), H());
   container.appendChild(renderer.domElement);
   const scene = new T.Scene();
@@ -326,7 +374,17 @@ function setWeek(sa){
   sa = Math.max(4, Math.min(41, Math.round(sa)));
   if (S.sa === sa) return {bpm: bpmAt(sa)};
   S.sa = sa;
-  if (S.group){ S.scene.remove(S.group); disposeTree(S.group); }
+  if (S.group){
+    S.scene.remove(S.group);
+    if (CUSTOM && CUSTOM.scene.parent) CUSTOM.scene.parent.remove(CUSTOM.scene);   // le modèle importé est réutilisé
+    disposeTree(S.group);
+  }
+  S.mixer = null;
+  if (CUSTOM && sa >= 10){
+    const {group, pivot} = buildCustom(sa);
+    S.scene.add(group); S.group = group; S.body = pivot; S.skin = skinMat(skinColors(sa));
+    return {bpm: bpmAt(sa)};
+  }
   const spec = sa < 10 ? embryo(sa) : fetus(sa);
   const {geo, marks, scale} = polygonize(spec.model, S.res);
   const skin = skinMat(skinColors(sa)), u = skin.uniforms;
@@ -382,6 +440,7 @@ function loop(){
   S.raf = requestAnimationFrame(loop);
   if (document.hidden) return;
   const t = (performance.now() - S.t0) / 1000, u = S.skin.uniforms;
+  if (S.mixer){ const now = performance.now(); S.mixer.update(Math.min(.05, (now - (S.lastT || now)) / 1000)); S.lastT = now; }
   const period = 60 / bpmAt(S.sa), ph = (t % period) / period;
   u.uPulse.value = Math.exp(-Math.pow((ph - .1) / .07, 2)) + .55 * Math.exp(-Math.pow((ph - .32) / .07, 2));
   if (!S.reduced){
@@ -413,6 +472,7 @@ function dispose(){
   cancelAnimationFrame(S.raf);
   removeEventListener("resize", S.onResize);
   S.controls.dispose();
+  if (CUSTOM && CUSTOM.scene.parent) CUSTOM.scene.parent.remove(CUSTOM.scene);
   disposeTree(S.scene);
   if (S.scene.background && S.scene.background.dispose) S.scene.background.dispose();
   if (S.bloom) S.bloom.dispose();
@@ -422,5 +482,5 @@ function dispose(){
   S = null;
 }
 
-window.Bebe3D = {mount, setWeek, dispose, bpmAt, isMounted: () => !!S};
+window.Bebe3D = {mount, setWeek, dispose, bpmAt, isMounted: () => !!S, setModel, clearModel, loadSavedModel, hasModel: () => !!CUSTOM};
 })();
