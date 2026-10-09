@@ -337,7 +337,48 @@ function nextRdv(){
 function topNames(){ return values("prenoms").filter(n => n.elle || n.lui).sort((a, b) => (+!!b.elle + +!!b.lui) - (+!!a.elle + +!!a.lui) || a.prenom.localeCompare(b.prenom, "fr")); }
 const sexLbl = s => s === "X" ? "F/G" : s === "F" ? "F" : "G";
 
+/* Accueil épuré (design « Nouveau ») : la semaine, puis aujourd'hui, puis 4 raccourcis */
+const ICO = {
+  album: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg>',
+  assiette: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3.5"/><path d="M3 4v6M3 7h0M21 4v16"/></svg>',
+  chrono: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>',
+  valise: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18"/></svg>',
+  cube: '<svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
+  coeur: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M6.5 12h3l1.5-2.5 2 5 1.5-2.5h3"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>'
+};
+function vAccueilV2(){
+  const p = preg();
+  let h = (window.GMX && GMX.homeTop ? GMX.homeTop(p, {compact: true}) : "") + (p ? heroHTML(p) : setupHTML());
+  if (!p) return h;
+  const w = weekData(p.sa);
+  if (p.sa >= 34 && !S.profil.naissance) h += `<button class="urgent-slim" data-gt-go="urgence"><span>C'est le moment ?</span><small>Maternité, itinéraire, prévenir ${esc(papaName())}</small></button>`;
+  h += `<section class="card week-card">
+    <h2>Cette semaine</h2>
+    <dl class="week-lines"><div><dt>Bébé</dt><dd>${esc(w[5])}</dd></div><div><dt>${esc(mamanName())}</dt><dd>${esc(w[6])}</dd></div></dl>
+    <div class="week-actions"><button class="btn small ghost" data-act="open3d">${ICO.cube}Voir en 3D</button><button class="btn small ghost" data-act="heart">${ICO.coeur}Écouter son cœur</button></div>
+  </section>`;
+  const next = nextRdv(), t = today(), iso = fmtISO(t);
+  const vit = !!((S.vitamines || {}).jours || {})[iso];
+  const dd = next ? diffDays(parseD(next.date), t) : null;
+  h += `<section class="card today-card"><h2>Aujourd'hui</h2>
+    <button class="today-row" data-go="rdv">
+      ${next ? `${dateBox(next.date)}<span class="tr-body"><b>${esc(next.titre)}</b><small>${dd === 0 ? "Aujourd'hui" : dd === 1 ? "Demain" : "Dans " + dd + " jours"}${next.heure ? " · " + esc(next.heure) : ""}${next.lieu ? " · " + esc(next.lieu) : ""}</small></span>`
+        : `<span class="tr-ico">${ICO.chrono}</span><span class="tr-body"><b>Aucun rendez-vous prévu</b><small>Ajouter le suivi type dans l'agenda</small></span>`}
+      <span class="tr-chev">${ICO.chevron}</span></button>
+    <div class="today-row">
+      <button class="check ${vit ? "on" : ""}" data-act="vitToday" aria-label="Vitamines prises aujourd'hui"></button>
+      <span class="tr-body"><b>Vitamines</b><small>${vit ? "Prises aujourd'hui" : "À prendre aujourd'hui"}</small></span>
+    </div></section>`;
+  h += `<nav class="shortcuts" aria-label="Raccourcis">
+    <button data-gt-go="album">${ICO.album}<span>Album</span></button>
+    <button data-gt-go="assiette">${ICO.assiette}<span>Je peux manger ?</span></button>
+    <button data-gt-go="outils">${ICO.chrono}<span>Contractions</span></button>
+    <button data-gt-go="valise">${ICO.valise}<span>Valise</span></button></nav>`;
+  return h;
+}
 function vAccueil(){
+  if (UI.design !== "classique") return vAccueilV2();
   const p = preg();
   let h = (window.GMX && GMX.homeTop ? GMX.homeTop(p) : "") + (p ? heroHTML(p) : setupHTML());
   if (window.GMX && GMX.homeAfterHero) h += GMX.homeAfterHero(p);
@@ -747,6 +788,7 @@ function openSettings(){
       <div class="seg">${[["v2", "Nouveau (affiné)"], ["classique", "Classique"]].map(([k, l]) => `<button type="button" data-design-set="${k}" aria-pressed="${(UI.design || "v2") === k}">${l}</button>`).join("")}</div>
       <div class="eyebrow" style="margin-top:4px">Couleurs</div>
       <div class="seg">${[["lavande", "Lavande & menthe"], ["sexe", "Selon le sexe"], ["rose", "Rose"], ["bleu", "Bleu"]].map(([k, l]) => `<button type="button" data-palette-set="${k}" aria-pressed="${(UI.palette || "lavande") === k}">${l}</button>`).join("")}</div></div>
+    ${!matchMedia("(display-mode: standalone)").matches ? `<button type="button" class="btn ghost" data-act="install">Installer l'appli sur le téléphone</button>` : ""}
     ${CLOUD && Cloud.user ? `<div class="card row"><div style="min-width:0;flex:1"><div class="eyebrow">Compte</div><div style="overflow-wrap:anywhere">${esc(Cloud.user.email)}</div></div><button type="button" class="btn small ghost" data-act="signout">Se déconnecter</button></div>` : ""}
     <div class="row"><button class="btn" type="submit">Enregistrer</button><span class="spacer"></span>
       <span class="muted" style="font-size:12.5px">${Cloud.state === "on" ? "Données partagées entre vous deux." : "Données gardées sur ce téléphone."}</span></div>
@@ -880,7 +922,7 @@ document.addEventListener("click", e => {
   if (d.gt){ UI.week = null; go("guide", d.gt); return; }
   if (d.foodf){ UI.foodCat = d.foodf; saveUI(); render(); return; }
   if (d.namef){ UI.nameSex = d.namef; saveUI(); render(); return; }
-  if (d.designSet){ UI.design = d.designSet; saveUI(); applyTheme(); document.querySelectorAll("[data-design-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.designSet === UI.design)); toast(UI.design === "classique" ? "Design classique" : "Nouveau design"); return; }
+  if (d.designSet){ UI.design = d.designSet; saveUI(); applyTheme(); render(); document.querySelectorAll("[data-design-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.designSet === UI.design)); toast(UI.design === "classique" ? "Design classique" : "Nouveau design"); return; }
   if (d.paletteSet){ UI.palette = d.paletteSet; saveUI(); applyTheme(); document.querySelectorAll("[data-palette-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.paletteSet === UI.palette)); return; }
   if (d.themeSet){ UI.theme = d.themeSet; saveUI(); applyTheme(); document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === UI.theme)); return; }
   if (d.mood !== undefined){ UI.mood = +d.mood; buzz(6); document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mood === d.mood)); return; }

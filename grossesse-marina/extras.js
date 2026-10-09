@@ -59,7 +59,7 @@ const saAt = iso => { const d0 = A.ddr(); if (!d0 || !iso) return null; const n 
 const naissance = () => A.S.profil.naissance || null;
 
 /* ================= Accueil ================= */
-GMX.homeTop = p => {
+GMX.homeTop = (p, opt = {}) => {
   let h = "";
   const nb = naissance();
   if (nb && nb.date){
@@ -71,7 +71,7 @@ GMX.homeTop = p => {
   // rendez-vous de demain
   const dem = A.fmtISO(A.addDays(A.today(), 1));
   const r = A.values("rdv").filter(x => x.date === dem && !x.fait);
-  if (r.length) h += `<button class="card reminder" data-go="rdv"><span>🔔</span><div style="min-width:0"><b>Demain : ${esc(r[0].titre)}</b><div class="muted" style="font-size:13px">${r[0].heure ? esc(r[0].heure) : "Heure à préciser"}${r[0].lieu ? " · " + esc(r[0].lieu) : ""}${r.length > 1 ? " · et " + (r.length - 1) + " autre(s)" : ""}</div></div></button>`;
+  if (r.length && !opt.compact) h += `<button class="card reminder" data-go="rdv"><span>🔔</span><div style="min-width:0"><b>Demain : ${esc(r[0].titre)}</b><div class="muted" style="font-size:13px">${r[0].heure ? esc(r[0].heure) : "Heure à préciser"}${r[0].lieu ? " · " + esc(r[0].lieu) : ""}${r.length > 1 ? " · et " + (r.length - 1) + " autre(s)" : ""}</div></div></button>`;
   celebrate(p);
   return h;
 };
