@@ -24,6 +24,7 @@
   let password = session.get();
   let state = null;      // carte en cours de modification
   let published = null;  // dernière version en ligne (JSON texte)
+  let reglages = { version: 1, reservationEnLigne: false }; // data/reglages.json, enregistré à chaque changement
   let tab = 'm0';
 
   const stateEl = $('#state');
@@ -70,6 +71,7 @@
       ...state.menus.map((m, i) => [`m${i}`, m.nom || `Menu ${i + 1}`]),
       ['enfant', state.enfant.nom || 'Menu enfant'],
       ['note', 'Mention sous les menus'],
+      ['reglages', 'Réglages'],
       ['acces', 'Mot de passe'],
     ];
     tabsEl.innerHTML = items.map(([id, label]) =>
@@ -145,6 +147,25 @@
       <label class="adm-field"><span>Texte</span><textarea rows="2" data-n="note">${esc(state.note)}</textarea>
         <small>S'affiche en petit sous la double page.</small></label>`;
 
+  const reglagesPanel = () => {
+    const on = reglages.reservationEnLigne === true;
+    return `
+      <h2>Réglages du site</h2>
+      <div class="adm-switch-row">
+        <div>
+          <p class="adm-switch-row__label" id="resa-label">Réservation en ligne</p>
+          <p class="adm-switch-row__help">${on
+            ? 'Activée : les clients réservent avec le formulaire du site (jour, service, couverts).'
+            : 'Désactivée : les clients voient « Réservez au 02.97.21.09.12 » à la place du formulaire.'}</p>
+        </div>
+        <button type="button" class="adm-toggle" role="switch" aria-checked="${on}" aria-labelledby="resa-label" data-act="resa-toggle">
+          <span class="adm-toggle__track"><span class="adm-toggle__thumb"></span></span>
+          <span class="adm-toggle__text">${on ? 'Activée' : 'Désactivée'}</span>
+        </button>
+      </div>
+      <p class="adm-note">Ce réglage s'applique immédiatement sur le site, sans passer par « Publier ».</p>`;
+  };
+
   const accessPanel = () => `
       <h2>Mot de passe</h2>
       <p>Il protège la publication de la carte. Il est oublié à la fermeture de l'onglet.</p>
@@ -179,6 +200,7 @@
     if (tab.startsWith('m')) panel.innerHTML = menuPanel(+tab.slice(1));
     else if (tab === 'enfant') panel.innerHTML = enfantPanel();
     else if (tab === 'note') panel.innerHTML = notePanel();
+    else if (tab === 'reglages') panel.innerHTML = reglagesPanel();
     else panel.innerHTML = accessPanel();
     panel.querySelectorAll('textarea').forEach(autosize);
   };
@@ -220,6 +242,29 @@
     }
     if (act === 'logout') { password = ''; session.set(''); renderPanel(); say('ok', '<p>Mot de passe oublié sur cet onglet.</p>'); return; }
     if (act === 'gen') { await generate(); return; }
+    if (act === 'resa-toggle') {
+      if (!password) {
+        tab = 'acces'; renderTabs(); renderPanel();
+        say('error', '<p>Pour changer ce réglage, saisissez le mot de passe de gestion.</p>');
+        $('[data-a="password"]', panel).focus();
+        return;
+      }
+      const next = !(reglages.reservationEnLigne === true);
+      b.disabled = true;
+      try {
+        const res = await send({ action: 'reglages', data: { reservationEnLigne: next } });
+        reglages = res.data;
+        renderPanel();
+        $('[data-act="resa-toggle"]', panel).focus();
+        say('ok', next ? '<p><strong>Réservation en ligne activée.</strong> Le formulaire est visible sur le site.</p>'
+          : '<p><strong>Réservation en ligne désactivée.</strong> Le site affiche le numéro de téléphone à la place.</p>');
+      } catch (err) {
+        if (err.status === 401) { password = ''; session.set(''); }
+        b.disabled = false;
+        say('error', `<p><strong>Le réglage n'a pas été changé.</strong></p><p>${esc(err.message)}</p>`);
+      }
+      return;
+    }
     if (act === 'copy') {
       const txt = $('#gen-out', panel).textContent;
       try { await navigator.clipboard.writeText(txt); b.textContent = 'Lignes copiées'; } catch { say('error', '<p>Copie impossible : sélectionnez le texte à la main.</p>'); }
@@ -353,7 +398,15 @@
   }
 
   // ---------- Chargement ----------
+  async function loadReglages() {
+    try {
+      const inline = document.getElementById('reglages-data');
+      reglages = inline ? JSON.parse(inline.textContent) : await (await fetch(`data/reglages.json?t=${Date.now()}`, { cache: 'no-store' })).json();
+    } catch { /* fichier absent : réservation en ligne considérée comme désactivée */ }
+  }
+
   async function loadPublished() {
+    await loadReglages();
     let text;
     try { text = serialize(await ArtyMenus.load(`data/menus.json?t=${Date.now()}`)); } catch {
       say('error', "<p>La carte en ligne est introuvable. Ouvrez cette page depuis le site publié.</p>");

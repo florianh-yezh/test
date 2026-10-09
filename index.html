@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-resa="off">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,7 +51,7 @@
       <span class="stamp__detail">le midi, 12h – 13h30</span>
     </p>
 
-    <form class="quickbook" action="#reserver" aria-label="Réserver une table">
+    <form class="quickbook resa-on-only" action="#reserver" aria-label="Réserver une table">
       <label class="qb-field">
         <span>Jour</span>
         <select name="date" id="qb-date"></select>
@@ -72,6 +72,11 @@
         <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
       </button>
     </form>
+
+    <div class="cover__call resa-off-only">
+      <a class="btn" href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Réservez au 02.97.21.09.12</a>
+      <p>Midi du mardi au dimanche, et le soir vendredi et samedi.</p>
+    </div>
 
     <p class="cover__foot">
       <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>40 Cours de Chazelles, Lorient — à deux pas de la gare</a>
@@ -191,9 +196,13 @@
   <section class="back" id="reserver" aria-labelledby="t-reserver">
     <div class="back__sheet">
       <h2 class="title" id="t-reserver">Réserver une table</h2>
-      <p class="back__intro">Choisissez votre jour et votre service ; nous vous confirmons votre table.</p>
+      <div class="back__call resa-off-only">
+        <p>Pour réserver une table ou organiser un repas de groupe, appelez-nous : nous vous trouvons la meilleure place.</p>
+        <a class="btn btn--block" href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Appeler le 02.97.21.09.12</a>
+      </div>
+      <p class="back__intro resa-on-only">Choisissez votre jour et votre service ; nous vous confirmons votre table.</p>
 
-      <form class="booking" id="booking" novalidate data-endpoint="">
+      <form class="booking resa-on-only" id="booking" novalidate data-endpoint="">
         <div class="error-summary" role="alert" tabindex="-1" hidden>
           <p class="error-summary__title">Il manque quelques informations :</p>
           <ul></ul>
@@ -294,8 +303,10 @@
 
   <!-- Barre mobile -->
   <nav class="dock" aria-label="Actions rapides">
-    <a href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Appeler</a>
-    <a href="#reserver" class="dock__main"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Réserver</a>
+    <a href="tel:+33297210912" class="resa-on-only"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Appeler</a>
+    <a href="#menus" class="resa-off-only"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Menus</a>
+    <a href="#reserver" class="dock__main resa-on-only"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Réserver</a>
+    <a href="tel:+33297210912" class="dock__main resa-off-only"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Réserver</a>
     <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Itinéraire</a>
   </nav>
 

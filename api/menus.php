@@ -4,6 +4,7 @@
 // POST JSON, en-tête X-Admin-Password.
 //   {"action": "check"}            vérifie seulement le mot de passe
 //   {"action": "save", "data": {…}} enregistre la carte (l'ancienne est archivée)
+//   {"action": "reglages", "data": {"reservationEnLigne": true|false}} enregistre les réglages du site
 
 declare(strict_types=1);
 
@@ -21,6 +22,18 @@ $root = dirname(__DIR__);
 $menusFile = $root . '/data/menus.json';
 $archiveDir = $root . '/data/archives';
 $attemptsFile = __DIR__ . '/.tentatives.json';
+$settingsFile = $root . '/data/reglages.json';
+
+// Écriture atomique : le site ne lit jamais un fichier à moitié écrit.
+function writeJson(string $file, array $data): void
+{
+    $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
+    $tmp = $file . '.tmp';
+    if (file_put_contents($tmp, $json, LOCK_EX) === false || !rename($tmp, $file)) {
+        @unlink($tmp);
+        reply(500, ['error' => "Le serveur n'a pas pu écrire data/" . basename($file) . " (droits d'écriture du dossier data/)."]);
+    }
+}
 
 function reply(int $status, array $body): never
 {
@@ -80,6 +93,15 @@ if (!is_array($req)) {
 }
 if (($req['action'] ?? '') === 'check') {
     reply(200, ['ok' => true]);
+}
+if (($req['action'] ?? '') === 'reglages') {
+    $on = $req['data']['reservationEnLigne'] ?? null;
+    if (!is_bool($on)) {
+        reply(422, ['error' => 'Réglage de réservation invalide.']);
+    }
+    $settings = ['version' => 1, 'reservationEnLigne' => $on];
+    writeJson($settingsFile, $settings);
+    reply(200, ['ok' => true, 'data' => $settings]);
 }
 if (($req['action'] ?? '') !== 'save' || !is_array($req['data'] ?? null)) {
     reply(400, ['error' => 'Action inconnue.']);
@@ -162,11 +184,6 @@ if (is_file($menusFile)) {
     }
 }
 
-$json = json_encode($clean, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n";
-$tmp = $menusFile . '.tmp';
-if (file_put_contents($tmp, $json, LOCK_EX) === false || !rename($tmp, $menusFile)) {
-    @unlink($tmp);
-    reply(500, ['error' => "Le serveur n'a pas pu écrire data/menus.json (droits d'écriture du dossier data/)."]);
-}
+writeJson($menusFile, $clean);
 
 reply(200, ['ok' => true, 'savedAt' => date(DATE_ATOM), 'data' => $clean]);

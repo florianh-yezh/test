@@ -246,6 +246,16 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  // ---------- Réglages : réservation en ligne activable depuis admin.html ----------
+  // Désactivée par défaut dans le HTML (data-resa="off") : sans réglage lisible, on reste sur le téléphone.
+  (async () => {
+    try {
+      const inline = document.getElementById('reglages-data');
+      const reglages = inline ? JSON.parse(inline.textContent) : await (await fetch('data/reglages.json', { cache: 'no-store' })).json();
+      document.documentElement.dataset.resa = reglages.reservationEnLigne === true ? 'on' : 'off';
+    } catch { /* réglage illisible : réservation par téléphone */ }
+  })();
+
   // ---------- Menus : contenu géré depuis admin.html ----------
   // En cas d'échec (fichier absent, ouverture hors ligne), le HTML de secours reste affiché.
   if (window.ArtyMenus) {

@@ -149,3 +149,23 @@
   white-space: pre; overflow-x: auto;
 }
 .adm-help .btn { margin-top: .4rem; }
+
+/* ---------- Réglages ---------- */
+
+.adm-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 1.2rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 6px; background: #fcfafa; }
+.adm-switch-row__label { font-weight: 700; font-size: 1.1rem; }
+.adm-switch-row__help { color: var(--ink-soft); margin-top: .2rem; max-width: 44ch; }
+.adm-note { color: var(--ink-soft); font-size: .9rem; }
+
+.adm-toggle { display: inline-flex; align-items: center; gap: .6rem; min-height: 44px; padding: 0 .2rem; border: 0; background: none; font: 700 1rem var(--text); color: var(--ink); cursor: pointer; flex: none; }
+.adm-toggle__track { position: relative; width: 52px; height: 30px; border-radius: 999px; background: #cdbcb8; transition: background .2s; }
+.adm-toggle__thumb { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s var(--ease-out); }
+.adm-toggle[aria-checked="true"] .adm-toggle__track { background: #2f8a4c; }
+.adm-toggle[aria-checked="true"] .adm-toggle__thumb { transform: translateX(22px); }
+.adm-toggle[aria-checked="true"] .adm-toggle__text { color: #2f8a4c; }
+.adm-toggle:disabled { opacity: .6; cursor: progress; }
+.adm-toggle:focus-visible { outline: 3px solid var(--vermillon); outline-offset: 3px; border-radius: 4px; }
+
+@media (max-width: 520px) {
+  .adm-switch-row { flex-direction: column; align-items: flex-start; }
+}

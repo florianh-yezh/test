@@ -213,6 +213,16 @@ strong { font-weight: 700; }
 .cover__foot a { display: inline-flex; align-items: center; gap: .45rem; text-decoration: none; min-height: 44px; }
 .cover__foot a:hover { color: var(--bordeaux); text-decoration: underline; }
 
+/* Réservation en ligne activable depuis l'admin (data/reglages.json) ; sinon, par téléphone */
+[data-resa="off"] .resa-on-only, [data-resa="on"] .resa-off-only { display: none !important; }
+[data-resa="off"] .cover__foot a[href^="tel:"] { display: none; }
+
+.cover__call { display: grid; justify-items: center; gap: .6rem; text-align: center; }
+.cover__call .btn { font-size: 1.15rem; padding: 1rem 1.8rem; }
+.cover__call p { color: var(--ink-soft); font-size: 1rem; }
+.back__call { display: grid; gap: 1.2rem; }
+.back__call p { color: var(--ink-soft); max-width: 46ch; }
+
 /* ---------- Le livre : doubles pages ---------- */
 
 .book {

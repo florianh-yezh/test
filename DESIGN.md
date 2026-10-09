@@ -152,6 +152,7 @@ Coins droits presque nets (4px) partout ; pastille arrondie uniquement pour le b
 
 ## Components
 
+- **Réservation par téléphone** (quand la réservation en ligne est désactivée dans l'admin) : gros bouton « Réservez au 02.97.21.09.12 » sur la couverture, bloc d'appel au dos, barre mobile Menus · Réserver (appel) · Itinéraire. Piloté par `data-resa` sur `<html>`.
 - **Bande de réservation** (couverture) : Jour (14 prochains jours ouverts), Service, Couverts, bouton « Réserver » qui pré-remplit le formulaire du dos.
 - **Formulaire de réservation** : labels visibles, aide sous le champ, erreurs au départ du champ et effacées dès la correction, récapitulatif d'erreurs focalisable. Midi/Soir en contrôle segmenté ; le soir n'est actif que vendredi et samedi. Aucun faux message de confirmation tant qu'aucun service n'est branché (`data-endpoint`).
 - **Tampon du jour** : « Ouvert jusqu'à… », « Aujourd'hui, ouverture à… » ou « Fermé, réouverture… », calculé sur les vrais horaires.

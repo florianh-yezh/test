@@ -32,6 +32,12 @@ Le site les affiche avec la mise en page de la double page « Menus » : plus be
 Sécurité : 5 mauvais mots de passe bloquent la publication 15 minutes pour cette adresse ; le serveur vérifie et nettoie la carte avant de l'enregistrer ; `config.php`, les archives et le compteur d'essais sont protégés par `.htaccess` (hébergements Apache).
 `admin.html` n'est pas indexée (`noindex` + `robots.txt`). Pour la cacher davantage : renommez-la avec un nom difficile à deviner, et/ou protégez-la par mot de passe dans l'espace client de l'hébergeur.
 
+## Réservation en ligne : activer / désactiver
+
+Dans `admin.html`, onglet **Réglages**, l'interrupteur « Réservation en ligne » enregistre `data/reglages.json` (effet immédiat).
+- **Désactivée** (réglage actuel) : la couverture et le dos du menu affichent « Réservez au 02.97.21.09.12 » ; la barre mobile propose Menus · Réserver (appel) · Itinéraire.
+- **Activée** : la bande de réservation de la couverture et le formulaire complet réapparaissent.
+
 ## Brancher la réservation en ligne
 
 Le formulaire `#booking` envoie ses données en `POST` vers l'adresse indiquée dans `data-endpoint` (compatible Formspree, Getform, Basin…).
