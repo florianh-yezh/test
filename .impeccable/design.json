@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T20:50:35.489136+00:00",
+  "title": "Design System: Ar'Ty Mad",
+  "extensions": {
+    "colorMeta": {
+      "bordeaux": {
+        "role": "primary",
+        "displayName": "Bordeaux",
+        "tonalRamp": [
+          "#4c0000",
+          "#800000",
+          "#b20000",
+          "#e60000",
+          "#ff3333",
+          "#ff8080",
+          "#ffc2c2",
+          "#ffe5e5"
+        ]
+      },
+      "bordeaux-deep": {
+        "role": "surface",
+        "displayName": "Nappe",
+        "tonalRamp": [
+          "#4c0005",
+          "#800008",
+          "#b2000b",
+          "#e6000e",
+          "#ff333f",
+          "#ff8087",
+          "#ffc2c5",
+          "#ffe5e7"
+        ]
+      },
+      "bordeaux-night": {
+        "role": "surface",
+        "displayName": "Bordeaux nuit",
+        "tonalRamp": [
+          "#4c000b",
+          "#800012",
+          "#b2001a",
+          "#e60021",
+          "#ff3351",
+          "#ff8092",
+          "#ffc2cb",
+          "#ffe5e9"
+        ]
+      },
+      "vermillon": {
+        "role": "accent",
+        "displayName": "Vermillon",
+        "tonalRamp": [
+          "#46070a",
+          "#740b11",
+          "#a31018",
+          "#d1141f",
+          "#ed454e",
+          "#f48b91",
+          "#fac7ca",
+          "#fde8e9"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papier",
+        "tonalRamp": [
+          "#4c1600",
+          "#802400",
+          "#b23300",
+          "#e64200",
+          "#ff6d33",
+          "#ffa480",
+          "#ffd3c2",
+          "#ffede5"
+        ]
+      },
+      "paper-edge": {
+        "role": "neutral",
+        "displayName": "Bord de page",
+        "tonalRamp": [
+          "#371d16",
+          "#5c3124",
+          "#804532",
+          "#a55841",
+          "#c5816d",
+          "#dbb1a3",
+          "#eed9d3",
+          "#f8efed"
+        ]
+      },
+      "ink": {
+        "role": "text",
+        "displayName": "Encre",
+        "tonalRamp": [
+          "#301e1c",
+          "#50322f",
+          "#714642",
+          "#915a55",
+          "#b4837e",
+          "#d0b1af",
+          "#e8dad8",
+          "#f6efef"
+        ]
+      },
+      "ink-soft": {
+        "role": "text",
+        "displayName": "Encre douce",
+        "tonalRamp": [
+          "#2d2120",
+          "#4b3835",
+          "#694e4a",
+          "#86645f",
+          "#aa8c88",
+          "#cab7b4",
+          "#e6dddb",
+          "#f4f1f0"
+        ]
+      },
+      "on-red": {
+        "role": "text",
+        "displayName": "Sur rouge",
+        "tonalRamp": [
+          "#4c0b00",
+          "#801200",
+          "#b21900",
+          "#e62100",
+          "#ff5033",
+          "#ff9280",
+          "#ffcbc2",
+          "#ffe9e5"
+        ]
+      },
+      "on-red-soft": {
+        "role": "text",
+        "displayName": "Sur rouge doux",
+        "tonalRamp": [
+          "#3f130e",
+          "#682017",
+          "#922d20",
+          "#bc3929",
+          "#da6658",
+          "#e89f97",
+          "#f4d1cd",
+          "#faecea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Nom de marque",
+        "purpose": "Ar'Ty Mad sur la couverture uniquement."
+      },
+      "title": {
+        "displayName": "Titre manuscrit",
+        "purpose": "Titres de section, prix, légendes."
+      },
+      "body": {
+        "displayName": "Texte",
+        "purpose": "Paragraphes, formulaires, horaires."
+      },
+      "lead": {
+        "displayName": "Chapeau",
+        "purpose": "Première phrase d'une page."
+      },
+      "label": {
+        "displayName": "Intertitre de menu",
+        "purpose": "Entrées / Plats."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 30px 60px -30px rgba(0,0,0,.55)",
+        "purpose": "Feuillet posé sur la nappe."
+      },
+      {
+        "name": "print",
+        "value": "0 16px 30px -18px rgba(58,36,34,.55)",
+        "purpose": "Tirage photo sur la page."
+      },
+      {
+        "name": "button",
+        "value": "0 6px 14px -6px rgba(0,0,0,.35)",
+        "purpose": "Élévation des boutons."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Dépliage des pages, tampon, états."
+      },
+      {
+        "name": "unfold",
+        "value": "rotateY(±16deg) → 0 en 1.3s",
+        "purpose": "Ouverture des doubles pages sur leur pli."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile",
+        "value": "640px"
+      },
+      {
+        "name": "tablet",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bouton principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Réserver, envoyer, organiser un groupe.",
+      "html": "<button class=\"ds-btn\">Réserver</button>",
+      "css": ".ds-btn{background:#8b0000;color:#fff;border:0;border-radius:4px;min-height:52px;padding:.8rem 1.6rem;font:700 1.05rem/1 'Alegreya Sans',sans-serif;box-shadow:0 6px 14px -6px rgba(0,0,0,.35);transition:background .25s,transform .25s}.ds-btn:hover{background:#b8121b;transform:translateY(-1px)}.ds-btn:focus-visible{outline:3px solid #b8121b;outline-offset:3px}"
+    },
+    {
+      "name": "Champ",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Champ de formulaire avec label visible.",
+      "html": "<label class=\"ds-field\"><span>Nom</span><input></label>",
+      "css": ".ds-field{display:grid;gap:.35rem;font:700 1rem 'Alegreya Sans',sans-serif;color:#3a2422}.ds-field input{min-height:48px;padding:.6rem .75rem;border:1px solid #d9c3be;border-radius:4px;font:500 1.05rem 'Alegreya Sans',sans-serif}.ds-field input:focus-visible{outline:none;border-color:#8b0000;box-shadow:0 0 0 3px rgba(139,0,0,.2)}"
+    },
+    {
+      "name": "Tampon du jour",
+      "kind": "custom",
+      "description": "Statut d'ouverture calculé.",
+      "html": "<p class=\"ds-stamp\"><b>Ouvert</b><span>jusqu'à 13h30</span></p>",
+      "css": ".ds-stamp{width:9.5rem;height:9.5rem;border-radius:50%;border:2px solid #fff;display:grid;place-content:center;text-align:center;transform:rotate(-9deg);background:#8b0000;color:#fff;font-family:'Alegreya Sans',sans-serif}.ds-stamp b{font:400 1.35rem 'Kaushan Script',cursive}"
+    },
+    {
+      "name": "Feuillet de menu",
+      "kind": "card",
+      "refersTo": "page-sheet",
+      "description": "Une page de la carte : titre, prix, plats séparés par « ou ».",
+      "html": "<article class=\"ds-menu\"><h3>Menu Plaisir <span>23 €</span></h3><ul><li>Foie gras maison</li><li>Suggestion de l'ardoise</li></ul></article>",
+      "css": ".ds-menu{background:#fffaf8;padding:2rem;border-radius:4px;color:#3a2422;font-family:'Alegreya Sans',sans-serif}.ds-menu h3{font:400 2.4rem 'Kaushan Script',cursive;color:#8b0000;display:flex;justify-content:space-between}.ds-menu ul{list-style:none}.ds-menu li+li::before{content:'ou';display:block;font-family:'Kaushan Script',cursive;color:#b8121b;margin:.35rem 0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le menu plié",
+    "overview": "La carte du restaurant qu'on déplie à table : couverture bordeaux, doubles pages de papier sur la nappe, réservation sur la couverture et au dos.",
+    "keyCharacteristics": [
+      "Bordeaux dominant",
+      "Titres manuscrits Kaushan Script",
+      "Feuillets et pli central",
+      "Réservation utilisable dès la couverture"
+    ],
+    "rules": [
+      {
+        "name": "Rien d'inventé",
+        "body": "Plats, prix, photos et histoire réels uniquement.",
+        "section": "colors"
+      },
+      {
+        "name": "Le papier sur la nappe",
+        "body": "Une seule logique de profondeur : feuillets posés sur le bordeaux.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Bordeaux en surface dominante",
+      "Icônes SVG au trait"
+    ],
+    "donts": [
+      "Sur-titres au-dessus des titres",
+      "Chiffres héros",
+      "Emoji comme icônes",
+      "Halos colorés"
+    ]
+  }
+}

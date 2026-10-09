@@ -3,256 +3,292 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ar'Ty Mad — Cuisine traditionnelle · Lorient</title>
-  <meta name="description" content="Ar'Ty Mad, institution lorientaise depuis les années 60. Cuisine simple, inventive, goûteuse et faite maison, couscous le jeudi et le vendredi, repas de groupe. 40 Cours de Chazelles, 56100 Lorient.">
+  <title>Ar'Ty Mad — Cuisine traditionnelle à Lorient</title>
+  <meta name="description" content="Ar'Ty Mad, institution lorientaise depuis les années 60, près de la gare. Cuisine simple, inventive, goûteuse et faite maison. Menus à 23 € et 35 €, couscous le jeudi et le vendredi, repas de groupe. Réservez en ligne.">
+  <meta name="theme-color" content="#8b0000">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Kaushan+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
-  <!-- Preloader -->
-  <div class="loader" aria-hidden="true">
-    <img src="images/logo.svg" alt="" class="loader__logo">
-    <span class="loader__word">Ar'Ty Mad</span>
-  </div>
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M9 3v4M15 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8V6.6c0-.7.4-1.1 1.1-1.1H17V2.5h-2.7C11.6 2.5 10.6 4.3 10.6 6.5V8H8.4v3.2h2.2V21.5H14V11.2h2.6L17 8z" fill="currentColor"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
 
-  <!-- Bandeau des valeurs -->
-  <div class="topbar">
-    <span>✔ savoureux</span><span>✔ frais</span><span>✔ convivialité</span>
-  </div>
+  <a class="skip" href="#reserver">Aller à la réservation</a>
 
-  <!-- Navigation -->
-  <header class="nav">
-    <a href="#top" class="nav__logo">
-      <img src="images/logo.svg" alt="">
-      <span>Ar'Ty Mad</span>
-    </a>
-    <nav class="nav__links" aria-label="Navigation principale">
-      <a href="#bienvenue">Bienvenue</a>
-      <a href="#menus">Nos menus</a>
+  <!-- Couverture -->
+  <header class="cover" id="top">
+    <nav class="tabs" aria-label="Sommaire">
+      <a href="#menus">Menus</a>
       <a href="#couscous">Couscous</a>
       <a href="#groupes">Groupes</a>
-      <a href="#horaires">Horaires</a>
+      <a href="#infos">Horaires &amp; accès</a>
     </nav>
-    <a href="tel:+33297210912" class="btn btn--small nav__cta">Réservez</a>
-    <button class="nav__burger" aria-label="Ouvrir le menu" aria-expanded="false">
-      <span></span><span></span>
-    </button>
-  </header>
 
-  <div class="mobile-menu" aria-hidden="true">
-    <a href="#bienvenue">Bienvenue</a>
-    <a href="#menus">Nos menus</a>
-    <a href="#couscous">Couscous</a>
-    <a href="#groupes">Repas de groupe</a>
-    <a href="#horaires">Horaires</a>
-    <a href="#contact">Contact</a>
-  </div>
-
-  <main id="top">
-
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero__bg" style="background-image:url('images/salle.jpg')"></div>
-      <div class="hero__overlay"></div>
-
-      <div class="hero__content">
-        <p class="eyebrow reveal">Lorient · depuis les années 60</p>
-        <h1 class="hero__title">
-          <span class="line"><span>Cuisine</span></span>
-          <span class="line"><span>traditionnelle</span></span>
-        </h1>
-        <a href="tel:+33297210912" class="hero__phone reveal">02.97.21.09.12</a>
-        <div class="hero__actions reveal">
-          <a href="tel:+33297210912" class="btn">Réservez</a>
-          <a href="#menus" class="btn btn--ghost">Nos menus</a>
-        </div>
-      </div>
-
-      <div class="hero__scroll" aria-hidden="true"><i></i></div>
-    </section>
-
-    <!-- Bandeau défilant -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee__track">
-        <span>savoureux</span><b>✦</b><span>frais</span><b>✦</b><span>convivialité</span><b>✦</b><span>fait maison</span><b>✦</b><span>Lorient</span><b>✦</b>
-        <span>savoureux</span><b>✦</b><span>frais</span><b>✦</b><span>convivialité</span><b>✦</b><span>fait maison</span><b>✦</b><span>Lorient</span><b>✦</b>
-      </div>
+    <div class="cover__brand">
+      <img src="images/logo.svg" alt="" width="104" height="104" class="cover__logo">
+      <h1 class="cover__name">Ar'Ty Mad</h1>
+      <p class="cover__tagline">Cuisine traditionnelle, faite maison</p>
+      <p class="cover__values">savoureux <span aria-hidden="true">·</span> frais <span aria-hidden="true">·</span> convivialité</p>
     </div>
 
-    <!-- Bienvenue -->
-    <section class="section welcome" id="bienvenue">
-      <div class="welcome__text">
-        <h2 class="title reveal">Bienvenue à Ar'Ty Mad</h2>
-        <p class="lead reveal">Le restaurant <strong>Ar'Ty Mad</strong> est une institution sur <strong>Lorient</strong> depuis les années 60 et c'est Aurélien et Sonia qui ont décidé en 2014 de le reprendre.</p>
-        <p class="lead reveal">Avec Aurélien au <strong>fourneau</strong>, vous goûterez à une cuisine simple, inventive, goûteuse et faite maison.</p>
+    <p class="stamp" aria-live="polite">
+      <span class="stamp__state">Mardi → dimanche</span>
+      <span class="stamp__detail">le midi, 12h – 13h30</span>
+    </p>
+
+    <form class="quickbook" action="#reserver" aria-label="Réserver une table">
+      <label class="qb-field">
+        <span>Jour</span>
+        <select name="date" id="qb-date"></select>
+      </label>
+      <label class="qb-field">
+        <span>Service</span>
+        <select name="service" id="qb-service">
+          <option value="midi">Midi</option>
+          <option value="soir">Soir</option>
+        </select>
+      </label>
+      <label class="qb-field">
+        <span>Couverts</span>
+        <select name="guests" id="qb-guests"></select>
+      </label>
+      <button type="submit" class="btn btn--ink">
+        Réserver
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+      </button>
+    </form>
+
+    <p class="cover__foot">
+      <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>40 Cours de Chazelles, Lorient — à deux pas de la gare</a>
+      <a href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>02.97.21.09.12</a>
+    </p>
+  </header>
+
+  <main class="book">
+
+    <!-- Double page : Bienvenue -->
+    <section class="spread" id="bienvenue" aria-labelledby="t-bienvenue">
+      <div class="page page--left">
+        <h2 class="title" id="t-bienvenue">Bienvenue à Ar'Ty Mad</h2>
+        <p class="lead">Le restaurant <strong>Ar'Ty Mad</strong> est une institution sur <strong>Lorient</strong> depuis les années 60, et c'est Aurélien et Sonia qui ont décidé en 2014 de le reprendre.</p>
+        <p>Avec Aurélien au <strong>fourneau</strong>, vous goûterez à une cuisine simple, inventive, goûteuse et faite maison.</p>
+        <p class="sign">Aurélien &amp; Sonia</p>
       </div>
-
-      <div class="stats">
-        <div class="stat reveal"><strong>60's</strong><span>une institution lorientaise</span></div>
-        <div class="stat reveal"><strong data-count="2014">2014</strong><span>reprise par Aurélien &amp; Sonia</span></div>
-        <div class="stat reveal"><strong><span data-count="100">100</span>%</strong><span>fait maison</span></div>
-      </div>
-    </section>
-
-    <!-- Menus -->
-    <section class="section menus" id="menus">
-      <div class="section__head">
-        <h2 class="title reveal">Nos menus</h2>
-        <p class="muted reveal">Prix net, boisson non comprise — Dessert au choix dans notre carte</p>
-      </div>
-
-      <div class="menus__grid">
-        <article class="card reveal">
-          <header class="card__head">
-            <h3>Menu Plaisir</h3>
-            <p class="card__price">23<small>€</small></p>
-          </header>
-          <h4>Entrées</h4>
-          <ul class="choices">
-            <li>Crumble de pétoncle et parmesan, crème citronnée et pesto de roquette</li>
-            <li>Foie gras maison, toast et chutney mangues</li>
-            <li>Suggestion de l'ardoise</li>
-          </ul>
-          <h4>Plats</h4>
-          <ul class="choices">
-            <li>Mahi Mahi sauce au safran et agrumes, purée de patate douce</li>
-            <li>Pluma de cochon sauce aigre douce, crème de petit pois à la menthe et écrasée de pommes de terre à la ciboulette</li>
-            <li>Suggestion de l'ardoise</li>
-          </ul>
-          <p class="card__foot">Dessert au choix dans notre carte</p>
-        </article>
-
-        <article class="card card--featured reveal">
-          <span class="card__ribbon">Gourmand</span>
-          <header class="card__head">
-            <h3>Menu Saveur</h3>
-            <p class="card__price">35<small>€</small></p>
-          </header>
-          <h4>Entrées</h4>
-          <ul class="choices">
-            <li>Foie gras maison, toast et chutney mangues</li>
-            <li>Noix de Saint-Jacques sauce au safran et agrumes, crumble parmesan</li>
-          </ul>
-          <h4>Plats</h4>
-          <ul class="choices">
-            <li>Filet de Saint-Pierre, crème de petit pois à la menthe et pesto de roquette, écrasée de pommes de terre à la ciboulette</li>
-            <li>Pièce de bœuf sauce aux poivrons caramélisés, purée de patate douce</li>
-          </ul>
-          <p class="card__foot">Dessert au choix dans notre carte</p>
-        </article>
-
-        <article class="card card--kids reveal">
-          <header class="card__head">
-            <h3>Menu enfant</h3>
-            <p class="card__price">12<small>€</small></p>
-          </header>
-          <p class="card__note">moins de 10 ans</p>
-          <p class="card__big">Au choix dans le menu plaisir</p>
-          <p class="card__formula">Plat + dessert + 1 sirop à l'eau</p>
-          <p class="card__quote">« Je mange comme les grands mais en petit. »</p>
-        </article>
+      <div class="page page--right page--photo">
+        <figure class="photo">
+          <img src="images/salle.jpg" alt="La salle d'Ar'Ty Mad : une longue table nappée de blanc, serviettes rouges et chaises bleu marine" width="1056" height="788" loading="lazy">
+          <figcaption>La salle, dressée pour un repas de groupe</figcaption>
+        </figure>
       </div>
     </section>
 
-    <!-- Couscous -->
-    <section class="couscous" id="couscous">
-      <div class="couscous__img reveal">
-        <img src="images/couscous.jpg" alt="Assiettes de couscous : merguez et côte d'agneau sur semoule" loading="lazy">
-        <span class="couscous__season">de Septembre à Mai</span>
-      </div>
-      <div class="couscous__text">
-        <p class="eyebrow eyebrow--light reveal">La tradition depuis les années 60</p>
-        <h2 class="title reveal">Couscous</h2>
-        <p class="reveal">Le <strong>couscous</strong> à l'agneau existe depuis la création du <strong>Ty Mad</strong> dans les années 60 et n'a pas pris une ride.</p>
-        <p class="reveal">Plongez dans cette tradition <strong>culinaire</strong> tous les jeudis et vendredis en plus de nos menus.</p>
-        <ul class="couscous__facts reveal">
-          <li><span>Garniture</span>Poulet, merguez et côte d'agneau</li>
-          <li><span>Quand</span>Jeudi et vendredi, midi et soir</li>
-          <li><span>À emporter</span>Possible sur réservation</li>
+    <!-- Double page : Menus -->
+    <section class="spread spread--menus" id="menus" aria-labelledby="t-menus">
+      <h2 class="visually-hidden" id="t-menus">Nos menus</h2>
+
+      <article class="page page--left menu" aria-labelledby="t-plaisir">
+        <header class="menu__head">
+          <h3 class="title" id="t-plaisir">Menu Plaisir</h3>
+          <p class="price">23&nbsp;€</p>
+        </header>
+        <h4>Entrées</h4>
+        <ul class="choices">
+          <li>Crumble de pétoncle et parmesan, crème citronnée et pesto de roquette</li>
+          <li>Foie gras maison, toast et chutney mangues</li>
+          <li>Suggestion de l'ardoise</li>
         </ul>
-        <div class="couscous__prices reveal">
-          <div><strong>15€90</strong><span>sans dessert</span></div>
-          <div><strong>23€00</strong><span>avec dessert</span></div>
+        <h4>Plats</h4>
+        <ul class="choices">
+          <li>Mahi Mahi sauce au safran et agrumes, purée de patate douce</li>
+          <li>Pluma de cochon sauce aigre douce, crème de petit pois à la menthe et écrasée de pommes de terre à la ciboulette</li>
+          <li>Suggestion de l'ardoise</li>
+        </ul>
+        <p class="menu__dessert">Dessert au choix dans notre carte</p>
+      </article>
+
+      <article class="page page--right menu" aria-labelledby="t-saveur">
+        <header class="menu__head">
+          <h3 class="title" id="t-saveur">Menu Saveur</h3>
+          <p class="price">35&nbsp;€</p>
+        </header>
+        <h4>Entrées</h4>
+        <ul class="choices">
+          <li>Foie gras maison, toast et chutney mangues</li>
+          <li>Noix de Saint-Jacques sauce au safran et agrumes, crumble parmesan</li>
+        </ul>
+        <h4>Plats</h4>
+        <ul class="choices">
+          <li>Filet de Saint-Pierre, crème de petit pois à la menthe et pesto de roquette, écrasée de pommes de terre à la ciboulette</li>
+          <li>Pièce de bœuf sauce aux poivrons caramélisés, purée de patate douce</li>
+        </ul>
+        <p class="menu__dessert">Dessert au choix dans notre carte</p>
+      </article>
+
+      <aside class="slip" aria-labelledby="t-enfant">
+        <h3 class="title" id="t-enfant">Menu enfant <span class="price">12&nbsp;€</span></h3>
+        <p><strong>Moins de 10 ans.</strong> Plat + dessert + 1 sirop à l'eau, au choix dans le menu plaisir.</p>
+        <p class="slip__quote">« Je mange comme les grands, mais en petit. »</p>
+      </aside>
+
+      <p class="menus__note">Prix net, boisson non comprise · Dessert au choix dans notre carte</p>
+    </section>
+
+    <!-- Encart de saison : Couscous -->
+    <section class="spread spread--insert" id="couscous" aria-labelledby="t-couscous">
+      <div class="page page--left page--photo">
+        <figure class="photo photo--tilt">
+          <img src="images/couscous.jpg" alt="Deux assiettes de couscous : semoule, merguez grillée et côte d'agneau" width="1056" height="786" loading="lazy">
+          <figcaption>De septembre à mai</figcaption>
+        </figure>
+      </div>
+      <div class="page page--right">
+        <h2 class="title" id="t-couscous">Couscous</h2>
+        <p class="lead">Le <strong>couscous</strong> à l'agneau existe depuis la création du <strong>Ty Mad</strong> dans les années 60 et n'a pas pris une ride.</p>
+        <p>Plongez dans cette tradition culinaire tous les jeudis et vendredis, en plus de nos menus. Possibilité à emporter sur réservation.</p>
+        <dl class="facts">
+          <div><dt>Garniture</dt><dd>Poulet, merguez et côte d'agneau</dd></div>
+          <div><dt>Quand</dt><dd>Jeudi et vendredi, midi et soir</dd></div>
+          <div><dt>Saison</dt><dd>De septembre à mai</dd></div>
+        </dl>
+        <div class="tariff">
+          <p><span class="price">15€90</span> sans dessert</p>
+          <p><span class="price">23€00</span> avec dessert</p>
         </div>
       </div>
     </section>
 
-    <!-- Repas de groupe -->
-    <section class="section groups" id="groupes">
-      <div class="groups__img reveal">
-        <img src="images/salle.jpg" alt="Grande table dressée pour un repas de groupe dans la salle" loading="lazy" data-parallax="0.08">
-      </div>
-      <div class="groups__text">
-        <h2 class="title reveal">Repas de groupe</h2>
-        <p class="reveal">Le restaurant <strong>Ar'Ty Mad</strong> est ravi de vous accueillir pour tous vos événements. Nous établirons ensemble un menu en fonction de vos envies, de votre budget et du nombre de convives !</p>
-        <p class="reveal">Nous sommes également heureux d'accueillir des <strong>groupes</strong>, même en dehors de nos jours habituels d'ouverture. Pour <strong>réserver</strong>, contactez-nous. Nous sommes impatients de vous servir !</p>
-        <a href="tel:+33297210912" class="btn reveal">Réservez</a>
-      </div>
-    </section>
-
-    <!-- Horaires + contact -->
-    <section class="section infos" id="horaires">
-      <div class="hours reveal">
-        <h2 class="title">Nos horaires</h2>
-        <p class="open-status"></p>
-        <table class="hours__table">
-          <thead><tr><th>Jours</th><th>Horaires</th></tr></thead>
-          <tbody>
-            <tr data-day="1"><td>Lundi</td><td>Fermé</td></tr>
-            <tr data-day="2"><td>Mardi</td><td>12h00 – 13h30</td></tr>
-            <tr data-day="3"><td>Mercredi</td><td>12h00 – 13h30</td></tr>
-            <tr data-day="4"><td>Jeudi</td><td>12h00 – 13h30</td></tr>
-            <tr data-day="5"><td>Vendredi</td><td>12h00 – 13h30 · 19h00 – 20h30</td></tr>
-            <tr data-day="6"><td>Samedi</td><td>12h00 – 13h30 · 19h00 – 21h00</td></tr>
-            <tr data-day="0"><td>Dimanche</td><td>12h00 – 13h30</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="contact reveal" id="contact">
-        <h2 class="title">Contactez-nous</h2>
-        <p>Contactez-nous pour réserver une table ou organiser votre événement spécial. Nous serons ravis de vous accueillir dans notre univers culinaire.</p>
-        <a href="tel:+33297210912" class="contact__phone">02.97.21.09.12</a>
-
-        <h3 class="contact__sub">Localisation</h3>
-        <p class="contact__addr"><strong>Ar'Ty Mad</strong><br>40 Cours de Chazelles, 56100 Lorient</p>
-        <div class="map">
-          <iframe title="Carte : Ar'Ty Mad, 40 Cours de Chazelles, Lorient" src="https://maps.google.com/maps?q=40%20Cours%20de%20Chazelles%2C%2056100%20Lorient&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <!-- Page : Repas de groupe -->
+    <section class="spread spread--single" id="groupes" aria-labelledby="t-groupes">
+      <div class="page">
+        <h2 class="title" id="t-groupes">Repas de groupe</h2>
+        <div class="cols">
+          <p>Le restaurant <strong>Ar'Ty Mad</strong> est ravi de vous accueillir pour tous vos événements. Nous établirons ensemble un menu en fonction de vos envies, de votre budget et du nombre de convives !</p>
+          <p>Nous sommes également heureux d'accueillir des <strong>groupes</strong>, même en dehors de nos jours habituels d'ouverture. Nous sommes impatients de vous servir !</p>
         </div>
+        <a href="#reserver" class="btn" data-prefill-group>Organiser un repas de groupe <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="footer__brand">
-      <img src="images/logo.svg" alt="">
-      <span>Ar'Ty Mad</span>
-    </div>
-    <p class="footer__tag">savoureux · frais · convivialité</p>
-    <div class="footer__bottom">
-      <p>© <span id="year"></span> Ar'Ty Mad — 40 Cours de Chazelles, 56100 Lorient</p>
-      <a href="#">Mentions légales</a>
-    </div>
-  </footer>
+  <!-- Dos du menu : réservation, horaires, accès -->
+  <section class="back" id="reserver" aria-labelledby="t-reserver">
+    <div class="back__sheet">
+      <h2 class="title" id="t-reserver">Réserver une table</h2>
+      <p class="back__intro">Choisissez votre jour et votre service ; nous vous confirmons votre table.</p>
 
-  <!-- Barre d'actions mobile -->
-  <nav class="actionbar" aria-label="Actions rapides">
-    <a href="tel:+33297210912">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
-      Téléphone
-    </a>
-    <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
-      Carte
-    </a>
-    <a href="https://www.facebook.com/search/top?q=Ar%27Ty%20Mad%20Lorient" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V6.5c0-.7.5-1 1-1h2V2h-3c-3 0-4 2-4 4.3V8H8v3.5h2V22h4V11.5h2.7L17 8z"/></svg>
-      Facebook
-    </a>
+      <form class="booking" id="booking" novalidate data-endpoint="">
+        <div class="error-summary" role="alert" tabindex="-1" hidden>
+          <p class="error-summary__title">Il manque quelques informations :</p>
+          <ul></ul>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="b-date">Date</label>
+            <input type="date" id="b-date" name="date" required aria-describedby="b-date-hint b-date-err">
+            <p class="hint" id="b-date-hint">Fermé le lundi. Le soir : vendredi et samedi.</p>
+            <p class="err" id="b-date-err"></p>
+          </div>
+          <fieldset class="field">
+            <legend>Service</legend>
+            <div class="segmented">
+              <label><input type="radio" name="service" value="midi" checked> Midi</label>
+              <label><input type="radio" name="service" value="soir"> Soir</label>
+            </div>
+            <p class="err" id="b-service-err"></p>
+          </fieldset>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="b-time">Heure d'arrivée</label>
+            <select id="b-time" name="time" required aria-describedby="b-time-err"></select>
+            <p class="err" id="b-time-err"></p>
+          </div>
+          <div class="field">
+            <label for="b-guests">Couverts</label>
+            <select id="b-guests" name="guests" required></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="b-name">Nom</label>
+            <input type="text" id="b-name" name="name" required autocomplete="name" aria-describedby="b-name-err">
+            <p class="err" id="b-name-err"></p>
+          </div>
+          <div class="field">
+            <label for="b-tel">Téléphone</label>
+            <input type="tel" id="b-tel" name="tel" required autocomplete="tel" inputmode="tel" aria-describedby="b-tel-hint b-tel-err">
+            <p class="hint" id="b-tel-hint">Pour vous joindre en cas de besoin.</p>
+            <p class="err" id="b-tel-err"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-notes">Précisions <span class="optional">(facultatif)</span></label>
+          <textarea id="b-notes" name="notes" rows="3" placeholder="Allergies, chaise haute, anniversaire, couscous à emporter…"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--block">Envoyer ma demande de réservation</button>
+        <div class="booking__status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <div class="back__infos" id="infos">
+      <div class="hours">
+        <h2 class="title title--light">Nos horaires</h2>
+        <table>
+          <caption class="visually-hidden">Horaires d'ouverture</caption>
+          <tbody>
+            <tr data-day="1"><th scope="row">Lundi</th><td>Fermé</td></tr>
+            <tr data-day="2"><th scope="row">Mardi</th><td>12h00 – 13h30</td></tr>
+            <tr data-day="3"><th scope="row">Mercredi</th><td>12h00 – 13h30</td></tr>
+            <tr data-day="4"><th scope="row">Jeudi</th><td>12h00 – 13h30</td></tr>
+            <tr data-day="5"><th scope="row">Vendredi</th><td>12h00 – 13h30<br>19h00 – 20h30</td></tr>
+            <tr data-day="6"><th scope="row">Samedi</th><td>12h00 – 13h30<br>19h00 – 21h00</td></tr>
+            <tr data-day="0"><th scope="row">Dimanche</th><td>12h00 – 13h30</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="contact">
+        <h2 class="title title--light">Nous trouver</h2>
+        <p>Contactez-nous pour réserver une table ou organiser votre événement spécial. Nous serons ravis de vous accueillir dans notre univers culinaire.</p>
+        <address>
+          <strong>Ar'Ty Mad</strong><br>
+          40 Cours de Chazelles<br>
+          56100 Lorient
+        </address>
+        <p class="contact__links">
+          <a href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>02.97.21.09.12</a>
+          <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Itinéraire</a>
+          <a href="https://www.facebook.com/search/top?q=Ar%27Ty%20Mad%20Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</a>
+        </p>
+      </div>
+    </div>
+
+    <footer class="colophon">
+      <p>© <span id="year">2026</span> Ar'Ty Mad · Lorient</p>
+      <a href="#">Mentions légales</a>
+    </footer>
+  </section>
+
+  <!-- Barre mobile -->
+  <nav class="dock" aria-label="Actions rapides">
+    <a href="tel:+33297210912"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Appeler</a>
+    <a href="#reserver" class="dock__main"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>Réserver</a>
+    <a href="https://maps.google.com/?q=40+Cours+de+Chazelles+56100+Lorient" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Itinéraire</a>
   </nav>
 
   <script src="script.js"></script>
