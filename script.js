@@ -257,9 +257,29 @@
   })();
 
   // ---------- Menus : contenu géré depuis admin.html ----------
+  // Les menus publiés alimentent aussi la fiche lue par Google (schema.org), pour rester à jour avec l'admin.
+  function describeMenus(data) {
+    const tag = document.getElementById('ld-restaurant');
+    if (!tag) return;
+    try {
+      const ld = JSON.parse(tag.textContent);
+      const amount = (s) => { const n = parseFloat(String(s).replace(/\s/g, '').replace(/€$/, '').replace(/[€,]/, '.')); return Number.isFinite(n) ? n : undefined; };
+      const section = (name, prix, items, description) => ({
+        '@type': 'MenuSection', name, ...(description ? { description } : {}),
+        offers: { '@type': 'Offer', price: amount(prix), priceCurrency: 'EUR' },
+        hasMenuItem: items.map((p) => ({ '@type': 'MenuItem', name: p })),
+      });
+      ld.hasMenu.hasMenuSection = [
+        ...data.menus.map((m) => section(m.nom, m.prix, m.rubriques.flatMap((r) => r.plats), m.pied)),
+        ...(data.enfant?.nom ? [section(data.enfant.nom, data.enfant.prix, [], [data.enfant.condition, data.enfant.contenu].filter(Boolean).join(' '))] : []),
+      ];
+      tag.textContent = JSON.stringify(ld);
+    } catch { /* la fiche de base reste valable sans le détail des menus */ }
+  }
+
   // En cas d'échec (fichier absent, ouverture hors ligne), le HTML de secours reste affiché.
   if (window.ArtyMenus) {
-    ArtyMenus.load().then((data) => ArtyMenus.render(data, $('#menus'))).catch(() => {});
+    ArtyMenus.load().then((data) => { ArtyMenus.render(data, $('#menus')); describeMenus(data); }).catch(() => {});
   }
 
   // ---------- Dépliage des doubles pages ----------

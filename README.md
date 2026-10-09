@@ -32,6 +32,12 @@ Le site les affiche avec la mise en page de la double page « Menus » : plus be
 Sécurité : 5 mauvais mots de passe bloquent la publication 15 minutes pour cette adresse ; le serveur vérifie et nettoie la carte avant de l'enregistrer ; `config.php`, les archives et le compteur d'essais sont protégés par `.htaccess` (hébergements Apache).
 `admin.html` n'est pas indexée (`noindex` + `robots.txt`). Pour la cacher davantage : renommez-la avec un nom difficile à deviner, et/ou protégez-la par mot de passe dans l'espace client de l'hébergeur.
 
+## Référencement Google
+
+`index.html` contient une fiche `schema.org/Restaurant` (adresse, téléphone, horaires, réservations) que Google peut afficher dans ses résultats et sur Maps. Le détail des menus (noms, prix, plats) y est ajouté automatiquement à partir de `data/menus.json`, donc il suit les modifications faites dans l'admin.
+
+Une fois le nom de domaine connu, à ajouter : l'adresse du site (`url`) et une photo (`image`) dans cette fiche, `og:url` / `og:image` pour les partages, et un `sitemap.xml`. Pensez aussi à créer ou revendiquer la fiche **Google Business Profile** du restaurant (horaires, photos, avis), qui pèse le plus pour apparaître sur Maps.
+
 ## Réservation en ligne : activer / désactiver
 
 Dans `admin.html`, onglet **Réglages**, l'interrupteur « Réservation en ligne » enregistre `data/reglages.json` (effet immédiat).
