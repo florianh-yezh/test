@@ -6,11 +6,17 @@ Ouvrir `index.html` dans un navigateur.
 - `index.html` — contenu (couverture, bienvenue, menus, couscous, repas de groupe, réservation, horaires, accès)
 - `styles.css` — design aux couleurs du restaurant (rouge bordeaux, Kaushan Script + Alegreya Sans)
 - `script.js` — réservation (bande de la couverture + formulaire), statut ouvert/fermé selon les horaires, dépliage des pages
-- `images/` — photos du restaurant et logo
+- `images/` — logo, photos du restaurant (`galerie/`) et photos des clients issues des avis Google (`avis/`)
+- `galerie.html`, `galerie.css`, `galerie.js` — page Galerie (filtres, visionneuse plein écran, glisser au doigt)
 - `data/menus.json` — contenu des menus ; `menus-render.js` — leur affichage (partagé avec l'admin)
 - `admin.html`, `admin.css`, `admin.js` — page de gestion de la carte ; `api/menus.php` + `api/config.php` — enregistrement sur l'hébergeur
 
 Direction de design : « le menu plié » (voir `DESIGN.md`, `PRODUCT.md` et `.impeccable/`), réalisée avec les skills Impeccable et UI/UX Pro Max installés dans `.claude/skills/`.
+
+## Avis et galerie
+
+- **Livre d'or** (page principale, avant la réservation) : 6 avis Google réels, sans les noms, avec un lien vers tous les avis Google. Pour en ajouter ou en retirer : bloc `<!-- Livre d'or -->` dans `index.html`.
+- **Galerie** (`galerie.html`) : 21 photos classées en « Les assiettes », « La salle » et « Vu par nos clients ». Les photos de clients proviennent de leurs avis Google ; leur affichage a été validé par le restaurant.
 
 ## Modifier la carte (page de gestion)
 
@@ -49,4 +55,4 @@ Dans `admin.html`, onglet **Réglages**, l'interrupteur « Réservation en ligne
 Le formulaire `#booking` envoie ses données en `POST` vers l'adresse indiquée dans `data-endpoint` (compatible Formspree, Getform, Basin…).
 Tant que `data-endpoint` est vide, le site n'affiche **aucune fausse confirmation** : il récapitule la demande et invite à appeler le restaurant.
 
-À compléter : fichier original du logo (`images/logo.svg` est une reproduction), service de réservation, lien de la page Facebook, page Mentions légales, horaires du jeudi soir (couscous).
+À compléter : service de réservation, lien de la page Facebook, page Mentions légales, horaires du jeudi soir (couscous).

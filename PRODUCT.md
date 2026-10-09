@@ -44,9 +44,9 @@ Une institution lorientaise depuis les années 60, reprise en 2014 par Aurélien
 
 ## Evidence on Hand
 
-- Photos réelles : `images/salle.jpg` (salle dressée pour un groupe), `images/couscous.jpg` (assiettes de couscous).
-- Logo : `images/logo.svg` est une reproduction approximative ; le fichier original reste à fournir.
-- Aucun avis client, note, distinction ou chiffre de fréquentation fourni : ne pas en inventer.
+- Photos réelles : `images/salle.jpg`, `images/couscous.jpg`, `images/galerie/` (9 photos du restaurant), `images/avis/` (10 photos de clients publiées avec leurs avis Google, affichage validé par le restaurant).
+- Logo : `images/logo.svg`, redessiné en vectoriel à partir du fichier fourni par le restaurant (carré rouge, traits en découpe).
+- Avis : 6 avis Google réels fournis par le restaurant (5 étoiles), affichés sans les noms, texte d'origine (une faute de frappe corrigée à la demande du restaurant). Aucune note moyenne, distinction ou chiffre de fréquentation fourni : ne pas en inventer.
 
 ## Product Principles
 

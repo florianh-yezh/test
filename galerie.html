@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galerie — Ar'Ty Mad, Lorient</title>
+  <meta name="description" content="Les assiettes et la salle d'Ar'Ty Mad en photos : cuisine traditionnelle faite maison, 40 Cours de Chazelles à Lorient.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Kaushan+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="galerie.css">
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+</head>
+<body class="g-body">
+  <svg width="0" height="0" class="sprite" aria-hidden="true">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5m5-5-5 5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <header class="g-head">
+    <a href="index.html" class="g-back"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg>Retour au site</a>
+    <a href="index.html" class="g-brand"><img src="images/logo.svg" alt="" width="38" height="40"><span>Ar'Ty Mad</span></a>
+    <a href="index.html#reserver" class="btn btn--small g-cta">Réserver</a>
+  </header>
+
+  <main class="g-main">
+    <h1 class="title g-title">La galerie</h1>
+    <p class="g-intro">Nos assiettes, notre salle, et vos plus belles photos.</p>
+
+    <div class="g-filters" role="group" aria-label="Filtrer les photos">
+      <button type="button" class="g-filter" aria-pressed="true" data-f="tout">Tout</button>
+      <button type="button" class="g-filter" aria-pressed="false" data-f="assiettes">Les assiettes</button>
+      <button type="button" class="g-filter" aria-pressed="false" data-f="salle">La salle</button>
+      <button type="button" class="g-filter" aria-pressed="false" data-f="clients">Vu par nos clients</button>
+    </div>
+
+    <ul class="g-grid"><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="0"><img src="images/galerie/plat-viande.jpg" alt="Viande, bacon croustillant, polenta grillée, champignons et petits pois" loading="lazy"><span class="g-cap">Un plat du moment</span></button></li><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="1"><img src="images/galerie/dessert-mille-feuille.jpg" alt="Mille-feuille au sucre glace, quenelle de glace et dés de fruits" loading="lazy"><span class="g-cap">Le mille-feuille</span></button></li><li class="g-item" data-cat="salle"><button type="button" class="g-open" data-i="2"><img src="images/galerie/devanture.jpg" alt="Devanture du restaurant le soir : enseigne lumineuse et porte rouge" loading="lazy"><span class="g-cap">La devanture, le soir</span></button></li><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="3"><img src="images/galerie/plat-saint-jacques.jpg" alt="Saint-Jacques et poisson, purée orange et tuile dentelle" loading="lazy"><span class="g-cap">Un plat de la mer</span></button></li><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="4"><img src="images/galerie/mises-en-bouche.jpg" alt="Mises en bouche en coupelles, décorées de fleurs comestibles" loading="lazy"><span class="g-cap">Les mises en bouche</span></button></li><li class="g-item" data-cat="salle"><button type="button" class="g-open" data-i="5"><img src="images/galerie/salle-tableaux.jpg" alt="La salle : tables nappées de blanc, chaises bleues et tableaux aux murs" loading="lazy"><span class="g-cap">La salle et ses tableaux</span></button></li><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="6"><img src="images/galerie/entree-feuillete.jpg" alt="Feuilleté sur salade et lamelle de poire caramélisée" loading="lazy"><span class="g-cap">Une entrée</span></button></li><li class="g-item" data-cat="salle"><button type="button" class="g-open" data-i="7"><img src="images/galerie/table-dressee.jpg" alt="Table pour deux, serviettes rouges et chemin de table" loading="lazy"><span class="g-cap">Une table dressée</span></button></li><li class="g-item" data-cat="assiettes"><button type="button" class="g-open" data-i="8"><img src="images/couscous.jpg" alt="Couscous : semoule, merguez et côte d&#x27;agneau" loading="lazy"><span class="g-cap">Le couscous du jeudi et du vendredi</span></button></li><li class="g-item" data-cat="salle"><button type="button" class="g-open" data-i="9"><img src="images/galerie/salle-fenetres.jpg" alt="La salle côté fenêtres, chaises bleues et nappes blanches" loading="lazy"><span class="g-cap">La salle, côté fenêtres</span></button></li><li class="g-item" data-cat="salle"><button type="button" class="g-open" data-i="10"><img src="images/salle.jpg" alt="Longue table dressée pour un repas de groupe" loading="lazy"><span class="g-cap">La grande tablée des repas de groupe</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="11"><img src="images/avis/veloute-oeuf.jpg" alt="Velouté vert, œuf poché et radis" loading="lazy"><span class="g-cap">Velouté et œuf poché</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="12"><img src="images/avis/foie-gras.jpg" alt="Foie gras, pain grillé et chutney" loading="lazy"><span class="g-cap">Foie gras maison</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="13"><img src="images/avis/poisson-risotto.jpg" alt="Poisson, persillade et risotto" loading="lazy"><span class="g-cap">Poisson et risotto</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="14"><img src="images/avis/viande.jpg" alt="Pièce de viande, sauce et petits pois" loading="lazy"><span class="g-cap">Pièce de viande</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="15"><img src="images/avis/dessert-framboise.jpg" alt="Dessert framboise et meringue" loading="lazy"><span class="g-cap">Dessert framboise</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="16"><img src="images/avis/poisson-legumes.jpg" alt="Poissons, sauce et petits légumes" loading="lazy"><span class="g-cap">Poissons et petits légumes</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="17"><img src="images/avis/cassolette.jpg" alt="Cassolette gratinée" loading="lazy"><span class="g-cap">Cassolette gratinée</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="18"><img src="images/avis/dessert-ananas.jpg" alt="Carpaccio d&#x27;ananas, écume et glace" loading="lazy"><span class="g-cap">Dessert à l&#x27;ananas</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="19"><img src="images/avis/moelleux-chocolat.jpg" alt="Moelleux au chocolat et boule de glace" loading="lazy"><span class="g-cap">Moelleux au chocolat</span></button></li><li class="g-item" data-cat="clients"><button type="button" class="g-open" data-i="20"><img src="images/avis/cafe-gourmand.jpg" alt="Café gourmand" loading="lazy"><span class="g-cap">Café gourmand</span></button></li></ul>
+    <p class="g-credit">Photos « Vu par nos clients » : publiées avec leurs avis Google.</p>
+  </main>
+
+  <dialog class="g-box" aria-label="Photo agrandie">
+    <button type="button" class="g-box__close" aria-label="Fermer"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    <button type="button" class="g-box__nav g-box__prev" aria-label="Photo précédente"><svg aria-hidden="true"><use href="#i-back"/></svg></button>
+    <figure class="g-box__fig"><img alt=""><figcaption></figcaption></figure>
+    <button type="button" class="g-box__nav g-box__next" aria-label="Photo suivante"><svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+  </dialog>
+
+  <script src="galerie.js"></script>
+</body>
+</html>

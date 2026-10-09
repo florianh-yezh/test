@@ -148,6 +148,9 @@ Une seule logique : du papier posé sur une nappe blanche. Ombres neutres très 
 
 ## Shapes
 
+Logo : carré bordeaux aux bords légèrement irréguliers, traits du « 3 » en découpe (transparents). Sur fond rouge, il passe en blanc (`filter: brightness(0) invert(1)`).
+
+
 Coins droits presque nets (4px) partout ; pastille arrondie uniquement pour le badge « aujourd'hui » ; cercle pour le tampon d'ouverture. Double filet clair à l'intérieur de la couverture, comme une carte imprimée.
 
 ## Components

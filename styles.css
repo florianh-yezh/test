@@ -106,7 +106,8 @@ strong { font-weight: 700; }
   clip-path: inset(0 0 0 0);
   transition: clip-path .9s var(--ease-out);
 }
-.loader__logo { width: 92px; height: auto; border-radius: 6px; box-shadow: 0 14px 36px -12px rgba(0, 0, 0, .5); animation: rise .8s var(--ease-out) both; }
+/* logo en blanc sur le rouge, comme sur les cartes du restaurant */
+.loader__logo { width: 92px; height: auto; filter: brightness(0) invert(1); animation: rise .8s var(--ease-out) both; }
 .loader__name { font-family: var(--script); font-size: clamp(2.6rem, 8vw, 4rem); line-height: 1; animation: rise .8s var(--ease-out) .12s both; }
 .loader.is-done { clip-path: inset(0 0 100% 0); pointer-events: none; }
 @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.94); } }
@@ -142,7 +143,7 @@ strong { font-weight: 700; }
 .tabs a:hover { color: var(--bordeaux); text-decoration: underline; }
 
 .cover__brand { align-self: center; text-align: center; display: grid; justify-items: center; }
-.cover__logo { width: clamp(76px, 9vw, 104px); height: auto; border-radius: 6px; box-shadow: 0 12px 26px -14px rgba(58, 36, 34, .5); margin-bottom: 1.2rem; }
+.cover__logo { width: clamp(76px, 9vw, 104px); height: auto; margin-bottom: 1.2rem; }
 .cover__name {
   font-family: var(--script);
   font-weight: 400;
@@ -351,6 +352,24 @@ strong { font-weight: 700; }
 /* groupes */
 .cols { columns: 2 22rem; column-gap: 3rem; margin-bottom: 2rem; }
 .cols p { color: var(--ink-soft); margin-bottom: 1rem; break-inside: avoid; }
+
+/* livre d'or : avis Google, sans les noms */
+.livre .page { padding-top: calc(var(--page-pad) + .4rem); }
+.livre .title { margin-bottom: .3rem; }
+.livre__intro { color: var(--ink-soft); margin-bottom: 1.6rem; }
+.avis { padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+.livre__intro + .avis, .page--right > .avis:first-child { border-top: 0; padding-top: .4rem; }
+.avis__stars { display: flex; gap: 3px; margin-bottom: .55rem; }
+.avis__stars svg { width: 18px; height: 18px; fill: var(--vermillon); }
+.avis__texte { margin: 0; }
+.avis__texte p { font-style: italic; font-size: 1.08rem; line-height: 1.6; color: var(--ink); max-width: 60ch; }
+.avis__meta { margin-top: .6rem; font-size: .9rem; color: var(--ink-soft); }
+.livre__more { margin-top: 1.8rem; }
+
+/* lien vers la galerie sous la photo de la salle */
+.page--photo { grid-template-rows: 1fr auto; }
+.photo-link { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; margin-top: 1.4rem; font-weight: 700; color: var(--bordeaux); text-decoration: none; border-bottom: 1px solid currentColor; }
+.photo-link:hover { color: var(--vermillon); }
 
 /* ---------- Dos du menu ---------- */
 
