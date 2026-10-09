@@ -1,7 +1,7 @@
 // Service worker : garde l'appli disponible hors connexion.
 // Pense à changer VERSION à chaque mise à jour des fichiers pour que les téléphones la récupèrent.
-const VERSION = "gm-v13";
-const SHELL = ["./", "index.html", "app.css", "app.js", "data.js", "extras.js", "bebe3d.js", "config.js", "manifest.webmanifest",
+const VERSION = "gm-v15";
+const SHELL = ["./", "index.html", "app.css", "design-v2.css", "app.js", "data.js", "extras.js", "bebe3d.js", "config.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/apple-touch-icon.png"];
 const RUNTIME_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com"];
 

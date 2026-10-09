@@ -718,6 +718,7 @@ function leave3D(){ window.B3SA = null; document.body.classList.remove("in3d"); 
 function applyTheme(){
   const r = document.documentElement;
   if (UI.theme === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", UI.theme);
+  r.setAttribute("data-design", UI.design === "classique" ? "classique" : "v2");
   let pal = UI.palette || "lavande";
   if (pal === "sexe") pal = S.profil.sexe === "F" ? "rose" : S.profil.sexe === "M" ? "bleu" : "lavande";
   if (pal === "lavande") r.removeAttribute("data-palette"); else r.setAttribute("data-palette", pal);
@@ -742,6 +743,8 @@ function openSettings(){
       <label class="f">Téléphone des urgences obstétricales<input type="tel" id="sMatTel" value="${esc(p.matTel || "")}" placeholder="02 97 …" maxlength="20"></label></div>
     <div class="card stack"><h3>Apparence</h3>
       <div class="seg">${[["auto", "Automatique"], ["light", "Clair"], ["dark", "Sombre"]].map(([k, l]) => `<button type="button" data-theme-set="${k}" aria-pressed="${UI.theme === k}">${l}</button>`).join("")}</div>
+      <div class="eyebrow" style="margin-top:4px">Design</div>
+      <div class="seg">${[["v2", "Nouveau (affiné)"], ["classique", "Classique"]].map(([k, l]) => `<button type="button" data-design-set="${k}" aria-pressed="${(UI.design || "v2") === k}">${l}</button>`).join("")}</div>
       <div class="eyebrow" style="margin-top:4px">Couleurs</div>
       <div class="seg">${[["lavande", "Lavande & menthe"], ["sexe", "Selon le sexe"], ["rose", "Rose"], ["bleu", "Bleu"]].map(([k, l]) => `<button type="button" data-palette-set="${k}" aria-pressed="${(UI.palette || "lavande") === k}">${l}</button>`).join("")}</div></div>
     ${CLOUD && Cloud.user ? `<div class="card row"><div style="min-width:0;flex:1"><div class="eyebrow">Compte</div><div style="overflow-wrap:anywhere">${esc(Cloud.user.email)}</div></div><button type="button" class="btn small ghost" data-act="signout">Se déconnecter</button></div>` : ""}
@@ -877,6 +880,7 @@ document.addEventListener("click", e => {
   if (d.gt){ UI.week = null; go("guide", d.gt); return; }
   if (d.foodf){ UI.foodCat = d.foodf; saveUI(); render(); return; }
   if (d.namef){ UI.nameSex = d.namef; saveUI(); render(); return; }
+  if (d.designSet){ UI.design = d.designSet; saveUI(); applyTheme(); document.querySelectorAll("[data-design-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.designSet === UI.design)); toast(UI.design === "classique" ? "Design classique" : "Nouveau design"); return; }
   if (d.paletteSet){ UI.palette = d.paletteSet; saveUI(); applyTheme(); document.querySelectorAll("[data-palette-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.paletteSet === UI.palette)); return; }
   if (d.themeSet){ UI.theme = d.themeSet; saveUI(); applyTheme(); document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === UI.theme)); return; }
   if (d.mood !== undefined){ UI.mood = +d.mood; buzz(6); document.querySelectorAll("[data-mood]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mood === d.mood)); return; }
