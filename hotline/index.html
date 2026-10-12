@@ -1,0 +1,1001 @@
+<title>Carnet Hotline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : poste de hotline. Barre d'outils en haut, onglets, liste à gauche + fiche à droite (empilées sur mobile). */
+:root {
+  --bg: #eef2f1;
+  --surface: #ffffff;
+  --sunk: #e3e9e7;
+  --ink: #16201e;
+  --muted: #56645f;
+  --line: #d3dcd9;
+  --accent: #0d6767;
+  --accent-ink: #ffffff;
+  --accent-soft: #d5ebe9;
+  --ok: #1f7a3a;
+  --ok-soft: #dcf0e1;
+  --warn: #9a5b00;
+  --warn-soft: #fbecd3;
+  --bad: #b3261e;
+  --bad-soft: #f8dedb;
+  --code-bg: #1b2422;
+  --code-ink: #d9efe9;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+  --r: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1514; --surface: #171f1e; --sunk: #1f2928; --ink: #e2eae7; --muted: #95a49f;
+    --line: #2b3735; --accent: #4fb5ad; --accent-ink: #06201e; --accent-soft: #19393a;
+    --ok: #6cc98a; --ok-soft: #173323; --warn: #e5ad55; --warn-soft: #3a2b12;
+    --bad: #f08a80; --bad-soft: #3d1a17; --code-bg: #0a0f0e; --code-ink: #cfeee6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1514; --surface: #171f1e; --sunk: #1f2928; --ink: #e2eae7; --muted: #95a49f;
+  --line: #2b3735; --accent: #4fb5ad; --accent-ink: #06201e; --accent-soft: #19393a;
+  --ok: #6cc98a; --ok-soft: #173323; --warn: #e5ad55; --warn-soft: #3a2b12;
+  --bad: #f08a80; --bad-soft: #3d1a17; --code-bg: #0a0f0e; --code-ink: #cfeee6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+code, pre, .mono { font-family: var(--f-mono); }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1240px; margin: 0 auto; padding: 12px 16px 0; display: grid; gap: 10px; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { font-size: 1.55rem; font-weight: 750; letter-spacing: -0.01em; }
+.brand .sub { color: var(--muted); font-size: .88rem; }
+.brand .stat { margin-left: auto; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.search { display: flex; gap: 8px; }
+.search input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--ink); font: inherit; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.tabs button { background: none; border: 0; padding: 9px 14px 11px; font-weight: 500; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+section.view { padding-top: 20px; }
+.lead { color: var(--muted); max-width: 68ch; margin: 6px 0 18px; }
+.h2 { font-size: 1.35rem; font-weight: 750; }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 999px; font-size: .85rem; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip .n { opacity: .7; font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+/* Fiches : liste + détail */
+.split { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.list { display: grid; gap: 4px; max-height: calc(100vh - 230px); overflow-y: auto; padding-right: 4px; position: sticky; top: 170px; }
+.item { text-align: left; border: 1px solid transparent; background: none; padding: 9px 11px; border-radius: var(--r); display: grid; gap: 2px; }
+.item:hover { background: var(--sunk); }
+.item[aria-current="true"] { background: var(--surface); border-color: var(--line); }
+.item .t { font-weight: 600; font-size: .93rem; line-height: 1.3; }
+.item .m { font-size: .76rem; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
+.dot.done { background: var(--ok); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; min-width: 0; }
+.fiche h2 { font-size: 1.5rem; font-weight: 750; margin: 4px 0 6px; }
+.eyebrow { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 600; }
+.lvl { display: inline-block; font-size: .72rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; margin-left: 6px; vertical-align: 1px; }
+.lvl.n1 { background: var(--ok-soft); color: var(--ok); }
+.lvl.n2 { background: var(--warn-soft); color: var(--warn); }
+.lvl.n3 { background: var(--bad-soft); color: var(--bad); }
+.block { margin-top: 18px; }
+.block h3 { font-family: var(--f-body); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.block ul, .block ol { margin: 0; padding-left: 1.3em; display: grid; gap: 5px; }
+.block p { margin: 0; max-width: 72ch; }
+.sym li::marker { color: var(--bad); }
+.fix li::marker { color: var(--accent); font-weight: 600; }
+:not(pre) > code { background: var(--sunk); padding: 1px 5px; border-radius: 4px; font-size: .86em; overflow-wrap: anywhere; }
+.cmd { margin-top: 8px; border-radius: var(--r); overflow: hidden; background: var(--code-bg); }
+.cmd-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px; font-size: .78rem; color: var(--code-ink); opacity: .85; border-bottom: 1px solid rgba(255,255,255,.08); }
+.cmd-h button { background: none; border: 1px solid rgba(255,255,255,.25); color: var(--code-ink); border-radius: 5px; padding: 2px 8px; font-size: .74rem; }
+.cmd pre { margin: 0; padding: 10px 12px; color: var(--code-ink); font-size: .84rem; overflow-x: auto; white-space: pre; }
+.note { margin-top: 18px; padding: 12px 14px; border-radius: var(--r); background: var(--warn-soft); color: var(--ink); font-size: .92rem; }
+.note b { color: var(--warn); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: var(--r); font-weight: 500; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn:hover { filter: brightness(.97); }
+.related { display: flex; flex-wrap: wrap; gap: 6px; }
+.related button { border: 1px dashed var(--line); background: none; padding: 4px 10px; border-radius: 999px; font-size: .84rem; color: var(--accent); }
+
+/* Méthode */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; counter-reset: s; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; counter-increment: s; }
+.step h3 { font-size: 1.05rem; display: flex; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.step h3::before { content: counter(s); font-family: var(--f-mono); font-size: .8rem; color: var(--accent); }
+.step p, .step ul { margin: 0; font-size: .92rem; color: var(--muted); }
+.step ul { padding-left: 1.1em; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 24px; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+.tw { overflow-x: auto; }
+
+/* Diagnostic */
+.tree-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.tree-pick button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
+.tree-pick button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tree-pick b { display: block; font-family: var(--f-display); font-size: 1.05rem; }
+.tree-pick span { font-size: .84rem; color: var(--muted); }
+.trail { display: flex; flex-wrap: wrap; gap: 6px; font-size: .82rem; color: var(--muted); margin-bottom: 12px; }
+.trail span::after { content: " ›"; }
+.q { font-family: var(--f-display); font-size: 1.3rem; font-weight: 600; margin-bottom: 14px; }
+.answers { display: grid; gap: 8px; }
+.answers button { text-align: left; background: var(--sunk); border: 1px solid var(--line); padding: 11px 14px; border-radius: var(--r); font-weight: 500; }
+.answers button:hover { border-color: var(--accent); }
+.verdict { background: var(--accent-soft); border-radius: var(--r); padding: 14px 16px; }
+
+/* Entraînement */
+.score { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; font-size: .9rem; color: var(--muted); }
+.score b { font-family: var(--f-display); font-size: 1.4rem; color: var(--ink); font-variant-numeric: tabular-nums; margin-right: 4px; }
+.ticket { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); margin-bottom: 8px; }
+.scenario { font-size: 1.08rem; max-width: 70ch; margin: 0 0 16px; }
+.choices { display: grid; gap: 8px; }
+.choices button { text-align: left; border: 1px solid var(--line); background: var(--surface); padding: 11px 14px; border-radius: var(--r); }
+.choices button.right { background: var(--ok-soft); border-color: var(--ok); }
+.choices button.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.choices button:disabled { cursor: default; }
+.explain { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--sunk); border-radius: 0 var(--r) var(--r) 0; }
+
+/* Veille */
+.veille-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.news { display: grid; gap: 10px; }
+.news-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 4px; }
+.news-item .d { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
+.news-item h3 { font-family: var(--f-body); font-size: 1rem; font-weight: 600; }
+.news-item p { margin: 0; font-size: .92rem; }
+.tag { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 999px; font-weight: 600; }
+.tag.crit { background: var(--bad-soft); color: var(--bad); }
+.tag.todo { background: var(--warn-soft); color: var(--warn); }
+.tag.info { background: var(--accent-soft); color: var(--accent); }
+.src h3 { font-size: 1.05rem; margin-bottom: 8px; }
+.src ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.src li { font-size: .9rem; }
+.src li span { display: block; color: var(--muted); font-size: .82rem; }
+.routine label { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: .92rem; }
+.routine input { margin-top: 4px; accent-color: var(--accent); }
+.empty { color: var(--muted); padding: 30px 0; }
+
+@media (max-width: 820px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .list { position: static; max-height: 260px; border: 1px solid var(--line); border-radius: var(--r); padding: 6px; background: var(--surface); }
+  .card { padding: 16px; }
+  .brand .stat { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .item, .chip, .btn, .answers button, .choices button { transition: background .15s, border-color .15s; }
+}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>Carnet Hotline</h1>
+      <span class="sub">M365 · AD/DNS · TSE · Genapi · Fiducial · pfSense · TeamViewer</span>
+      <span class="stat" id="stat"></span>
+    </div>
+    <div class="search">
+      <input id="q" type="search" placeholder="Symptôme, message d'erreur, mot-clé… (ex : « mot de passe en boucle », OST, 50053)" autocomplete="off">
+    </div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-v="methode">Méthode d'appel</button>
+      <button role="tab" data-v="fiches">Fiches de dépannage</button>
+      <button role="tab" data-v="diag">Diagnostic guidé</button>
+      <button role="tab" data-v="quiz">Entraînement</button>
+      <button role="tab" data-v="veille">Veille</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- MÉTHODE -->
+  <section class="view" id="v-methode" hidden>
+    <h2 class="h2">Prendre un appel sans se perdre</h2>
+    <p class="lead">Six réflexes qui évitent 80 % des pertes de temps. Le bon diagnostic vient presque toujours de la question « qui d'autre est touché ? ».</p>
+    <div class="steps">
+      <div class="step"><h3>Identifier</h3><p>Client, utilisateur, poste (nom ou ID TeamViewer), environnement : poste local, TSE sur site, Genapi Cloud, Fiducial Cloud.</p></div>
+      <div class="step"><h3>Faire décrire précisément</h3><p>Message d'erreur exact (capture), depuis quand, ce qui a changé (mise à jour, nouveau PC, mot de passe changé, coupure de courant).</p></div>
+      <div class="step"><h3>Mesurer le périmètre</h3><ul><li>1 utilisateur → poste, profil, compte</li><li>Tout un site → réseau, pfSense, box, serveur</li><li>Tous les clients → panne éditeur ou Microsoft (vérifier l'état des services)</li></ul></div>
+      <div class="step"><h3>Reproduire</h3><p>Prendre la main, refaire le geste. Tester en webmail / sur un autre poste / avec un autre compte pour isoler.</p></div>
+      <div class="step"><h3>Corriger du moins au plus risqué</h3><p>Redémarrer l'appli, puis réparer, puis recréer (profil, cache). Sauvegarder avant toute suppression (OST, profil, config pfSense).</p></div>
+      <div class="step"><h3>Tracer et clôturer</h3><p>Noter cause et solution dans le ticket. Faire valider par l'utilisateur. Si récurrent : en parler pour une correction de fond.</p></div>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <h3 class="h2" style="font-size:1.1rem;margin-bottom:10px">Isoler en 3 tests</h3>
+        <div class="tw"><table>
+          <thead><tr><th>Test</th><th>Si ça marche</th><th>Si ça ne marche pas</th></tr></thead>
+          <tbody>
+            <tr><td>Webmail <code>outlook.office.com</code></td><td>Problème local (Outlook, profil, cache)</td><td>Compte, licence, boîte ou service M365</td></tr>
+            <tr><td>Autre poste / autre session</td><td>Problème du poste ou du profil Windows</td><td>Compte ou serveur</td></tr>
+            <tr><td>Autre utilisateur, même poste</td><td>Profil ou droits de l'utilisateur</td><td>Poste, réseau, serveur</td></tr>
+            <tr><td>Accès par IP au lieu du nom</td><td>DNS</td><td>Réseau, pare-feu, service arrêté</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h3 class="h2" style="font-size:1.1rem;margin-bottom:10px">Pages à garder ouvertes</h3>
+        <div class="tw"><table>
+          <tbody>
+            <tr><td>Centre d'admin M365</td><td><code>admin.microsoft.com</code></td></tr>
+            <tr><td>Entra (comptes, MFA, journaux de connexion)</td><td><code>entra.microsoft.com</code></td></tr>
+            <tr><td>Exchange admin</td><td><code>admin.exchange.microsoft.com</code></td></tr>
+            <tr><td>SharePoint admin</td><td><code>&lt;tenant&gt;-admin.sharepoint.com</code></td></tr>
+            <tr><td>Defender (mails bloqués, quarantaine)</td><td><code>security.microsoft.com</code></td></tr>
+            <tr><td>État des services M365</td><td>Admin › Intégrité › Intégrité du service</td></tr>
+            <tr><td>Console TeamViewer</td><td><code>web.teamviewer.com</code></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FICHES -->
+  <section class="view" id="v-fiches" hidden>
+    <div class="chips" id="cats"></div>
+    <div class="split">
+      <div class="list" id="list"></div>
+      <article class="card fiche" id="fiche"></article>
+    </div>
+  </section>
+
+  <!-- DIAGNOSTIC -->
+  <section class="view" id="v-diag" hidden>
+    <h2 class="h2">Diagnostic guidé</h2>
+    <p class="lead">Réponds aux questions pendant l'appel. L'arbre t'amène à la fiche qui correspond.</p>
+    <div class="tree-pick" id="trees"></div>
+    <div class="card" id="tree"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view" id="v-quiz" hidden>
+    <h2 class="h2">Entraînement sur cas réels</h2>
+    <p class="lead">Un ticket arrive. Choisis la première action la plus pertinente. L'explication renvoie vers la fiche pour réviser.</p>
+    <div class="chips" id="qcats"></div>
+    <div class="score" id="score"></div>
+    <div class="card" id="qcard"></div>
+  </section>
+
+  <!-- VEILLE -->
+  <section class="view" id="v-veille" hidden>
+    <h2 class="h2">Veille</h2>
+    <p class="lead">Ce qui peut générer des appels dans les semaines qui viennent, puis les sources à suivre et une routine de 15 minutes par jour.</p>
+    <h3 class="eyebrow" style="margin-bottom:8px">Points d'attention · relevé du 12 octobre 2026</h3>
+    <div class="news" id="news"></div>
+    <div class="veille-grid" style="margin-top:26px" id="sources"></div>
+    <div class="card routine" style="margin-top:16px">
+      <h3 class="h2" style="font-size:1.1rem;margin-bottom:6px">Routine de veille</h3>
+      <div id="routine"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ===================== CATÉGORIES ===================== */
+const CATS = {
+  outlook: "Outlook / Exchange",
+  office: "Office & licences",
+  onedrive: "OneDrive / SharePoint",
+  teams: "Teams",
+  compte: "Comptes, MFA & sécurité",
+  ad: "Active Directory / GPO",
+  dns: "DNS / DHCP / réseau",
+  tse: "TSE / RDS",
+  notaire: "Genapi & notariat",
+  fiducial: "Fiducial Cloud",
+  pfsense: "pfSense / VPN",
+  tv: "TeamViewer",
+  poste: "Poste Windows & impression"
+};
+
+/* ===================== FICHES =====================
+   niv : 1 = hotline seule, 2 = admin requis, 3 = escalade probable */
+const FICHES = [
+/* ---------- OUTLOOK ---------- */
+{ id:"ol-profil", cat:"outlook", niv:1, t:"Recréer un profil Outlook",
+  sym:["Outlook bloqué sur « Chargement du profil… » ou se ferme au démarrage","Dossiers vides, synchronisation figée, erreurs de connexion persistantes","Le webmail fonctionne normalement"],
+  cause:"Profil MAPI ou fichier OST corrompu. C'est la réparation la plus efficace quand le webmail marche et qu'Outlook non.",
+  diag:["Vérifier le webmail : s'il marche, la boîte est saine côté serveur","Tester `outlook.exe /safe` pour écarter un complément","Noter les boîtes partagées ou PST ouverts dans le profil actuel (ils devront être rajoutés)"],
+  fix:["Fermer Outlook (vérifier dans le Gestionnaire des tâches)","Panneau de configuration › Courrier (Microsoft Outlook) › Afficher les profils › Ajouter","Nommer le profil (ex : `Outlook-2026`), saisir l'adresse, laisser la découverte automatique","Cocher « Toujours utiliser ce profil » sur le nouveau","Ouvrir Outlook et laisser synchroniser (peut prendre du temps sur grosse boîte)","Rattacher les PST d'archive si besoin, puis supprimer l'ancien profil une fois validé"],
+  cmd:[{l:"Ouvrir directement la gestion des profils (Exécuter)",c:"outlook.exe /profiles"},{l:"Panneau Courrier si introuvable",c:"control mlcfg32.cpl"}],
+  note:"Ne supprime pas l'ancien profil tant que l'utilisateur n'a pas vérifié ses archives PST, signatures et boîtes partagées. Signatures : %appdata%\\Microsoft\\Signatures.",
+  rel:["ol-ost","ol-mdp","ol-safe"] },
+
+{ id:"ol-safe", cat:"outlook", niv:1, t:"Outlook ne démarre pas ou plante",
+  sym:["Outlook se ferme seul ou « Microsoft Outlook a cessé de fonctionner »","Fenêtre blanche, « Ne répond pas »"],
+  cause:"Le plus souvent un complément (COM), un volet de navigation corrompu ou une mise à jour Office incomplète.",
+  diag:["Lancer `outlook.exe /safe` : s'il démarre, c'est un complément","Regarder l'Observateur d'événements › Journaux Windows › Application (source Outlook / Application Error) pour le module fautif"],
+  fix:["En mode sans échec : Fichier › Options › Compléments › Gérer : Compléments COM › Atteindre › décocher un par un","Si le volet de navigation est en cause : `outlook.exe /resetnavpane`","Réparation rapide d'Office (voir fiche « Réparer Office »)","En dernier recours : recréer le profil"],
+  cmd:[{l:"Mode sans échec",c:"outlook.exe /safe"},{l:"Réinitialiser le volet de navigation",c:"outlook.exe /resetnavpane"},{l:"Réinitialiser les affichages",c:"outlook.exe /cleanviews"}],
+  note:"Sur les postes notariaux, le complément Genapi est souvent dans la liste. Ne le supprime pas : désactive-le pour tester, puis réactive-le.",
+  rel:["off-repair","ol-profil","nt-word-addin"] },
+
+{ id:"ol-ost", cat:"outlook", niv:1, t:"Fichier OST corrompu ou trop gros",
+  sym:["Erreur « Le fichier .ost n'est pas un fichier de données Outlook »","Éléments manquants ou en double, synchro qui ne finit jamais","Disque plein à cause de %localappdata%"],
+  cause:"Le fichier OST est une copie locale de la boîte Exchange. Il peut être supprimé sans perte : il se recrée depuis le serveur.",
+  diag:["Vérifier la taille du fichier dans %localappdata%\\Microsoft\\Outlook","Confirmer que le webmail contient bien tout (sinon la perte est côté serveur, pas dans l'OST)"],
+  fix:["Fermer Outlook","Renommer le fichier `.ost` en `.ost.old` (plutôt que supprimer)","Relancer Outlook : nouvelle synchronisation complète","Pour limiter la taille : Fichier › Paramètres du compte › Modifier › curseur « Courrier à conserver en mode hors connexion » (ex : 1 an)","Une fois OK, supprimer le `.old`"],
+  cmd:[{l:"Ouvrir le dossier des OST",c:"explorer %localappdata%\\Microsoft\\Outlook"}],
+  note:"Un PST (archive locale) ne se reconstruit pas, lui. Ne jamais supprimer un PST : le réparer avec SCANPST (fiche dédiée).",
+  rel:["ol-pst","ol-profil"] },
+
+{ id:"ol-pst", cat:"outlook", niv:1, t:"Réparer un PST d'archive (SCANPST)",
+  sym:["Archive PST qui ne s'ouvre plus","Message « erreurs détectées dans le fichier »"],
+  cause:"PST stocké sur un partage réseau, coupure pendant une écriture, fichier trop gros.",
+  diag:["Où est le PST ? S'il est sur un lecteur réseau, c'est la cause probable (non supporté par Microsoft)","Taille du fichier : au-delà de 50 Go, risque élevé"],
+  fix:["Fermer Outlook","Copier le PST (sauvegarde avant réparation)","Lancer SCANPST.EXE, choisir le fichier, Démarrer puis Réparer (plusieurs passes si besoin)","Rouvrir Outlook. Les éléments récupérés peuvent être dans « Éléments trouvés et perdus »","Proposer de migrer vers l'archive en ligne Exchange pour ne plus dépendre d'un PST"],
+  cmd:[{l:"Emplacement habituel (Microsoft 365, 64 bits)",c:"\"C:\\Program Files\\Microsoft Office\\root\\Office16\\SCANPST.EXE\""}],
+  rel:["ol-archive","ol-ost"] },
+
+{ id:"ol-archive", cat:"outlook", niv:2, t:"Créer une archive (en ligne ou PST)",
+  sym:["« Votre boîte aux lettres est presque pleine »","L'utilisateur veut garder ses anciens mails sans encombrer sa boîte"],
+  cause:"Quota de boîte atteint (50 Go sur la plupart des offres Business). Deux options : archive en ligne Exchange (recommandée) ou PST local.",
+  diag:["Vérifier la taille : Exchange admin › Boîtes aux lettres › utilisateur, ou commande ci-dessous","Vérifier la licence : l'archive en ligne est incluse dans les offres Business (Basic/Standard/Premium) et Exchange Online Plan 1/2"],
+  fix:["Archive en ligne : Exchange admin › Destinataires › Boîtes aux lettres › utilisateur › Autres › Gérer la boîte aux lettres d'archive › Activer","Appliquer une stratégie de rétention (ex : déplacer en archive après 2 ans), via Purview ou la stratégie par défaut","L'archive apparaît dans Outlook sous « Archive en ligne – adresse » (délai jusqu'à quelques heures)","PST si pas d'autre choix : Fichier › Ouvrir et exporter › Importer/Exporter › Exporter vers un fichier › PST, ou Fichier › Outils › Nettoyer les anciens éléments","Stocker le PST en local (pas sur un partage), et le sauvegarder"],
+  cmd:[{l:"Taille d'une boîte (Exchange Online PowerShell)",c:"Connect-ExchangeOnline\nGet-EXOMailboxStatistics -Identity jean.dupont@client.fr | fl DisplayName,TotalItemSize,ItemCount"},{l:"Activer l'archive en ligne",c:"Enable-Mailbox -Identity jean.dupont@client.fr -Archive"},{l:"Forcer le traitement de la rétention",c:"Start-ManagedFolderAssistant -Identity jean.dupont@client.fr"}],
+  note:"Pour un office notarial, l'archive en ligne est préférable au PST : sauvegardée côté Microsoft, consultable depuis le webmail, recherchable.",
+  rel:["ol-pst","ol-quota"] },
+
+{ id:"ol-quota", cat:"outlook", niv:1, t:"Boîte pleine, plus d'envoi ni de réception",
+  sym:["NDR « boîte aux lettres pleine » côté expéditeur","L'utilisateur ne peut plus envoyer"],
+  cause:"Quota atteint. Souvent la corbeille, les éléments envoyés ou des pièces jointes énormes (actes scannés).",
+  diag:["Fichier › Outils › Nettoyage de la boîte aux lettres › Afficher la taille de la boîte","Regarder Éléments supprimés et Éléments récupérables"],
+  fix:["Vider Éléments supprimés","Rechercher les gros messages : dans la recherche, `taille:énorme` ou filtre Taille > 5 Mo","Activer l'archive en ligne (fiche dédiée)","Débloquer rapidement : déplacer des dossiers anciens vers l'archive"],
+  rel:["ol-archive"] },
+
+{ id:"ol-mdp", cat:"outlook", niv:1, t:"Outlook / Office demande le mot de passe en boucle",
+  sym:["Fenêtre de connexion qui revient sans cesse","« Besoin d'un mot de passe » dans la barre d'état Outlook","Souvent après un changement de mot de passe ou de MFA"],
+  cause:"Jetons d'authentification périmés dans le Gestionnaire d'identification ou le compte Windows (WAM).",
+  diag:["Le webmail accepte-t-il le mot de passe ? Sinon, problème de compte (fiche « Connexion refusée »)","Journaux de connexion Entra de l'utilisateur : code d'erreur exact","`dsregcmd /status` pour voir l'état de jonction du poste"],
+  fix:["Fermer toutes les applis Office","Gestionnaire d'identification › Informations d'identification Windows › supprimer les entrées `MicrosoftOffice16_Data…` et `OneDrive Cached Credential`","Paramètres Windows › Comptes › Accès Professionnel ou scolaire › vérifier/déconnecter un ancien compte en double","Rouvrir Word › Fichier › Compte › se déconnecter puis se reconnecter","Redémarrer le poste si la boucle continue"],
+  cmd:[{l:"Ouvrir le Gestionnaire d'identification",c:"control /name Microsoft.CredentialManager"},{l:"État de jonction Entra / jeton",c:"dsregcmd /status"}],
+  note:"Sur un TSE, ces jetons sont par utilisateur. Le faire dans la session de l'utilisateur, pas en admin.",
+  rel:["cpt-login","off-activation"] },
+
+{ id:"ol-partagee", cat:"outlook", niv:2, t:"Boîte partagée absente ou envois mal classés",
+  sym:["La boîte partagée n'apparaît pas dans Outlook","Les mails envoyés « en tant que » la boîte partagée vont dans les Envoyés de l'utilisateur","« Vous n'êtes pas autorisé à envoyer au nom de… »"],
+  cause:"Droits Accès total / Envoyer en tant que absents, mappage automatique désactivé, ou délai de propagation (jusqu'à 60 min).",
+  diag:["Exchange admin › boîte partagée › Délégation : vérifier Lecture et gestion (accès total) et Envoyer en tant que","Tester dans le webmail : Ouvrir une autre boîte aux lettres"],
+  fix:["Ajouter les droits manquants puis patienter (redémarrer Outlook après 30–60 min)","Si la boîte n'apparaît toujours pas : Fichier › Paramètres du compte › Modifier › Paramètres supplémentaires › Avancé › Ajouter","Pour que les envois restent dans la boîte partagée : commande ci-dessous","Dans le champ De, choisir l'adresse de la boîte partagée (Options › Afficher De)"],
+  cmd:[{l:"Donner l'accès total avec affichage automatique",c:"Add-MailboxPermission -Identity accueil@client.fr -User jean.dupont@client.fr -AccessRights FullAccess -AutoMapping $true"},{l:"Envoyer en tant que",c:"Add-RecipientPermission -Identity accueil@client.fr -Trustee jean.dupont@client.fr -AccessRights SendAs -Confirm:$false"},{l:"Copie des envois dans la boîte partagée",c:"Set-Mailbox accueil@client.fr -MessageCopyForSentAsEnabled $true -MessageCopyForSendOnBehalfEnabled $true"}],
+  rel:["ol-calendrier"] },
+
+{ id:"ol-calendrier", cat:"outlook", niv:2, t:"Partager un calendrier / droits de délégué",
+  sym:["La secrétaire ne voit pas ou ne peut pas modifier l'agenda du notaire","Rendez-vous créés mais invisibles pour les autres"],
+  cause:"Droits de dossier calendrier insuffisants. Le nom du dossier dépend de la langue de la boîte (`Calendrier` en français).",
+  diag:["Vérifier les droits actuels (commande ci-dessous)","Vérifier la langue de la boîte : `Calendar` si la boîte a été créée en anglais"],
+  fix:["Depuis Outlook du propriétaire : clic droit sur le calendrier › Partage › Autorisations","Ou en PowerShell : Editor pour modifier, Reviewer pour consulter","Le délégué ajoute le calendrier : Ajouter un calendrier › Depuis le carnet d'adresses"],
+  cmd:[{l:"Voir les droits",c:"Get-MailboxFolderPermission -Identity notaire@client.fr:\\Calendrier"},{l:"Donner les droits de modification",c:"Add-MailboxFolderPermission -Identity notaire@client.fr:\\Calendrier -User secretariat@client.fr -AccessRights Editor"},{l:"Modifier un droit existant",c:"Set-MailboxFolderPermission -Identity notaire@client.fr:\\Calendrier -User secretariat@client.fr -AccessRights Editor"}],
+  rel:["ol-partagee"] },
+
+{ id:"ol-quarantaine", cat:"outlook", niv:2, t:"Mail attendu jamais reçu",
+  sym:["« Mon client dit m'avoir envoyé un mail, je ne l'ai pas »","Mails d'un expéditeur précis qui n'arrivent plus"],
+  cause:"Courrier indésirable, règle de boîte, quarantaine Defender, ou mail jamais parti chez l'expéditeur.",
+  diag:["Dossier Courrier indésirable et règles de l'utilisateur (une règle peut déplacer ou supprimer)","Exchange admin › Flux de messagerie › Suivi des messages : chercher par expéditeur sur 10 jours","Defender › Examen › Quarantaine"],
+  fix:["Si en quarantaine : libérer le message et, si légitime, autoriser l'expéditeur (Defender › Stratégies › Listes d'autorisation/de blocage)","Si absent du suivi : le mail n'est jamais arrivé chez Microsoft, demander le NDR à l'expéditeur","Si une règle suspecte existe (transfert externe, suppression) : traiter comme compte compromis"],
+  cmd:[{l:"Suivi rapide des messages",c:"Get-MessageTrace -SenderAddress expediteur@domaine.fr -StartDate (Get-Date).AddDays(-7) -EndDate (Get-Date)"},{l:"Règles de boîte de l'utilisateur",c:"Get-InboxRule -Mailbox jean.dupont@client.fr | fl Name,Enabled,From,MoveToFolder,ForwardTo,DeleteMessage"}],
+  note:"Une règle de transfert vers une adresse externe ou qui supprime des mails est un signe classique de compte piraté.",
+  rel:["cpt-compromis"] },
+
+/* ---------- OFFICE ---------- */
+{ id:"off-repair", cat:"office", niv:1, t:"Réparer Office",
+  sym:["Word, Excel ou Outlook plantent au lancement","Fonctions qui ne répondent pas, erreurs aléatoires après mise à jour"],
+  cause:"Installation Click-to-Run endommagée (mise à jour interrompue, antivirus, disque plein).",
+  diag:["Plusieurs applis Office touchées ? Alors c'est l'installation, pas un fichier","Espace disque libre sur C:"],
+  fix:["Fermer toutes les applis Office","Paramètres › Applications › Applications installées › Microsoft 365 › Modifier","Réparation rapide d'abord (quelques minutes, hors ligne)","Si insuffisant : Réparation en ligne (réinstalle, nécessite Internet, ~20–40 min)","Redémarrer puis retester"],
+  cmd:[{l:"Ouvrir Programmes et fonctionnalités",c:"appwiz.cpl"},{l:"Forcer la mise à jour d'Office",c:"\"C:\\Program Files\\Common Files\\microsoft shared\\ClickToRun\\OfficeC2RClient.exe\" /update user"}],
+  note:"Sur un TSE, une réparation en ligne touche tous les utilisateurs : à faire hors heures de production.",
+  rel:["off-activation","ol-safe"] },
+
+{ id:"off-activation", cat:"office", niv:2, t:"« Produit sans licence » / activation Office",
+  sym:["Bandeau rouge « Produit sans licence » ou « Fonctionnalités désactivées »","Office en lecture seule"],
+  cause:"Licence non attribuée, compte Office différent du compte M365, plus de 5 installations, ou TSE sans activation d'ordinateur partagé.",
+  diag:["Admin M365 › Utilisateurs actifs › utilisateur › Licences et applications : licence avec « Applications Microsoft 365 » ?","Dans Word › Fichier › Compte : quel compte est connecté ?","Sur serveur RDS : l'activation d'ordinateur partagé est-elle active ?"],
+  fix:["Attribuer la bonne licence (Business Standard, Business Premium, Apps for Business, E3…)","Se déconnecter du mauvais compte dans Fichier › Compte, se reconnecter avec le compte M365","Trop d'appareils : l'utilisateur va sur `myaccount.microsoft.com` › Office/Appareils pour libérer une installation","Effacer les identités en cache (fiche « mot de passe en boucle »)"],
+  cmd:[{l:"Vérifier l'activation ordinateur partagé (TSE)",c:"reg query \"HKLM\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration\" /v SharedComputerLicensing"}],
+  note:"Sur TSE, Microsoft 365 Apps exige l'activation d'ordinateur partagé (valeur 1) et une licence qui l'autorise (Business Premium, Apps for enterprise, E3/E5). Business Standard ne la permet pas.",
+  rel:["off-repair","tse-office","ol-mdp"] },
+
+{ id:"off-fichier", cat:"office", niv:1, t:"Document Word/Excel corrompu ou perdu",
+  sym:["« Word a rencontré une erreur en essayant d'ouvrir le fichier »","Fichier non enregistré après plantage"],
+  cause:"Fermeture brutale, fichier ouvert depuis un partage réseau coupé, synchronisation OneDrive en conflit.",
+  diag:["Le fichier est-il sur OneDrive/SharePoint ? Alors l'historique des versions existe","Sur un partage serveur : clichés instantanés (Versions précédentes) activés ?"],
+  fix:["Word › Fichier › Ouvrir › Parcourir › sélectionner le fichier › flèche du bouton Ouvrir › Ouvrir et réparer","Fichiers non enregistrés : Fichier › Informations › Gérer le document › Récupérer les documents non enregistrés","OneDrive/SharePoint : clic droit › Historique des versions › Restaurer","Partage serveur : clic droit › Propriétés › Versions précédentes"],
+  rel:["od-restore"] },
+
+/* ---------- ONEDRIVE / SHAREPOINT ---------- */
+{ id:"od-sync", cat:"onedrive", niv:1, t:"OneDrive ne synchronise plus",
+  sym:["Croix rouge ou flèches bleues bloquées","« Traitement des modifications » sans fin","Fichiers modifiés invisibles sur l'autre poste"],
+  cause:"Nom ou chemin invalide (caractères, longueur > 400), fichier ouvert, quota plein, client OneDrive bloqué.",
+  diag:["Cliquer sur l'icône nuage › voir l'erreur exacte","Chemins trop longs : arborescences de dossiers clients très profondes","Espace disque local et quota OneDrive"],
+  fix:["Corriger les fichiers signalés (renommer, raccourcir le chemin)","Suspendre puis reprendre la synchronisation","Réinitialiser OneDrive (commande ci-dessous). Il se relance seul, sinon le relancer","Si toujours bloqué : déconnecter le PC dans Paramètres OneDrive puis reconnecter (les fichiers restent dans le cloud)"],
+  cmd:[{l:"Réinitialiser OneDrive (Exécuter)",c:"%localappdata%\\Microsoft\\OneDrive\\onedrive.exe /reset"},{l:"Si le chemin ci-dessus n'existe pas (installation machine)",c:"\"C:\\Program Files\\Microsoft OneDrive\\onedrive.exe\" /reset"}],
+  note:"Pour les bibliothèques SharePoint, préférer « Ajouter un raccourci à Mes fichiers » plutôt que « Synchroniser » : moins de conflits et un seul point de synchronisation.",
+  rel:["od-restore","sp-acces"] },
+
+{ id:"od-restore", cat:"onedrive", niv:1, t:"Fichiers supprimés ou écrasés (OneDrive/SharePoint)",
+  sym:["« Tout un dossier a disparu »","Fichiers renommés en masse (alerte rançongiciel possible)"],
+  cause:"Suppression par erreur, désynchronisation, ou chiffrement par un rançongiciel.",
+  diag:["Quand ? Quels fichiers ? Extensions bizarres (ex : .locked) = rançongiciel, débrancher le poste du réseau","Corbeille du site (93 jours), puis corbeille secondaire"],
+  fix:["Fichier isolé : Corbeille du site ou de OneDrive › Restaurer","Restauration massive : OneDrive › Paramètres › Restaurer votre OneDrive › choisir date et heure","SharePoint : Paramètres du site › Restaurer cette bibliothèque","Fichier écrasé : Historique des versions"],
+  note:"Suspicion de rançongiciel : isoler le poste (câble, Wi-Fi), ne pas éteindre, prévenir immédiatement le N2/responsable. Pour un notaire, une violation de données peut imposer une notification CNIL sous 72 h.",
+  rel:["cpt-compromis","off-fichier"] },
+
+{ id:"sp-acces", cat:"onedrive", niv:2, t:"SharePoint : accès refusé / demande d'accès",
+  sym:["« Vous devez avoir l'autorisation pour accéder à cet élément »","Un lien de partage ne marche pas pour un externe"],
+  cause:"Utilisateur hors du groupe du site, héritage d'autorisations cassé sur un dossier, partage externe désactivé, lien expiré.",
+  diag:["Quel compte est connecté dans le navigateur ? (souvent un compte perso ou un autre tenant)","Tester en navigation privée","Site › Paramètres › Autorisations du site › Vérifier les autorisations pour cet utilisateur"],
+  fix:["Ajouter l'utilisateur au groupe Membres du site (ou à l'équipe Teams associée)","Dossier à autorisations uniques : Gérer l'accès sur le dossier","Externe : vérifier le partage externe dans SharePoint admin › Stratégies › Partage, puis au niveau du site","Recréer un lien de partage pour l'externe"],
+  rel:["od-sync","teams-fichiers"] },
+
+{ id:"sp-bibli", cat:"onedrive", niv:2, t:"Lecteur réseau migré vers SharePoint : bonnes pratiques",
+  sym:["Client qui veut « remplacer le serveur de fichiers par SharePoint »","Lenteurs et conflits après migration"],
+  cause:"SharePoint n'est pas un serveur de fichiers : limites de synchro (~300 000 fichiers conseillés par client OneDrive), chemins longs, fichiers ouverts à plusieurs.",
+  diag:["Volume total et nombre de fichiers","Applications métier qui ont besoin d'un chemin UNC (Genapi par exemple) : elles doivent rester sur le serveur"],
+  fix:["Une bibliothèque par grand usage plutôt qu'une seule énorme","Raccourcis OneDrive plutôt que synchro de toute la bibliothèque","Laisser les données des applis métier sur le serveur local ou le cloud éditeur"],
+  rel:["od-sync","nt-inot"] },
+
+/* ---------- TEAMS ---------- */
+{ id:"teams-cache", cat:"teams", niv:1, t:"Teams bloqué, écran blanc ou ne se connecte pas",
+  sym:["Teams tourne en boucle ou affiche une fenêtre blanche","Conversations qui ne chargent pas, mauvais statut"],
+  cause:"Cache local de Teams corrompu.",
+  diag:["Teams web (`teams.microsoft.com`) fonctionne ? Alors c'est le client local"],
+  fix:["Quitter Teams (clic droit icône › Quitter)","Nouveau Teams : Paramètres Windows › Applications › Microsoft Teams › Options avancées › Réinitialiser","Ou supprimer le dossier de cache ci-dessous puis relancer"],
+  cmd:[{l:"Cache du nouveau Teams",c:"explorer %localappdata%\\Packages\\MSTeams_8wekyb3d8bbwe\\LocalCache\\Microsoft\\MSTeams"}],
+  rel:["ol-mdp"] },
+
+{ id:"teams-fichiers", cat:"teams", niv:2, t:"Teams : un membre ne voit pas l'équipe ou les fichiers",
+  sym:["Équipe absente de la liste","Onglet Fichiers en erreur"],
+  cause:"Membre non ajouté, propagation en cours, ou fichiers du canal privé (site SharePoint distinct).",
+  diag:["Centre d'admin Teams › Équipes › membres","Fichiers : ouvrir dans SharePoint pour voir l'erreur réelle"],
+  fix:["Ajouter le membre, attendre la propagation (jusqu'à quelques heures pour SharePoint)","Canal privé : l'ajouter explicitement au canal","Se déconnecter/reconnecter de Teams"],
+  rel:["sp-acces"] },
+
+/* ---------- COMPTES / SÉCURITÉ ---------- */
+{ id:"cpt-login", cat:"compte", niv:2, t:"Connexion M365 refusée : lire le journal Entra",
+  sym:["« Votre compte ou mot de passe est incorrect »","« Votre compte est verrouillé »","« Vous ne pouvez pas accéder à cette ressource »"],
+  cause:"Le code d'erreur Entra dit exactement pourquoi. Ne pas deviner : le lire.",
+  diag:["Entra › Utilisateurs › utilisateur › Journaux de connexion › ouvrir l'échec","Codes fréquents : 50126 mauvais identifiants · 50053 compte verrouillé (trop d'essais, parfois une attaque) · 50057 compte désactivé · 50076/50074 MFA requise · 53003 bloqué par accès conditionnel · 50158 contrôle de sécurité externe · 700016 appli inconnue du tenant"],
+  fix:["50126 : réinitialiser le mot de passe (et vérifier si Entra Connect le synchronise depuis l'AD)","50053 : attendre ou réinitialiser ; vérifier les IP sources des essais (attaque ?)","50057 : réactiver le compte (Bloquer la connexion = Non)","53003 : regarder quelle stratégie d'accès conditionnel bloque (onglet Accès conditionnel du journal)"],
+  note:"Si le tenant est synchronisé avec l'AD (Entra Connect), un mot de passe se change dans l'AD local, pas dans le portail M365.",
+  rel:["cpt-mfa","cpt-compromis","ad-lock"] },
+
+{ id:"cpt-mfa", cat:"compte", niv:2, t:"MFA : nouveau téléphone, Authenticator perdu",
+  sym:["« Je n'ai plus le code », téléphone changé ou perdu","L'utilisateur ne reçoit plus la notification"],
+  cause:"La méthode MFA enregistrée n'est plus disponible.",
+  diag:["Vérifier l'identité de l'appelant (rappel sur numéro connu, validation par le responsable de l'étude) : c'est une cible classique d'ingénierie sociale","Entra › utilisateur › Méthodes d'authentification"],
+  fix:["Supprimer l'ancienne méthode ou cliquer « Exiger une nouvelle inscription de l'authentification multifacteur »","Option : générer un Passe d'accès temporaire (TAP) pour qu'il se réinscrive","L'utilisateur se reconnecte et suit `aka.ms/mysecurityinfo` pour configurer Authenticator"],
+  note:"Ne jamais réinitialiser la MFA sur simple demande téléphonique non vérifiée.",
+  rel:["cpt-login","cpt-compromis"] },
+
+{ id:"cpt-compromis", cat:"compte", niv:3, t:"Compte M365 compromis (phishing)",
+  sym:["Les contacts reçoivent des mails bizarres de l'utilisateur","Règles de boîte inconnues, transferts vers l'extérieur","Connexions depuis un pays étranger dans les journaux"],
+  cause:"Mot de passe et/ou session volés via une fausse page de connexion.",
+  diag:["Journaux de connexion Entra : IP, pays, appli","Règles de boîte, transferts, méthodes MFA ajoutées récemment","Defender › Utilisateurs restreints (blocage d'envoi)"],
+  fix:["Bloquer la connexion puis réinitialiser le mot de passe","Révoquer toutes les sessions (bouton dans Entra ou commande)","Supprimer règles et transferts suspects, retirer les méthodes MFA inconnues","Vérifier les consentements d'applications de l'utilisateur","Débloquer l'envoi dans Defender une fois propre","Prévenir les destinataires et le responsable : pour un notaire, évaluer avec lui la notification CNIL (72 h) et le risque de fraude au virement"],
+  cmd:[{l:"Révoquer les sessions (Microsoft Graph)",c:"Connect-MgGraph -Scopes User.ReadWrite.All\nRevoke-MgUserSignInSession -UserId jean.dupont@client.fr"},{l:"Transferts configurés sur la boîte",c:"Get-Mailbox jean.dupont@client.fr | fl ForwardingAddress,ForwardingSmtpAddress,DeliverToMailboxAndForward"},{l:"Règles de boîte",c:"Get-InboxRule -Mailbox jean.dupont@client.fr"}],
+  note:"Fraude au RIB : dans le notariat, un compte piraté sert souvent à envoyer un faux RIB pendant une vente. Alerter tout de suite l'étude.",
+  rel:["cpt-login","ol-quarantaine","od-restore"] },
+
+/* ---------- AD / GPO ---------- */
+{ id:"ad-lock", cat:"ad", niv:1, t:"Compte AD verrouillé (ou qui se reverrouille)",
+  sym:["« Le compte référencé est actuellement verrouillé »","Se reverrouille quelques minutes après déblocage"],
+  cause:"Trop de mauvais mots de passe. S'il revient : un ancien mot de passe enregistré quelque part (téléphone, lecteur réseau mappé, session TSE ouverte ailleurs, tâche planifiée).",
+  diag:["Qui verrouille ? Observateur d'événements du contrôleur de domaine (PDC) › Sécurité › ID 4740 : champ « Nom de l'ordinateur appelant »","Sessions ouvertes sur d'autres postes ou TSE"],
+  fix:["Déverrouiller : Utilisateurs et ordinateurs AD › compte › Compte › Déverrouiller","Supprimer l'identifiant mémorisé sur la machine source (Gestionnaire d'identification, mail sur téléphone)","Fermer les sessions TSE oubliées"],
+  cmd:[{l:"État du compte",c:"Get-ADUser jdupont -Properties LockedOut,lockoutTime,BadLogonCount,PasswordLastSet"},{l:"Déverrouiller",c:"Unlock-ADAccount jdupont"},{l:"Trouver la source (sur le PDC)",c:"Get-WinEvent -FilterHashtable @{LogName='Security';Id=4740} -MaxEvents 20 |\n  Select TimeCreated,@{n='Compte';e={$_.Properties[0].Value}},@{n='Source';e={$_.Properties[1].Value}}"}],
+  rel:["ad-mdp","tse-session"] },
+
+{ id:"ad-mdp", cat:"ad", niv:1, t:"Réinitialiser un mot de passe AD",
+  sym:["Mot de passe expiré ou oublié"],
+  cause:"Expiration de stratégie ou oubli.",
+  diag:["Le tenant M365 est-il synchronisé ? Alors le nouveau mot de passe sera aussi celui de M365 (après la synchro, ~2 min avec la synchro du hachage)"],
+  fix:["Utilisateurs et ordinateurs AD › clic droit › Réinitialiser le mot de passe","Cocher « L'utilisateur doit changer le mot de passe » selon votre procédure","Si M365 ne suit pas : forcer une synchro Entra Connect (commande)"],
+  cmd:[{l:"Réinitialiser",c:"Set-ADAccountPassword jdupont -Reset -NewPassword (Read-Host -AsSecureString 'Nouveau mot de passe')"},{l:"Synchro delta Entra Connect (sur le serveur Entra Connect)",c:"Start-ADSyncSyncCycle -PolicyType Delta"}],
+  rel:["ad-lock","cpt-login"] },
+
+{ id:"ad-trust", cat:"ad", niv:2, t:"« La relation d'approbation entre cette station et le domaine a échoué »",
+  sym:["Message à l'ouverture de session sur un poste","Souvent après restauration d'une image ou longue absence du PC"],
+  cause:"Le mot de passe du compte ordinateur ne correspond plus à celui de l'AD.",
+  diag:["Ouvrir une session en compte local admin (ou débrancher le réseau pour utiliser le cache)"],
+  fix:["Réparer le canal sécurisé sans sortir du domaine (commande ci-dessous, en PowerShell admin)","Redémarrer","Si échec : sortir le poste du domaine (groupe de travail), redémarrer, le remettre dans le domaine"],
+  cmd:[{l:"Tester / réparer",c:"Test-ComputerSecureChannel -Verbose\nTest-ComputerSecureChannel -Repair -Credential DOMAINE\\admin"}],
+  rel:["ad-gpo"] },
+
+{ id:"ad-gpo", cat:"ad", niv:2, t:"Une GPO ne s'applique pas (lecteurs, imprimantes, fond d'écran)",
+  sym:["Lecteur réseau ou imprimante absent pour un utilisateur","Paramètre attendu non appliqué"],
+  cause:"Utilisateur/ordinateur dans la mauvaise OU, filtrage de sécurité, filtre WMI, ou DNS du poste qui ne pointe pas sur le DC.",
+  diag:["`gpresult /r` : la GPO est-elle « appliquée » ou « refusée » (et pourquoi) ?","Le poste utilise-t-il le DC comme DNS ? (`ipconfig /all`)"],
+  fix:["`gpupdate /force` puis fermer/rouvrir la session","Déplacer l'objet dans la bonne OU","Ajouter l'utilisateur au groupe ciblé, puis fermer la session (les groupes sont lus à l'ouverture)"],
+  cmd:[{l:"Résumé",c:"gpresult /r"},{l:"Rapport complet",c:"gpresult /h C:\\Temp\\gp.html /f"},{l:"Forcer",c:"gpupdate /force"}],
+  rel:["dns-client","ad-sante"] },
+
+{ id:"ad-sante", cat:"ad", niv:3, t:"Santé de l'AD : réplication, heure, DC",
+  sym:["Problèmes aléatoires d'authentification sur plusieurs postes","Changements faits sur un DC invisibles sur l'autre","Erreurs Kerberos, heure décalée"],
+  cause:"Réplication en échec, DC hors ligne, décalage horaire > 5 min (Kerberos).",
+  diag:["Lancer les commandes de santé ci-dessous sur un DC"],
+  fix:["Corriger l'heure : le PDC se synchronise sur une source externe, les autres sur la hiérarchie du domaine","Réplication : identifier le DC en échec, vérifier réseau/DNS entre DC"],
+  cmd:[{l:"Résumé de réplication",c:"repadmin /replsummary"},{l:"Diagnostic complet",c:"dcdiag /v /c /e > C:\\Temp\\dcdiag.txt"},{l:"Heure",c:"w32tm /query /status\nw32tm /query /source"}],
+  rel:["ad-gpo","dns-client"] },
+
+/* ---------- DNS / RÉSEAU ---------- */
+{ id:"dns-client", cat:"dns", niv:1, t:"Un serveur ou un partage est introuvable par son nom",
+  sym:["« Impossible de trouver le chemin réseau » mais l'IP répond","Lecteurs réseau rouges, applis métier qui ne trouvent plus le serveur"],
+  cause:"Le poste n'utilise pas le DNS du domaine (DNS de la box en dur, DHCP de la box au lieu du serveur), cache DNS périmé.",
+  diag:["`ipconfig /all` : le serveur DNS doit être l'IP du DC, pas la box ni 8.8.8.8","`nslookup serveur` et `ping serveur`"],
+  fix:["Vider le cache DNS et réenregistrer le poste","Corriger la configuration DHCP (option 006 = DC) ou la carte réseau","Si le Wi-Fi invité/box donne une autre IP : le poste est sur le mauvais réseau"],
+  cmd:[{l:"Diagnostic",c:"ipconfig /all\nnslookup SRV-AD01\nResolve-DnsName SRV-AD01 -Server 192.168.1.10"},{l:"Corriger côté poste",c:"ipconfig /flushdns\nipconfig /registerdns"}],
+  note:"Règle d'or : postes du domaine → DNS = contrôleur(s) de domaine. Le DC, lui, transfère vers Internet (redirecteurs).",
+  rel:["dns-internet","ad-gpo"] },
+
+{ id:"dns-internet", cat:"dns", niv:2, t:"Plus d'Internet sur tout le site",
+  sym:["Aucun site ne s'ouvre pour personne","Teams/Outlook déconnectés sur tous les postes"],
+  cause:"Lien opérateur, pfSense, DNS du serveur (redirecteurs), ou DHCP épuisé.",
+  diag:["`ping 8.8.8.8` : s'il répond mais pas `ping google.fr` → DNS","Si rien ne répond : passerelle (pfSense) joignable ? Puis WAN (fiche pfSense)","Nouveaux appareils sans IP (169.254.x.x) → étendue DHCP pleine ou serveur DHCP arrêté"],
+  fix:["DNS : sur le DC, Gestionnaire DNS › serveur › Propriétés › Redirecteurs : tester / remplacer","DHCP : vérifier l'étendue, supprimer les baux expirés, agrandir la plage","WAN : voir fiche pfSense « Internet coupé »"],
+  cmd:[{l:"Tests en chaîne",c:"ping 192.168.1.254\nping 8.8.8.8\nnslookup google.fr\nnslookup google.fr 8.8.8.8"},{l:"Baux DHCP (serveur Windows)",c:"Get-DhcpServerv4ScopeStatistics"}],
+  rel:["pf-wan","dns-client"] },
+
+/* ---------- TSE / RDS ---------- */
+{ id:"tse-session", cat:"tse", niv:1, t:"Session TSE bloquée ou fantôme",
+  sym:["L'utilisateur ne peut pas se reconnecter, écran noir","« Votre session est déjà ouverte ailleurs »","Appli métier ouverte dans une ancienne session"],
+  cause:"Session déconnectée restée ouverte, processus bloqué à la fermeture.",
+  diag:["Lister les sessions sur le serveur"],
+  fix:["Fermer la session de l'utilisateur (prévenir : travail non enregistré perdu)","Si le logoff ne marche pas : tuer ses processus puis réessayer","Option : prendre la main sur sa session pour sauver le travail (shadow)"],
+  cmd:[{l:"Lister les sessions",c:"quser /server:SRV-TSE01"},{l:"Fermer la session n° 3",c:"logoff 3 /server:SRV-TSE01"},{l:"Prendre le contrôle de la session 3 (avec accord)",c:"mstsc /shadow:3 /v:SRV-TSE01 /control"}],
+  rel:["tse-profil","tse-lent"] },
+
+{ id:"tse-profil", cat:"tse", niv:2, t:"Profil temporaire sur le TSE",
+  sym:["« Vous êtes connecté avec un profil temporaire »","Bureau vide, imprimantes et réglages perdus"],
+  cause:"Profil local verrouillé ou corrompu, clé de registre dupliquée en `.bak`, ou disque FSLogix non monté.",
+  diag:["Regedit : HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList : chercher le SID de l'utilisateur en double avec `.bak`","Si FSLogix : journaux dans C:\\ProgramData\\FSLogix\\Logs, disque VHDX verrouillé par une autre session ?"],
+  fix:["Fermer la session de l'utilisateur","Dans ProfileList : supprimer la clé SID sans `.bak` (la temporaire), renommer celle en `.bak` en retirant `.bak`, vérifier ProfileImagePath, mettre State et RefCount à 0","Faire reconnecter l'utilisateur","Profil irrécupérable : renommer C:\\Users\\nom en nom.old, supprimer la clé SID, recréer puis recopier Bureau/Documents/Favoris/signatures"],
+  cmd:[{l:"SID d'un utilisateur",c:"wmic useraccount where name='jdupont' get sid"}],
+  note:"Exporter la clé ProfileList avant toute modification.",
+  rel:["tse-session"] },
+
+{ id:"tse-lic", cat:"tse", niv:3, t:"« Aucun serveur de licences Bureau à distance disponible »",
+  sym:["Connexions refusées sur le TSE, message de licence","Message sur la période de grâce"],
+  cause:"Période de grâce de 120 jours expirée, serveur de licences non défini ou injoignable, CAL épuisées.",
+  diag:["Lancer `lsdiag.msc` (Diagnostic des licences Bureau à distance) sur le serveur RDS","Mode de licence (Par utilisateur / Par périphérique) cohérent avec les CAL installées ?"],
+  fix:["Définir le serveur de licences et le mode (Gestionnaire de serveur › Services Bureau à distance › Propriétés du déploiement, ou GPO)","Vérifier que le service « Gestionnaire de licences des services Bureau à distance » tourne","CAL manquantes : escalade commerciale"],
+  cmd:[{l:"Diagnostic",c:"lsdiag.msc"}],
+  rel:["tse-session"] },
+
+{ id:"tse-lent", cat:"tse", niv:2, t:"TSE lent pour tout le monde",
+  sym:["Ouverture de session longue, applis qui rament","Plaintes simultanées de plusieurs utilisateurs"],
+  cause:"Un utilisateur ou processus qui consomme tout, disque C: plein, antivirus en scan, mises à jour en cours.",
+  diag:["Gestionnaire des tâches › Utilisateurs (tri par CPU/mémoire)","Moniteur de ressources › Disque","Espace libre sur C: (profils, temp, téléchargements)"],
+  fix:["Fermer le processus ou la session fautive","Nettoyer : dossiers Temp des profils, anciens profils inutilisés","Planifier un redémarrage nocturne du TSE"],
+  cmd:[{l:"Moniteur de ressources",c:"resmon"},{l:"Top processus mémoire",c:"Get-Process | Sort WS -Desc | Select -First 15 Name,Id,@{n='Mo';e={[int]($_.WS/1MB)}},SessionId"}],
+  rel:["tse-session","pc-disque"] },
+
+{ id:"tse-imp", cat:"tse", niv:2, t:"Imprimante absente ou mauvaise dans la session TSE",
+  sym:["L'imprimante locale n'apparaît pas dans la session","Impression vers la mauvaise imprimante"],
+  cause:"Redirection d'imprimantes désactivée (client RDP ou GPO), pilote absent sur le serveur, imprimante par défaut non gérée.",
+  diag:["Client RDP › Afficher les options › Ressources locales › Imprimantes cochée ?","Le pilote existe-t-il sur le serveur ? (Gestion de l'impression)"],
+  fix:["Cocher la redirection dans le .rdp (`redirectprinters:i:1`)","Installer le pilote universel du fabricant sur le serveur","Préférer des imprimantes réseau déployées par GPO plutôt que redirigées"],
+  rel:["pc-spooler"] },
+
+{ id:"tse-office", cat:"tse", niv:2, t:"Office sur TSE : activation et mises à jour",
+  sym:["Office sans licence uniquement sur le serveur RDS"],
+  cause:"Activation d'ordinateur partagé absente ou licence non compatible.",
+  diag:["Clé SharedComputerLicensing = 1 ?","Licence de l'utilisateur compatible (pas Business Standard)"],
+  fix:["Activer l'activation d'ordinateur partagé (Office Deployment Tool ou GPO)","Changer la licence de l'utilisateur si nécessaire"],
+  cmd:[{l:"Vérifier",c:"reg query \"HKLM\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration\" /v SharedComputerLicensing"}],
+  rel:["off-activation"] },
+
+/* ---------- NOTARIAT ---------- */
+{ id:"nt-inot", cat:"notaire", niv:2, t:"Logiciel Genapi (iNot) ne s'ouvre pas sur le serveur de l'étude",
+  sym:["Message de connexion à la base / serveur introuvable","Tous les postes de l'étude touchés, ou un seul"],
+  cause:"Serveur Genapi injoignable, service applicatif arrêté, lecteur réseau absent, mise à jour non passée sur le poste.",
+  diag:["Périmètre : un poste = poste/profil ; toute l'étude = serveur, réseau ou panne éditeur","Le serveur répond-il par son nom ? (fiche DNS)","Les services Genapi du serveur sont-ils démarrés ? (noter leurs noms exacts dans la fiche client)","Une mise à jour Genapi a-t-elle eu lieu récemment ?"],
+  fix:["Un poste : fermer/rouvrir la session, vérifier lecteurs réseau, relancer le poste","Toute l'étude : vérifier/redémarrer les services Genapi sur le serveur (hors rédaction en cours si possible)","Erreur après mise à jour : ne pas bricoler, ouvrir un ticket au support Genapi avec captures et heure"],
+  note:"Le périmètre exact (ce qui relève de vous ou de Genapi) dépend du contrat de chaque étude : le vérifier dans la fiche client. Ne pas toucher à la base de données éditeur.",
+  rel:["dns-client","nt-word-addin","nt-cloud"] },
+
+{ id:"nt-word-addin", cat:"notaire", niv:1, t:"Les outils de rédaction Genapi ont disparu de Word",
+  sym:["Onglet ou ruban Genapi absent dans Word","Fusion d'acte qui ne se lance plus"],
+  cause:"Word a désactivé le complément après un plantage, ou mise à jour Office/Genapi incompatible.",
+  diag:["Word › Fichier › Options › Compléments : le complément est-il dans « Compléments d'application désactivés » ?"],
+  fix:["Gérer : Éléments désactivés › Atteindre › sélectionner › Activer","Gérer : Compléments COM › Atteindre › recocher le complément","Redémarrer Word","Si ça revient après chaque mise à jour Office : support Genapi (compatibilité de version)"],
+  rel:["ol-safe","off-repair"] },
+
+{ id:"nt-cloud", cat:"notaire", niv:2, t:"Genapi en cloud : connexion impossible",
+  sym:["L'utilisateur ne peut pas ouvrir son environnement Genapi hébergé"],
+  cause:"Identifiants, MFA, accès Internet du site, ou incident côté hébergeur.",
+  diag:["Internet fonctionne-t-il sur le poste ?","Tout le monde ou un seul ? D'autres études chez vous touchées en même temps = incident éditeur","Message exact à l'écran (capture)"],
+  fix:["Un utilisateur : vérifier identifiants, réinitialisation selon la procédure Genapi","Tout le site : vérifier Internet/pfSense","Plusieurs clients : ouvrir un ticket chez l'éditeur et prévenir les études"],
+  note:"Complète cette fiche avec la procédure interne de votre société (URL de connexion, contacts support, qui réinitialise quoi).",
+  rel:["nt-inot","pf-wan"] },
+
+{ id:"nt-real", cat:"notaire", niv:2, t:"Clé REAL / signature électronique notariale",
+  sym:["La clé REAL n'est pas reconnue","Télé-actes ou signature d'acte électronique en échec"],
+  cause:"Pilote ou middleware de la clé, port USB, navigateur, certificat expiré. Matériel et certificats relèvent de l'ADSN.",
+  diag:["La clé est-elle vue par Windows (Gestionnaire de périphériques) ?","Tester un autre port USB, sans hub","Le problème touche-t-il d'autres clés de l'étude ?"],
+  fix:["Réinstaller le middleware fourni par l'ADSN","Sur TSE : la clé doit être redirigée (cartes à puce cochées dans les ressources locales RDP)","Certificat expiré ou clé défectueuse : support ADSN"],
+  note:"Vérifier dans la fiche client si la clé est utilisée en local ou via le TSE : la redirection carte à puce RDP est une cause fréquente.",
+  rel:["tse-imp"] },
+
+/* ---------- FIDUCIAL ---------- */
+{ id:"fid-acces", cat:"fiducial", niv:2, t:"Fiducial Cloud : accès impossible",
+  sym:["L'utilisateur ne parvient pas à se connecter à son environnement Fiducial Cloud","Connexion lente ou coupée"],
+  cause:"Identifiants/double authentification, connexion Internet du site, raccourci de connexion obsolète, incident hébergeur.",
+  diag:["Un utilisateur ou tout le site ?","Connexion Internet du site (débit, coupures)","Message d'erreur exact"],
+  fix:["Un utilisateur : vérifier identifiants et MFA selon la procédure Fiducial","Tout le site : diagnostiquer le réseau (pfSense, box)","Plusieurs clients Fiducial touchés : incident hébergeur, ticket Fiducial"],
+  note:"Fiche générique. Ajoute vos procédures internes Fiducial (portail, contacts, ce que vous pouvez réinitialiser vous-mêmes).",
+  rel:["pf-wan","tse-imp"] },
+
+/* ---------- PFSENSE ---------- */
+{ id:"pf-wan", cat:"pfsense", niv:2, t:"pfSense : Internet coupé",
+  sym:["Plus d'Internet sur le site","Passerelle WAN en rouge"],
+  cause:"Lien opérateur tombé, box/ONT en panne, IP WAN changée, passerelle mal surveillée.",
+  diag:["Status › Gateways : passerelle en ligne / perte de paquets ?","Status › Interfaces : le WAN a-t-il une IP ?","Diagnostics › Ping depuis l'interface WAN vers 8.8.8.8","Faire vérifier les voyants de la box / ONT sur place"],
+  fix:["Box : redémarrage électrique (prévenir le client)","WAN DHCP : Status › Interfaces › Release/Renew","Multi-WAN : vérifier le groupe de passerelles et la bascule","Problème DNS seul : Services › DNS Resolver, puis Diagnostics › DNS Lookup"],
+  note:"Avant toute modification : Diagnostics › Backup & Restore › télécharger la configuration.",
+  rel:["dns-internet","pf-vpn","pf-nat"] },
+
+{ id:"pf-vpn", cat:"pfsense", niv:2, t:"VPN nomade (OpenVPN / WireGuard / IPsec) ne se connecte pas",
+  sym:["Le client VPN reste « en cours de connexion »","Connecté mais aucun accès au serveur"],
+  cause:"Certificat utilisateur expiré ou révoqué, identifiants AD/RADIUS, réseau local de l'utilisateur identique à celui du bureau (192.168.1.0/24 des deux côtés), règle de pare-feu.",
+  diag:["Status › OpenVPN : le client apparaît-il ?","Status › System Logs › OpenVPN (ou IPsec) : message d'erreur à l'heure de la tentative","Connecté mais pas d'accès : comparer le réseau de la box de l'utilisateur et celui du bureau"],
+  fix:["Certificat expiré : System › Cert. Manager, en régénérer un, réexporter le client (paquet OpenVPN Client Export)","Authentification : vérifier le compte (AD verrouillé ?)","Conflit de réseau : changer le sous-réseau du bureau est lourd ; à court terme, l'utilisateur peut tester via le partage de connexion de son téléphone","Règles : Firewall › Rules › OpenVPN"],
+  rel:["ad-lock","pf-wan"] },
+
+{ id:"pf-nat", cat:"pfsense", niv:2, t:"Ouvrir un port / redirection (NAT)",
+  sym:["Demande d'accès à un service interne depuis l'extérieur (caméras, appli métier)"],
+  cause:"Besoin de redirection de port.",
+  diag:["Est-ce vraiment nécessaire ? Un VPN est presque toujours préférable","Jamais de RDP (3389) exposé sur Internet"],
+  fix:["Firewall › NAT › Port Forward › Ajouter : interface WAN, port, IP interne cible, « Add associated filter rule »","Restreindre la source aux IP connues si possible","Tester depuis l'extérieur, puis documenter dans la fiche client"],
+  note:"Exposer RDP ou un partage de fichiers sur Internet est la porte d'entrée n°1 des rançongiciels.",
+  rel:["pf-vpn","pf-logs"] },
+
+{ id:"pf-logs", cat:"pfsense", niv:2, t:"pfSense bloque un site ou un service",
+  sym:["Un site ou une appli précise ne marche pas, le reste oui"],
+  cause:"Règle de pare-feu, liste de blocage (pfBlockerNG), filtrage DNS.",
+  diag:["Status › System Logs › Firewall : filtrer sur l'IP du poste","pfBlockerNG installé ? Regarder ses rapports (Firewall › pfBlockerNG › Reports)","Diagnostics › Packet Capture pour voir si le trafic sort"],
+  fix:["Ajouter une exception ciblée (liste blanche pfBlockerNG ou règle précise)","Ne pas désactiver le pare-feu entier pour tester"],
+  rel:["pf-nat"] },
+
+/* ---------- TEAMVIEWER ---------- */
+{ id:"tv-pret", cat:"tv", niv:1, t:"TeamViewer « Non prêt, vérifier la connexion »",
+  sym:["Pas d'ID affiché ou état non prêt","Impossible de se connecter au poste"],
+  cause:"Pas d'Internet, proxy/pare-feu qui bloque, service TeamViewer arrêté, version trop ancienne.",
+  diag:["Le poste a-t-il Internet ?","Service « TeamViewer » démarré ? (services.msc)","Règles pfSense/pfBlockerNG qui bloqueraient TeamViewer ?"],
+  fix:["Redémarrer le service TeamViewer","Mettre TeamViewer à jour (versions trop vieilles refusées)","Sinon, faire installer le module QuickSupport par l'utilisateur pour un dépannage ponctuel"],
+  cmd:[{l:"Redémarrer le service",c:"net stop TeamViewer && net start TeamViewer"}],
+  rel:["tv-noir","pf-logs"] },
+
+{ id:"tv-noir", cat:"tv", niv:1, t:"TeamViewer : écran noir ou impossible de cliquer sur une fenêtre admin",
+  sym:["Écran noir pendant la prise en main","Les fenêtres UAC ne réagissent pas aux clics"],
+  cause:"TeamViewer lancé en mode utilisateur (pas en service), écran verrouillé, poste sans écran branché.",
+  diag:["TeamViewer est-il installé (accès non surveillé) ou lancé en QuickSupport ?"],
+  fix:["Installer TeamViewer complet pour qu'il tourne en service (UAC visible)","Poste sans écran : activer l'écran noir/pilote d'affichage dans les options TeamViewer ou brancher un émulateur HDMI","Demander à l'utilisateur de valider lui-même l'UAC si QuickSupport"],
+  rel:["tv-pret"] },
+
+/* ---------- POSTE ---------- */
+{ id:"pc-spooler", cat:"poste", niv:1, t:"Impression bloquée (file d'attente)",
+  sym:["Documents bloqués dans la file","L'imprimante n'imprime plus rien pour personne sur ce poste"],
+  cause:"Spouleur d'impression bloqué par un travail corrompu.",
+  diag:["L'imprimante imprime-t-elle depuis un autre poste ? Sinon, problème imprimante/réseau"],
+  fix:["Arrêter le spouleur, vider la file, redémarrer le spouleur (commandes, en admin)"],
+  cmd:[{l:"Vider la file d'impression",c:"net stop spooler\ndel /Q /F %systemroot%\\System32\\spool\\PRINTERS\\*\nnet start spooler"}],
+  rel:["tse-imp","pc-scan"] },
+
+{ id:"pc-scan", cat:"poste", niv:2, t:"Le copieur n'envoie plus les scans par mail",
+  sym:["Scan vers mail en erreur d'authentification SMTP","Arrêt soudain sans changement côté client"],
+  cause:"Microsoft retire l'authentification basique SMTP AUTH dans Exchange Online ; mot de passe du compte d'envoi changé ; MFA sur le compte d'envoi.",
+  diag:["Paramètres SMTP du copieur : smtp.office365.com:587, TLS, compte utilisé","Le compte d'envoi a-t-il changé de mot de passe ?","Vérifier dans le Message Center l'état du retrait de SMTP AUTH basique"],
+  fix:["Solution durable : connecteur de relais par IP fixe du site (Exchange admin › Flux de messagerie › Connecteurs) vers `<domaine>.mail.protection.outlook.com`:25","Ou relais SMTP local / service d'envoi tiers","Alternative : scan vers dossier réseau ou OneDrive (selon le copieur)"],
+  note:"Scan vers dossier qui ne marche plus après une mise à jour Windows : souvent un copieur qui ne parle que SMBv1. Mettre à jour le firmware du copieur plutôt que réactiver SMBv1.",
+  rel:["pc-spooler"] },
+
+{ id:"pc-disque", cat:"poste", niv:1, t:"Disque C: plein / Windows lent ou instable",
+  sym:["Moins de 10 % d'espace libre","Mises à jour qui échouent, lenteurs"],
+  cause:"Fichiers temporaires, anciens OST, téléchargements, mises à jour.",
+  diag:["Paramètres › Système › Stockage pour voir les gros postes"],
+  fix:["Nettoyage de disque avec « Nettoyer les fichiers système »","Supprimer les anciens OST inutiles","Réparer les fichiers système si Windows est instable (commandes)"],
+  cmd:[{l:"Nettoyage",c:"cleanmgr /sageset:1\ncleanmgr /sagerun:1"},{l:"Réparer Windows (admin)",c:"DISM /Online /Cleanup-Image /RestoreHealth\nsfc /scannow"}],
+  rel:["ol-ost","tse-lent"] }
+];
+
+/* ===================== ARBRES DE DIAGNOSTIC ===================== */
+const TREES = {
+  mail: { t:"Problème de messagerie", d:"Outlook, envoi, réception, boîte partagée", start:"m1", n:{
+    m1:{q:"Le webmail (outlook.office.com) fonctionne-t-il avec ce compte ?", a:[["Oui, tout est normal en webmail","m2"],["Non, impossible de se connecter","m5"],["Oui, mais il manque des mails aussi en webmail","m6"]]},
+    m2:{q:"Que fait Outlook ?", a:[["Il ne s'ouvre pas / plante","m3"],["Il demande le mot de passe en boucle","=ol-mdp"],["Il s'ouvre mais ne synchronise pas","=ol-ost"],["Il manque une boîte partagée","=ol-partagee"]]},
+    m3:{q:"Outlook démarre-t-il en mode sans échec (outlook.exe /safe) ?", a:[["Oui","=ol-safe"],["Non","m4"]]},
+    m4:{q:"Word et Excel ont-ils aussi des problèmes ?", a:[["Oui","=off-repair"],["Non, seulement Outlook","=ol-profil"]]},
+    m5:{q:"Quel est le code d'erreur dans les journaux de connexion Entra ?", a:[["Je ne sais pas encore","=cpt-login"],["50053 (verrouillé)","=cpt-login"],["Connexions depuis l'étranger","=cpt-compromis"],["MFA impossible (nouveau téléphone)","=cpt-mfa"]]},
+    m6:{q:"Le message a-t-il été vu dans le suivi des messages ?", a:[["Oui, en quarantaine ou indésirable","=ol-quarantaine"],["Non, jamais arrivé","=ol-quarantaine"],["La boîte est pleine","=ol-quota"]]}
+  }},
+  acces: { t:"Pas d'accès à un fichier ou une appli", d:"Lecteur réseau, SharePoint, Genapi, TSE", start:"a1", n:{
+    a1:{q:"Où se trouve la ressource ?", a:[["Sur le serveur local (lecteur réseau, Genapi local)","a2"],["SharePoint / OneDrive / Teams","a4"],["Dans un cloud éditeur (Genapi cloud, Fiducial)","a5"],["Sur le TSE","a6"]]},
+    a2:{q:"Le serveur répond-il à son nom ? (ping NOMSERVEUR)", a:[["Non, mais son IP répond","=dns-client"],["Rien ne répond","=dns-internet"],["Oui, il répond","a3"]]},
+    a3:{q:"Combien d'utilisateurs sont touchés ?", a:[["Un seul : lecteur absent","=ad-gpo"],["Toute l'étude, sur Genapi","=nt-inot"],["Un seul, sur Genapi","=nt-word-addin"]]},
+    a4:{q:"Quel est le symptôme ?", a:[["Accès refusé","=sp-acces"],["Ne se synchronise pas","=od-sync"],["Fichiers disparus","=od-restore"],["Équipe Teams invisible","=teams-fichiers"]]},
+    a5:{q:"Quel cloud ?", a:[["Genapi","=nt-cloud"],["Fiducial","=fid-acces"]]},
+    a6:{q:"Quel est le symptôme ?", a:[["Session bloquée / écran noir","=tse-session"],["Profil temporaire","=tse-profil"],["Message de licence RDS","=tse-lic"],["Lent pour tout le monde","=tse-lent"]]}
+  }},
+  login: { t:"L'utilisateur ne peut pas se connecter", d:"Windows, AD, M365, VPN", start:"l1", n:{
+    l1:{q:"Où la connexion échoue-t-elle ?", a:[["Ouverture de session Windows / TSE","l2"],["Microsoft 365 (Outlook, Teams, portail)","=cpt-login"],["VPN depuis la maison","=pf-vpn"]]},
+    l2:{q:"Quel message ?", a:[["Compte verrouillé","=ad-lock"],["Mot de passe expiré / incorrect","=ad-mdp"],["Relation d'approbation échouée","=ad-trust"],["Profil temporaire","=tse-profil"]]}
+  }},
+  reseau: { t:"Réseau, Internet, prise en main", d:"pfSense, DNS, TeamViewer", start:"r1", n:{
+    r1:{q:"Qui est touché ?", a:[["Tout le site, plus d'Internet","=pf-wan"],["Un site ou service précis seulement","=pf-logs"],["Je n'arrive pas à prendre la main","r2"]]},
+    r2:{q:"Que montre TeamViewer ?", a:[["Non prêt / pas d'ID","=tv-pret"],["Écran noir ou UAC non cliquable","=tv-noir"]]}
+  }}
+};
+
+/* ===================== QUIZ ===================== */
+const QUIZ = [
+{cat:"outlook", s:"Maître Lefèvre : Outlook reste bloqué sur « Chargement du profil ». Le webmail fonctionne parfaitement.", c:["Réinstaller Office","Lancer outlook.exe /safe pour tester un complément","Réinitialiser le mot de passe M365","Supprimer la boîte et la recréer"], a:1, e:"Le webmail marche : la boîte est saine. On isole d'abord un complément avec le mode sans échec, puis on recrée le profil si besoin.", f:"ol-safe"},
+{cat:"outlook", s:"Une clerc a un fichier .ost de 38 Go et Outlook signale des erreurs de données.", c:["Lancer SCANPST sur l'OST","Renommer l'OST et laisser Outlook resynchroniser","Supprimer le compte dans Exchange","Copier l'OST sur le serveur"], a:1, e:"L'OST est un cache : il se reconstruit depuis Exchange. SCANPST est pour les PST.", f:"ol-ost"},
+{cat:"outlook", s:"« Ma boîte est pleine, je veux garder tous mes anciens mails. » Licence Business Standard.", c:["Exporter en PST sur le lecteur réseau","Activer l'archive en ligne Exchange","Acheter une licence E5","Supprimer les mails de plus d'un an"], a:1, e:"L'archive en ligne est incluse dans les offres Business. Un PST sur un lecteur réseau n'est pas supporté et se corrompt.", f:"ol-archive"},
+{cat:"outlook", s:"La secrétaire envoie depuis la boîte accueil@, mais les mails envoyés atterrissent dans ses propres Éléments envoyés.", c:["Recréer son profil Outlook","Activer MessageCopyForSentAsEnabled sur la boîte partagée","Lui donner une licence en plus","Créer une règle Outlook"], a:1, e:"C'est le comportement par défaut. Set-Mailbox -MessageCopyForSentAsEnabled $true copie les envois dans la boîte partagée.", f:"ol-partagee"},
+{cat:"outlook", s:"Un client dit avoir envoyé un acte hier, l'utilisateur ne l'a pas reçu. Rien dans les indésirables.", c:["Recréer le profil Outlook","Faire un suivi des messages dans Exchange admin","Redémarrer le serveur","Augmenter le quota"], a:1, e:"Le suivi des messages dit si le mail est arrivé, a été mis en quarantaine ou n'est jamais parti.", f:"ol-quarantaine"},
+{cat:"office", s:"Sur le TSE, Word affiche « Produit sans licence » pour tous les utilisateurs. Ils ont Business Standard.", c:["Réparer Office en ligne","Business Standard n'autorise pas l'activation d'ordinateur partagé : changer de licence","Réinstaller Windows","Supprimer les profils"], a:1, e:"Microsoft 365 Apps sur RDS exige l'activation d'ordinateur partagé, autorisée par Business Premium, Apps for enterprise, E3/E5, pas par Business Standard.", f:"off-activation"},
+{cat:"office", s:"Word, Excel et Outlook plantent tous depuis ce matin sur un poste.", c:["Recréer le profil Outlook","Réparation rapide d'Office","Vider le cache Teams","Réinitialiser OneDrive"], a:1, e:"Plusieurs applis touchées = installation Office. Réparation rapide d'abord, puis en ligne.", f:"off-repair"},
+{cat:"compte", s:"Après un changement de mot de passe, Outlook et Teams redemandent le mot de passe en boucle. Le webmail accepte le nouveau.", c:["Réinitialiser la MFA","Supprimer les identifiants MicrosoftOffice16 dans le Gestionnaire d'identification","Réinstaller Teams","Désactiver le compte"], a:1, e:"Le compte est sain (webmail OK) : ce sont les jetons en cache sur le poste.", f:"ol-mdp"},
+{cat:"compte", s:"Un appelant se présente comme le notaire et demande de réinitialiser sa MFA, « je suis en déplacement, c'est urgent ».", c:["Réinitialiser immédiatement, c'est un client","Vérifier son identité par un rappel sur un numéro connu ou via l'étude avant d'agir","Lui donner un nouveau mot de passe par téléphone","Désactiver la MFA du tenant"], a:1, e:"L'urgence et l'autorité sont les deux leviers classiques de l'ingénierie sociale. On vérifie toujours.", f:"cpt-mfa"},
+{cat:"compte", s:"Des partenaires reçoivent de l'utilisateur un mail « nouveau RIB ». Une règle transfère tout vers une adresse Gmail.", c:["Supprimer la règle et clore le ticket","Bloquer, réinitialiser le mot de passe, révoquer les sessions, nettoyer règles/MFA et prévenir l'étude","Changer seulement le mot de passe","Attendre de voir si ça recommence"], a:1, e:"Compte compromis. Changer le mot de passe seul laisse les sessions actives. Dans le notariat, le risque de fraude au virement impose de prévenir l'étude immédiatement.", f:"cpt-compromis"},
+{cat:"compte", s:"Journal de connexion Entra : code 53003.", c:["Mot de passe incorrect","Bloqué par une stratégie d'accès conditionnel","Compte désactivé","Licence manquante"], a:1, e:"53003 = accès conditionnel. L'onglet Accès conditionnel du journal indique la stratégie en cause.", f:"cpt-login"},
+{cat:"ad", s:"Un compte AD se reverrouille 10 minutes après chaque déblocage.", c:["Augmenter le seuil de verrouillage du domaine","Chercher l'événement 4740 sur le PDC pour trouver la machine source","Recréer le compte","Désactiver la stratégie de mot de passe"], a:1, e:"Un ancien mot de passe est mémorisé quelque part (téléphone, session TSE, lecteur mappé). L'événement 4740 donne l'ordinateur appelant.", f:"ad-lock"},
+{cat:"ad", s:"Au démarrage : « La relation d'approbation entre cette station de travail et le domaine principal a échoué ».", c:["Réinstaller Windows","Se connecter en admin local et lancer Test-ComputerSecureChannel -Repair","Réinitialiser le mot de passe de l'utilisateur","Supprimer le DC"], a:1, e:"C'est le compte ordinateur qui est désynchronisé, pas l'utilisateur. La réparation du canal sécurisé évite de sortir du domaine.", f:"ad-trust"},
+{cat:"ad", s:"Le client est synchronisé avec Entra Connect. Tu réinitialises le mot de passe dans le portail M365, rien ne marche sur le poste.", c:["C'est normal, il faut changer le mot de passe dans l'AD local","Il faut attendre 24 h","Il faut une licence en plus","Recréer le profil Windows"], a:0, e:"En synchro AD, l'AD local fait foi. Changer dans l'AD, puis Start-ADSyncSyncCycle -PolicyType Delta si on veut accélérer.", f:"ad-mdp"},
+{cat:"dns", s:"Les lecteurs réseau sont rouges sur un poste. ping 192.168.1.10 répond, ping SRV-AD01 non.", c:["Redémarrer le serveur","Vérifier que le DNS du poste est le contrôleur de domaine (ipconfig /all)","Réinstaller la carte réseau","Changer le câble"], a:1, e:"L'IP répond mais pas le nom : c'est le DNS. Le poste utilise probablement la box comme DNS.", f:"dns-client"},
+{cat:"dns", s:"Tout le site : ping 8.8.8.8 répond, mais aucun site web ne s'ouvre.", c:["Lien opérateur coupé","Problème DNS (redirecteurs du DC ou DNS Resolver pfSense)","Panne Microsoft 365","Câble du poste"], a:1, e:"Si on joint une IP Internet mais pas les noms, c'est la résolution DNS.", f:"dns-internet"},
+{cat:"tse", s:"Un utilisateur arrive sur le TSE avec « profil temporaire ».", c:["Lui créer un nouveau compte AD","Fermer sa session et corriger la clé SID en .bak dans ProfileList","Redémarrer le serveur en pleine journée","Réinstaller Office"], a:1, e:"Cas classique de clé ProfileList dupliquée. Exporter la clé, corriger, faire reconnecter.", f:"tse-profil"},
+{cat:"tse", s:"L'utilisateur ne peut pas rouvrir le TSE : « session déjà ouverte », écran noir.", c:["quser puis logoff de sa session","Redémarrer le serveur","Réinitialiser son mot de passe","Recréer son profil"], a:0, e:"Fermer la session bloquée suffit dans la plupart des cas, sans gêner les autres utilisateurs.", f:"tse-session"},
+{cat:"tse", s:"Message « Aucun serveur de licences Bureau à distance n'est disponible ».", c:["Réparer Office","Lancer lsdiag.msc pour voir le serveur et le mode de licence","Vider le cache DNS","Mettre à jour TeamViewer"], a:1, e:"Le Diagnostic des licences Bureau à distance indique si le serveur de licences est configuré et joignable, et si la période de grâce est finie.", f:"tse-lic"},
+{cat:"notaire", s:"Toute l'étude : Genapi ne se lance plus depuis ce matin. Les mails et Internet fonctionnent.", c:["Réinstaller Genapi sur chaque poste","Vérifier que le serveur répond et que ses services Genapi tournent, puis ouvrir un ticket éditeur si besoin","Réparer Office","Réinitialiser les mots de passe"], a:1, e:"Toute l'étude touchée = côté serveur. Vérifier serveur et services, ne pas toucher à la base, escalader à Genapi si ça ne repart pas.", f:"nt-inot"},
+{cat:"notaire", s:"Le ruban Genapi a disparu de Word chez une clerc après un plantage de Word.", c:["Réinstaller Windows","Réactiver le complément dans Options › Compléments › Éléments désactivés","Recréer son compte M365","Vider le cache Teams"], a:1, e:"Word désactive les compléments qui l'ont fait planter. On les réactive dans les éléments désactivés.", f:"nt-word-addin"},
+{cat:"notaire", s:"La clé REAL n'est pas reconnue, mais uniquement quand le notaire travaille sur le TSE.", c:["Commander une nouvelle clé","Vérifier la redirection des cartes à puce dans la connexion Bureau à distance","Réinstaller Office","Changer le mot de passe AD"], a:1, e:"En TSE, le périphérique doit être redirigé (Ressources locales › Cartes à puce).", f:"nt-real"},
+{cat:"pfsense", s:"Un collaborateur en télétravail est connecté au VPN mais n'accède à rien. Sa box et le bureau sont en 192.168.1.0/24.", c:["Recréer son certificat","Conflit de sous-réseau : tester via le partage de connexion du téléphone","Redémarrer le pfSense","Ouvrir le port 3389"], a:1, e:"Même réseau des deux côtés : le PC envoie le trafic sur sa box locale au lieu du tunnel.", f:"pf-vpn"},
+{cat:"pfsense", s:"Le client demande d'ouvrir le port 3389 pour se connecter au TSE depuis chez lui.", c:["Ouvrir le port, c'est rapide","Refuser et proposer le VPN (ou une passerelle RD)","Ouvrir le port uniquement le week-end","Changer le port en 3390 et ouvrir"], a:1, e:"RDP exposé est la première porte d'entrée des rançongiciels, même sur un port changé.", f:"pf-nat"},
+{cat:"tv", s:"En prise en main TeamViewer, tu ne peux pas cliquer sur la fenêtre UAC (écran grisé).", c:["TeamViewer est lancé en QuickSupport : faire valider l'UAC par l'utilisateur ou installer TeamViewer complet","Désactiver l'UAC définitivement","Redémarrer en mode sans échec","Changer d'ID TeamViewer"], a:0, e:"Sans le service TeamViewer, le bureau sécurisé n'est pas accessible. Ne jamais désactiver l'UAC.", f:"tv-noir"},
+{cat:"onedrive", s:"OneDrive affiche une croix rouge : « Le chemin d'accès est trop long ».", c:["Désinstaller OneDrive","Raccourcir les noms de dossiers ou le chemin du fichier signalé","Augmenter le quota","Désactiver Fichiers à la demande"], a:1, e:"Le chemin complet ne doit pas dépasser 400 caractères. Fréquent dans les arborescences de dossiers clients.", f:"od-sync"},
+{cat:"onedrive", s:"Des fichiers d'un dossier SharePoint ont tous une extension « .locked » ce matin.", c:["Restaurer depuis la corbeille","Isoler immédiatement le poste suspect du réseau et escalader (rançongiciel probable)","Renommer les fichiers","Réinitialiser OneDrive"], a:1, e:"Extensions changées en masse = chiffrement. Isoler d'abord, restaurer ensuite (Restaurer votre OneDrive / bibliothèque).", f:"od-restore"},
+{cat:"poste", s:"Le copieur n'envoie plus les scans par mail : erreur d'authentification SMTP, rien n'a changé chez le client.", c:["Remettre l'ancien mot de passe","Retrait progressif de SMTP AUTH basique : passer par un connecteur de relais par IP","Désactiver la MFA du tenant","Réinstaller le pilote"], a:1, e:"La solution durable ne dépend plus de l'authentification basique : connecteur IP ou relais.", f:"pc-scan"},
+{cat:"teams", s:"Teams (nouveau) affiche une fenêtre blanche. teams.microsoft.com fonctionne.", c:["Réinitialiser l'appli Teams dans Paramètres › Applications","Retirer la licence Teams","Recréer le compte","Réparer Windows"], a:0, e:"Le web marche : c'est le cache local. Réinitialiser l'appli ou vider MSTeams_8wekyb3d8bbwe.", f:"teams-cache"}
+];
+
+/* ===================== VEILLE ===================== */
+const NEWS = [
+  {d:"13 oct. 2026", tag:["todo","À planifier"], t:"Patch Tuesday d'octobre", p:"Mises à jour Microsoft publiées demain. Vérifier les problèmes connus sur la page Windows release health avant de valider sur les TSE et DC.", src:"https://learn.microsoft.com/fr-fr/windows/release-health/"},
+  {d:"13 oct. 2026", tag:["todo","Cycle de vie"], t:"Windows Server 2022 passe en support étendu", p:"Fin du support standard : plus de nouvelles fonctionnalités, seulement les correctifs de sécurité. Les serveurs 2016 et plus anciens deviennent prioritaires dans les plans de renouvellement.", src:"https://learn.microsoft.com/fr-fr/lifecycle/products/windows-server-2022"},
+  {d:"13 oct. 2026", tag:["crit","Cycle de vie"], t:"Fin de la 1re année d'ESU Windows 10", p:"L'ESU grand public s'arrête et l'ESU entreprise doit être renouvelée (et payée) pour une 2e année. Un Windows 10 non couvert ne reçoit plus de correctifs : inventorier ceux qui restent chez les clients.", src:"https://learn.microsoft.com/fr-fr/windows/whats-new/extended-security-updates"},
+  {d:"Octobre 2026", tag:["todo","Exchange Online"], t:"Retrait d'Exchange Web Services (EWS)", p:"Microsoft a annoncé le début de la désactivation d'EWS dans Exchange Online à partir d'octobre 2026. Les vieilles applis qui lisent la messagerie via EWS (synchros d'agenda, connecteurs métier, anciens scanners) peuvent cesser de marcher. Date et périmètre à confirmer dans le Message Center.", src:"https://techcommunity.microsoft.com/t5/exchange-team-blog/bg-p/Exchange"},
+  {d:"Fin 2026", tag:["todo","Exchange Online"], t:"POP/IMAP : TLS 1.0 et 1.1 retirés", p:"Les connexions POP3/IMAP4 vers Exchange Online devront utiliser TLS 1.2 minimum. Concerne les vieux clients mail et certains copieurs. Source : synthèse tierce, à confirmer.", src:"https://changepilot.cloud/hubfs/Microsoft_365_ServiceDisruption_Digest_September_2026_Retirements.pdf?hsLang=en"},
+  {d:"Sept. 2026", tag:["crit","À vérifier"], t:"Régression RDS signalée après les mises à jour de septembre", p:"Des sources signalent des blocages des Services Bureau à distance sur plusieurs versions de Windows Server, corrigés par un Known Issue Rollback déployé par GPO. Si des TSE clients se figent depuis septembre, vérifier ce point en premier.", src:"https://ayinedjimi-consultants.fr/patch-tuesday/octobre-2026"},
+  {d:"Oct. 2026", tag:["info","Admin M365"], t:"L'appli Admin disparaît de Teams/Outlook", p:"L'application Admin pour petites entreprises est retirée (MC1462922). Passer par le centre d'administration Microsoft 365.", src:"https://mc.merill.net/message/MC1462922"}
+];
+const SOURCES = [
+  {h:"Sécurité (à lire chaque jour)", l:[
+    ["CERT-FR (ANSSI) : alertes et avis","https://www.cert.ssi.gouv.fr/","Alertes critiques en français, avec produits concernés"],
+    ["Cybermalveillance.gouv.fr","https://www.cybermalveillance.gouv.fr/","Arnaques en cours, fiches à donner aux clients"],
+    ["BleepingComputer","https://www.bleepingcomputer.com/","Rançongiciels, failles exploitées, anglais"],
+    ["IT-Connect : actualités","https://www.it-connect.fr/actualites/","Synthèses Windows, M365 et sécurité en français"]]},
+  {h:"Microsoft", l:[
+    ["Message Center (centre d'admin M365)","https://admin.microsoft.com/#/MessageCenter","Les changements qui arrivent sur vos tenants"],
+    ["Message Center lisible sans connexion","https://mc.merill.net/","Miroir public, recherche par MC"],
+    ["Windows release health","https://learn.microsoft.com/fr-fr/windows/release-health/","Problèmes connus après les mises à jour"],
+    ["Feuille de route Microsoft 365","https://www.microsoft.com/microsoft-365/roadmap","Fonctions à venir"],
+    ["MSRC : guide des mises à jour","https://msrc.microsoft.com/update-guide","Détail des CVE du Patch Tuesday"]]},
+  {h:"Métier et équipements", l:[
+    ["Netgate (pfSense) : blog et versions","https://www.netgate.com/blog","Nouvelles versions et failles pfSense"],
+    ["TeamViewer : bulletins de sécurité","https://www.teamviewer.com/fr/resources/trust-center/security-bulletins/","Failles et versions à mettre à jour"],
+    ["Genapi","https://www.genapi.fr/","Annonces éditeur, nouvelles versions"],
+    ["Notariat services / ADSN","https://www.adsn.notaires.fr/","Clé REAL, outils de la profession"]]}
+];
+const ROUTINE = [
+  ["jour","Chaque matin (10 min) : CERT-FR alertes, état des services M365, mails des éditeurs (Genapi, Fiducial)"],
+  ["jour2","Chaque matin : regarder s'il y a eu des appels identiques chez plusieurs clients la veille (signe d'un incident global)"],
+  ["sem","Chaque semaine : Message Center M365, filtrer « Action requise » et « Changement majeur »"],
+  ["sem2","Chaque semaine : versions pfSense et TeamViewer à jour chez les clients ?"],
+  ["mois","2e mardi du mois (Patch Tuesday) : lire les problèmes connus avant de laisser passer les mises à jour sur TSE et DC"],
+  ["mois2","Chaque mois : ajouter une fiche à ce carnet à partir d'un ticket marquant"]
+];
+
+/* ===================== ÉTAT & STOCKAGE ===================== */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("hl:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("hl:" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const S = {
+  view: "fiches", cat: "all", fiche: null, query: "",
+  done: new Set(store.get("done", [])),
+  quiz: store.get("quiz", { ok: 0, total: 0 }),
+  qcat: "all", qi: null, answered: false,
+  tree: "mail", node: null, trail: [],
+  routine: store.get("routine", {})
+};
+const byId = Object.fromEntries(FICHES.map(f => [f.id, f]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+function stat() {
+  const pct = S.quiz.total ? Math.round(100 * S.quiz.ok / S.quiz.total) : 0;
+  $("#stat").textContent = `${S.done.size}/${FICHES.length} fiches maîtrisées · quiz ${S.quiz.ok}/${S.quiz.total}${S.quiz.total ? " (" + pct + " %)" : ""}`;
+}
+
+/* ===================== NAVIGATION ===================== */
+function show(v) {
+  S.view = v;
+  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.v === v));
+  document.querySelectorAll("section.view").forEach(s => s.hidden = s.id !== "v-" + v);
+  store.set("view", v);
+  if (v === "fiches") renderFiches();
+  if (v === "diag") renderTree();
+  if (v === "quiz") renderQuiz();
+  if (v === "veille") renderVeille();
+}
+$("#tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(b.dataset.v); });
+
+function openFiche(id) { S.fiche = id; S.cat = "all"; S.query = ""; $("#q").value = ""; show("fiches"); window.scrollTo({ top: 0 }); }
+
+/* ===================== FICHES ===================== */
+function matches(f) {
+  if (S.cat !== "all" && f.cat !== S.cat) return false;
+  if (!S.query) return true;
+  const hay = norm([f.t, f.cause, ...(f.sym||[]), ...(f.diag||[]), ...(f.fix||[]), f.note||"", ...(f.cmd||[]).map(c => c.c + " " + c.l), CATS[f.cat]].join(" "));
+  return norm(S.query).split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+}
+function renderFiches() {
+  const counts = {};
+  FICHES.forEach(f => counts[f.cat] = (counts[f.cat] || 0) + 1);
+  $("#cats").innerHTML = `<button class="chip" data-c="all" aria-pressed="${S.cat==="all"}">Toutes<span class="n">${FICHES.length}</span></button>` +
+    Object.entries(CATS).map(([k, v]) => `<button class="chip" data-c="${k}" aria-pressed="${S.cat===k}">${esc(v)}<span class="n">${counts[k]||0}</span></button>`).join("");
+  const list = FICHES.filter(matches);
+  if (!list.find(f => f.id === S.fiche)) S.fiche = list[0] ? list[0].id : null;
+  $("#list").innerHTML = list.length ? list.map(f => `
+    <button class="item" data-id="${f.id}" aria-current="${f.id===S.fiche}">
+      <span class="t">${esc(f.t)}</span>
+      <span class="m"><span class="dot ${S.done.has(f.id)?"done":""}"></span>${esc(CATS[f.cat])} · N${f.niv}</span>
+    </button>`).join("") : `<p class="empty">Aucune fiche pour « ${esc(S.query)} ». Essaie un autre mot (ex : profil, verrouillé, VPN).</p>`;
+  renderFiche();
+}
+function renderFiche() {
+  const f = byId[S.fiche];
+  const el = $("#fiche");
+  if (!f) { el.innerHTML = `<p class="empty">Choisis une fiche dans la liste.</p>`; return; }
+  const lv = ["", "Hotline", "Droits admin", "Escalade probable"][f.niv];
+  el.innerHTML = `
+    <div class="eyebrow">${esc(CATS[f.cat])}<span class="lvl n${f.niv}">N${f.niv} · ${lv}</span></div>
+    <h2>${esc(f.t)}</h2>
+    <div class="block"><h3>Symptômes</h3><ul class="sym">${f.sym.map(s => `<li>${fmt(s)}</li>`).join("")}</ul></div>
+    <div class="block"><h3>Cause probable</h3><p>${fmt(f.cause)}</p></div>
+    <div class="block"><h3>Vérifier d'abord</h3><ul>${f.diag.map(s => `<li>${fmt(s)}</li>`).join("")}</ul></div>
+    <div class="block"><h3>Résolution</h3><ol class="fix">${f.fix.map(s => `<li>${fmt(s)}</li>`).join("")}</ol></div>
+    ${f.cmd ? `<div class="block"><h3>Commandes</h3>${f.cmd.map((c, i) => `
+      <div class="cmd"><div class="cmd-h"><span>${esc(c.l)}</span><button data-copy="${i}">Copier</button></div><pre>${esc(c.c)}</pre></div>`).join("")}</div>` : ""}
+    ${f.note ? `<div class="note"><b>Attention ·</b> ${fmt(f.note)}</div>` : ""}
+    ${f.rel ? `<div class="block"><h3>Fiches liées</h3><div class="related">${f.rel.filter(r => byId[r]).map(r => `<button data-go="${r}">${esc(byId[r].t)}</button>`).join("")}</div></div>` : ""}
+    <div class="actions">
+      <button class="btn ${S.done.has(f.id) ? "" : "primary"}" id="mark">${S.done.has(f.id) ? "Retirer de « maîtrisée »" : "Marquer comme maîtrisée"}</button>
+      <button class="btn" id="train">M'entraîner sur ce thème</button>
+    </div>`;
+}
+$("#cats").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) { S.cat = b.dataset.c; S.fiche = null; renderFiches(); } });
+$("#list").addEventListener("click", e => { const b = e.target.closest("[data-id]"); if (b) { S.fiche = b.dataset.id; renderFiches(); if (innerWidth < 820) $("#fiche").scrollIntoView({ behavior: "smooth" }); } });
+$("#fiche").addEventListener("click", e => {
+  const f = byId[S.fiche];
+  const cp = e.target.closest("[data-copy]");
+  if (cp) {
+    const txt = f.cmd[+cp.dataset.copy].c;
+    const done = () => { cp.textContent = "Copié"; setTimeout(() => cp.textContent = "Copier", 1400); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(cp.closest(".cmd").querySelector("pre")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent = "Sélectionné, Ctrl+C"; };
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+    return;
+  }
+  const go = e.target.closest("[data-go]");
+  if (go) { openFiche(go.dataset.go); return; }
+  if (e.target.id === "mark") {
+    S.done.has(f.id) ? S.done.delete(f.id) : S.done.add(f.id);
+    store.set("done", [...S.done]); stat(); renderFiches();
+  }
+  if (e.target.id === "train") { S.qcat = f.cat; S.qi = null; show("quiz"); }
+});
+$("#q").addEventListener("input", e => { S.query = e.target.value.trim(); if (S.view !== "fiches") show("fiches"); else renderFiches(); });
+
+/* ===================== DIAGNOSTIC ===================== */
+function renderTree() {
+  $("#trees").innerHTML = Object.entries(TREES).map(([k, t]) => `<button data-t="${k}" aria-pressed="${S.tree===k}"><b>${esc(t.t)}</b><span>${esc(t.d)}</span></button>`).join("");
+  const T = TREES[S.tree];
+  if (!S.node) S.node = T.start;
+  const trail = S.trail.length ? `<div class="trail">${S.trail.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : "";
+  if (S.node.startsWith("=")) {
+    const f = byId[S.node.slice(1)];
+    $("#tree").innerHTML = `${trail}<div class="verdict"><div class="eyebrow">Piste la plus probable</div><div class="q" style="margin:4px 0 8px">${esc(f.t)}</div><p style="margin:0 0 12px">${fmt(f.cause)}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-go="${f.id}">Ouvrir la fiche</button><button class="btn" data-reset>Recommencer</button></div></div>`;
+    return;
+  }
+  const n = T.n[S.node];
+  $("#tree").innerHTML = `${trail}<div class="q">${esc(n.q)}</div><div class="answers">${n.a.map((a, i) => `<button data-a="${i}">${esc(a[0])}</button>`).join("")}</div>
+    ${S.trail.length ? `<div style="margin-top:14px"><button class="btn" data-reset>Recommencer</button></div>` : ""}`;
+}
+$("#trees").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (b) { S.tree = b.dataset.t; S.node = null; S.trail = []; renderTree(); } });
+$("#tree").addEventListener("click", e => {
+  if (e.target.closest("[data-reset]")) { S.node = null; S.trail = []; renderTree(); return; }
+  const go = e.target.closest("[data-go]"); if (go) { openFiche(go.dataset.go); return; }
+  const a = e.target.closest("[data-a]"); if (!a) return;
+  const ans = TREES[S.tree].n[S.node].a[+a.dataset.a];
+  S.trail.push(ans[0]); S.node = ans[1]; renderTree();
+});
+
+/* ===================== QUIZ ===================== */
+function pool() { return QUIZ.map((q, i) => i).filter(i => S.qcat === "all" || QUIZ[i].cat === S.qcat); }
+function nextQ() {
+  const p = pool(); if (!p.length) { S.qi = null; return; }
+  let i; do { i = p[Math.floor(Math.random() * p.length)]; } while (p.length > 1 && i === S.qi);
+  S.qi = i; S.answered = false;
+}
+function renderQuiz() {
+  const counts = {}; QUIZ.forEach(q => counts[q.cat] = (counts[q.cat] || 0) + 1);
+  $("#qcats").innerHTML = `<button class="chip" data-c="all" aria-pressed="${S.qcat==="all"}">Tous<span class="n">${QUIZ.length}</span></button>` +
+    Object.keys(CATS).filter(k => counts[k]).map(k => `<button class="chip" data-c="${k}" aria-pressed="${S.qcat===k}">${esc(CATS[k])}<span class="n">${counts[k]}</span></button>`).join("");
+  const pct = S.quiz.total ? Math.round(100 * S.quiz.ok / S.quiz.total) : 0;
+  $("#score").innerHTML = `<span><b>${S.quiz.ok}</b>bonnes réponses</span><span><b>${S.quiz.total}</b>questions</span><span><b>${pct} %</b>réussite</span>`;
+  if (S.qi === null || (S.qcat !== "all" && QUIZ[S.qi].cat !== S.qcat)) nextQ();
+  if (S.qi === null) { $("#qcard").innerHTML = `<p class="empty">Pas encore de cas sur ce thème. Choisis « Tous ».</p>`; return; }
+  const q = QUIZ[S.qi];
+  $("#qcard").innerHTML = `
+    <div class="ticket">TICKET #${String(4100 + S.qi)} · ${esc(CATS[q.cat])}</div>
+    <p class="scenario">${fmt(q.s)}</p>
+    <div class="choices">${q.c.map((c, i) => `<button data-i="${i}">${fmt(c)}</button>`).join("")}</div>
+    <div id="qx"></div>`;
+}
+$("#qcats").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) { S.qcat = b.dataset.c; S.qi = null; renderQuiz(); } });
+$("#qcard").addEventListener("click", e => {
+  const go = e.target.closest("[data-go]"); if (go) { openFiche(go.dataset.go); return; }
+  if (e.target.id === "nextq") { nextQ(); renderQuiz(); return; }
+  const b = e.target.closest("[data-i]"); if (!b || S.answered) return;
+  S.answered = true;
+  const q = QUIZ[S.qi], i = +b.dataset.i, ok = i === q.a;
+  S.quiz.total++; if (ok) S.quiz.ok++; store.set("quiz", S.quiz); stat();
+  $("#qcard").querySelectorAll("[data-i]").forEach(x => { x.disabled = true; if (+x.dataset.i === q.a) x.classList.add("right"); });
+  if (!ok) b.classList.add("wrong");
+  $("#qx").innerHTML = `<div class="explain"><b>${ok ? "Bonne réponse." : "Pas tout à fait."}</b> ${fmt(q.e)}</div>
+    <div class="actions"><button class="btn primary" id="nextq">Cas suivant</button><button class="btn" data-go="${q.f}">Réviser la fiche</button></div>`;
+  const pct = Math.round(100 * S.quiz.ok / S.quiz.total);
+  $("#score").innerHTML = `<span><b>${S.quiz.ok}</b>bonnes réponses</span><span><b>${S.quiz.total}</b>questions</span><span><b>${pct} %</b>réussite</span>`;
+});
+
+/* ===================== VEILLE ===================== */
+function renderVeille() {
+  $("#news").innerHTML = NEWS.map(n => `
+    <div class="news-item">
+      <div class="d">${esc(n.d)} <span class="tag ${n.tag[0]}">${esc(n.tag[1])}</span></div>
+      <h3>${esc(n.t)}</h3>
+      <p>${fmt(n.p)}</p>
+      <a href="${esc(n.src)}" target="_blank" rel="noopener">Source</a>
+    </div>`).join("");
+  $("#sources").innerHTML = SOURCES.map(g => `<div class="card src"><h3>${esc(g.h)}</h3><ul>${g.l.map(l => `<li><a href="${esc(l[1])}" target="_blank" rel="noopener">${esc(l[0])}</a><span>${esc(l[2])}</span></li>`).join("")}</ul></div>`).join("");
+  $("#routine").innerHTML = ROUTINE.map(([k, t]) => `<label><input type="checkbox" id="r-${k}" data-k="${k}" ${S.routine[k] ? "checked" : ""}> ${esc(t)}</label>`).join("") +
+    `<p style="font-size:.82rem;color:var(--muted);margin:8px 0 0">Les cases cochées sont mémorisées dans ce navigateur.</p>`;
+}
+$("#routine").addEventListener("change", e => { const k = e.target.dataset.k; if (k) { S.routine[k] = e.target.checked; store.set("routine", S.routine); } });
+
+/* ===================== DÉMARRAGE ===================== */
+stat();
+const hash = location.hash.slice(1);
+show(["methode","fiches","diag","quiz","veille"].includes(hash) ? hash : store.get("view", "methode"));
+</script>
