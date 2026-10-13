@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout : poste de hotline. Barre d'outils en haut, onglets, liste à gauche + fiche à droite (empilées sur mobile). */
+/* Layout : poste de hotline. Accueil = grille de thèmes cliquables › liste de symptômes › fiche avec étapes à cocher. */
 :root {
   --bg: #eef2f1;
   --surface: #ffffff;
@@ -25,7 +25,7 @@
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
-  --r: 8px;
+  --r: 10px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -45,73 +45,98 @@
 }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 56px; }
 h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
-code, pre, .mono { font-family: var(--f-mono); }
+code, pre { font-family: var(--f-mono); }
 a { color: var(--accent); }
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* En-tête */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
-.top-in { max-width: 1240px; margin: 0 auto; padding: 12px 16px 0; display: grid; gap: 10px; }
-.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.brand h1 { font-size: 1.55rem; font-weight: 750; letter-spacing: -0.01em; }
-.brand .sub { color: var(--muted); font-size: .88rem; }
+.top-in { max-width: 1100px; margin: 0 auto; padding: 12px 16px 0; display: grid; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand h1 { font-size: 1.45rem; font-weight: 750; letter-spacing: -0.01em; }
+.brand h1 button { background: none; border: 0; padding: 0; font: inherit; }
 .brand .stat { margin-left: auto; font-size: .82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-.search { display: flex; gap: 8px; }
-.search input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--ink); font: inherit; }
+.search input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); color: var(--ink); font: inherit; font-size: 1rem; }
 .tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .tabs button { background: none; border: 0; padding: 9px 14px 11px; font-weight: 500; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; }
 .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
 
-section.view { padding-top: 20px; }
+.h2 { font-size: 1.4rem; font-weight: 750; }
 .lead { color: var(--muted); max-width: 68ch; margin: 6px 0 18px; }
-.h2 { font-size: 1.35rem; font-weight: 750; }
+.empty { color: var(--muted); padding: 24px 0; }
+.back { background: none; border: 0; color: var(--accent); font-weight: 600; padding: 4px 0; margin-bottom: 10px; display: inline-flex; gap: 6px; align-items: center; }
+.back:hover { text-decoration: underline; }
 
-/* Chips */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.chip { border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 999px; font-size: .85rem; }
-.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.chip .n { opacity: .7; font-variant-numeric: tabular-nums; margin-left: 4px; }
+/* Accueil : thèmes */
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.tile { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 16px 14px; display: grid; gap: 6px; align-content: start; }
+.tile:hover { border-color: var(--accent); }
+.tile .tt { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.tile b { font-family: var(--f-display); font-size: 1.12rem; font-weight: 600; line-height: 1.2; }
+.tile .n { font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tile .d { font-size: .86rem; color: var(--muted); }
+.tile .prog { height: 4px; background: var(--sunk); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.tile .prog i { display: block; height: 100%; background: var(--ok); }
+.quick { margin-top: 26px; }
+.quick h3 { font-family: var(--f-body); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 8px; }
+.quick .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { border: 1px solid var(--line); background: var(--surface); padding: 7px 13px; border-radius: 999px; font-size: .9rem; }
+.pill:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Fiches : liste + détail */
-.split { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 18px; align-items: start; }
-.list { display: grid; gap: 4px; max-height: calc(100vh - 230px); overflow-y: auto; padding-right: 4px; position: sticky; top: 170px; }
-.item { text-align: left; border: 1px solid transparent; background: none; padding: 9px 11px; border-radius: var(--r); display: grid; gap: 2px; }
-.item:hover { background: var(--sunk); }
-.item[aria-current="true"] { background: var(--surface); border-color: var(--line); }
-.item .t { font-weight: 600; font-size: .93rem; line-height: 1.3; }
-.item .m { font-size: .76rem; color: var(--muted); display: flex; gap: 8px; align-items: center; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); display: inline-block; }
-.dot.done { background: var(--ok); }
-
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; min-width: 0; }
-.fiche h2 { font-size: 1.5rem; font-weight: 750; margin: 4px 0 6px; }
-.eyebrow { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 600; }
-.lvl { display: inline-block; font-size: .72rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; margin-left: 6px; vertical-align: 1px; }
+/* Liste de symptômes */
+.symlist { display: grid; gap: 8px; }
+.sy { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 13px 16px; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; }
+.sy:hover { border-color: var(--accent); }
+.sy .u { font-weight: 600; font-size: 1.02rem; }
+.sy .t2 { font-size: .84rem; color: var(--muted); grid-column: 1; }
+.sy .side { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 8px; align-items: center; }
+.sy .arrow { color: var(--accent); font-size: 1.2rem; }
+.lvl { display: inline-block; font-size: .72rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 .lvl.n1 { background: var(--ok-soft); color: var(--ok); }
 .lvl.n2 { background: var(--warn-soft); color: var(--warn); }
 .lvl.n3 { background: var(--bad-soft); color: var(--bad); }
-.block { margin-top: 18px; }
-.block h3 { font-family: var(--f-body); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
-.block ul, .block ol { margin: 0; padding-left: 1.3em; display: grid; gap: 5px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); display: inline-block; }
+
+/* Fiche */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; min-width: 0; }
+.fiche h2 { font-size: 1.6rem; font-weight: 750; margin: 6px 0 4px; }
+.fiche .t2 { color: var(--muted); margin: 0; }
+.eyebrow { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.block { margin-top: 20px; }
+.block h3 { font-family: var(--f-body); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
+.block h3 .count { font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; }
+.block ul { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
 .block p { margin: 0; max-width: 72ch; }
 .sym li::marker { color: var(--bad); }
-.fix li::marker { color: var(--accent); font-weight: 600; }
+.checks { display: grid; gap: 6px; }
+.ck { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; text-align: left; background: var(--sunk); border: 1px solid transparent; border-radius: 8px; padding: 10px 12px; }
+.ck:hover { border-color: var(--line); }
+.ck .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--muted); display: grid; place-items: center; font-size: .8rem; font-weight: 700; color: var(--muted); font-family: var(--f-mono); margin-top: 1px; }
+.ck.on { background: var(--ok-soft); }
+.ck.on .box { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.ck.on .txt { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--ok); }
 :not(pre) > code { background: var(--sunk); padding: 1px 5px; border-radius: 4px; font-size: .86em; overflow-wrap: anywhere; }
-.cmd { margin-top: 8px; border-radius: var(--r); overflow: hidden; background: var(--code-bg); }
-.cmd-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px; font-size: .78rem; color: var(--code-ink); opacity: .85; border-bottom: 1px solid rgba(255,255,255,.08); }
-.cmd-h button { background: none; border: 1px solid rgba(255,255,255,.25); color: var(--code-ink); border-radius: 5px; padding: 2px 8px; font-size: .74rem; }
+.ck :not(pre) > code { background: var(--surface); }
+.cmd { margin-top: 8px; border-radius: 8px; overflow: hidden; background: var(--code-bg); }
+.cmd-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 10px; font-size: .78rem; color: var(--code-ink); border-bottom: 1px solid rgba(255,255,255,.08); }
+.cmd-h button { background: none; border: 1px solid rgba(255,255,255,.3); color: var(--code-ink); border-radius: 5px; padding: 3px 10px; font-size: .76rem; flex-shrink: 0; }
 .cmd pre { margin: 0; padding: 10px 12px; color: var(--code-ink); font-size: .84rem; overflow-x: auto; white-space: pre; }
-.note { margin-top: 18px; padding: 12px 14px; border-radius: var(--r); background: var(--warn-soft); color: var(--ink); font-size: .92rem; }
+.note { margin-top: 18px; padding: 12px 14px; border-radius: 8px; background: var(--warn-soft); font-size: .92rem; }
 .note b { color: var(--warn); }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
-.btn { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: var(--r); font-weight: 500; }
+.outcome { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 12px; }
+.outcome .q { font-family: var(--f-display); font-size: 1.1rem; font-weight: 600; }
+.outcome .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 9px 15px; border-radius: 8px; font-weight: 500; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.btn:hover { filter: brightness(.97); }
-.related { display: flex; flex-wrap: wrap; gap: 6px; }
-.related button { border: 1px dashed var(--line); background: none; padding: 4px 10px; border-radius: 999px; font-size: .84rem; color: var(--accent); }
+.btn.good { background: var(--ok); color: var(--surface); border-color: var(--ok); }
+.btn:hover { filter: brightness(.96); }
+.next { display: grid; gap: 6px; }
+.next button { text-align: left; background: var(--accent-soft); border: 0; border-radius: 8px; padding: 10px 14px; font-weight: 500; }
+.next button span { color: var(--muted); font-weight: 400; font-size: .86rem; }
+.msg { padding: 12px 14px; border-radius: 8px; background: var(--ok-soft); }
 
 /* Méthode */
 .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; counter-reset: s; }
@@ -127,30 +152,36 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
 .tw { overflow-x: auto; }
 
 /* Diagnostic */
-.tree-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.tree-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 18px; }
 .tree-pick button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; }
 .tree-pick button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-.tree-pick b { display: block; font-family: var(--f-display); font-size: 1.05rem; }
+.tree-pick b { display: block; font-family: var(--f-display); font-size: 1.05rem; font-weight: 600; }
 .tree-pick span { font-size: .84rem; color: var(--muted); }
 .trail { display: flex; flex-wrap: wrap; gap: 6px; font-size: .82rem; color: var(--muted); margin-bottom: 12px; }
 .trail span::after { content: " ›"; }
-.q { font-family: var(--f-display); font-size: 1.3rem; font-weight: 600; margin-bottom: 14px; }
+.qq { font-family: var(--f-display); font-size: 1.3rem; font-weight: 600; margin-bottom: 14px; }
 .answers { display: grid; gap: 8px; }
-.answers button { text-align: left; background: var(--sunk); border: 1px solid var(--line); padding: 11px 14px; border-radius: var(--r); font-weight: 500; }
+.answers button { text-align: left; background: var(--sunk); border: 1px solid var(--line); padding: 12px 14px; border-radius: 8px; font-weight: 500; }
 .answers button:hover { border-color: var(--accent); }
-.verdict { background: var(--accent-soft); border-radius: var(--r); padding: 14px 16px; }
+.verdict { background: var(--accent-soft); border-radius: 8px; padding: 14px 16px; }
 
 /* Entraînement */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 5px 11px; border-radius: 999px; font-size: .85rem; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip .n { opacity: .7; font-variant-numeric: tabular-nums; margin-left: 4px; }
 .score { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; font-size: .9rem; color: var(--muted); }
 .score b { font-family: var(--f-display); font-size: 1.4rem; color: var(--ink); font-variant-numeric: tabular-nums; margin-right: 4px; }
 .ticket { font-family: var(--f-mono); font-size: .8rem; color: var(--muted); margin-bottom: 8px; }
 .scenario { font-size: 1.08rem; max-width: 70ch; margin: 0 0 16px; }
 .choices { display: grid; gap: 8px; }
-.choices button { text-align: left; border: 1px solid var(--line); background: var(--surface); padding: 11px 14px; border-radius: var(--r); }
+.choices button { text-align: left; border: 1px solid var(--line); background: var(--surface); padding: 12px 14px; border-radius: 8px; }
+.choices button:hover:not(:disabled) { border-color: var(--accent); }
 .choices button.right { background: var(--ok-soft); border-color: var(--ok); }
 .choices button.wrong { background: var(--bad-soft); border-color: var(--bad); }
 .choices button:disabled { cursor: default; }
-.explain { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--sunk); border-radius: 0 var(--r) var(--r) 0; }
+.explain { margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--accent); background: var(--sunk); border-radius: 0 8px 8px 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
 /* Veille */
 .veille-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
@@ -159,7 +190,7 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
 .news-item .d { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
 .news-item h3 { font-family: var(--f-body); font-size: 1rem; font-weight: 600; }
 .news-item p { margin: 0; font-size: .92rem; }
-.tag { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 999px; font-weight: 600; }
+.tag { display: inline-block; font-size: .72rem; padding: 1px 7px; border-radius: 999px; font-weight: 600; font-family: var(--f-body); }
 .tag.crit { background: var(--bad-soft); color: var(--bad); }
 .tag.todo { background: var(--warn-soft); color: var(--warn); }
 .tag.info { background: var(--accent-soft); color: var(--accent); }
@@ -169,61 +200,60 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
 .src li span { display: block; color: var(--muted); font-size: .82rem; }
 .routine label { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; font-size: .92rem; }
 .routine input { margin-top: 4px; accent-color: var(--accent); }
-.empty { color: var(--muted); padding: 30px 0; }
 
-@media (max-width: 820px) {
-  .split { grid-template-columns: minmax(0, 1fr); }
-  .list { position: static; max-height: 260px; border: 1px solid var(--line); border-radius: var(--r); padding: 6px; background: var(--surface); }
+@media (max-width: 640px) {
   .card { padding: 16px; }
   .brand .stat { margin-left: 0; width: 100%; }
+  .sy { grid-template-columns: 1fr; }
+  .sy .side { grid-row: auto; grid-column: 1; }
+  .sy .arrow { display: none; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .item, .chip, .btn, .answers button, .choices button { transition: background .15s, border-color .15s; }
+  .tile, .sy, .ck, .btn, .pill, .answers button, .choices button { transition: background .15s, border-color .15s; }
 }
 </style>
 
 <header class="top">
   <div class="top-in">
     <div class="brand">
-      <h1>Carnet Hotline</h1>
-      <span class="sub">M365 · AD/DNS · TSE · Genapi · Fiducial · pfSense · TeamViewer</span>
+      <h1><button id="home-link" title="Revenir à l'accueil">Carnet Hotline</button></h1>
       <span class="stat" id="stat"></span>
     </div>
     <div class="search">
-      <input id="q" type="search" placeholder="Symptôme, message d'erreur, mot-clé… (ex : « mot de passe en boucle », OST, 50053)" autocomplete="off">
+      <input id="q" type="search" placeholder="Tape ce que dit l'utilisateur : « plus d'internet », « lecteur », « OCR », « verrouillé »…" autocomplete="off">
     </div>
     <nav class="tabs" role="tablist" id="tabs">
-      <button role="tab" data-v="methode">Méthode d'appel</button>
-      <button role="tab" data-v="fiches">Fiches de dépannage</button>
+      <button role="tab" data-v="home">Dépanner</button>
       <button role="tab" data-v="diag">Diagnostic guidé</button>
       <button role="tab" data-v="quiz">Entraînement</button>
       <button role="tab" data-v="veille">Veille</button>
+      <button role="tab" data-v="methode">Méthode d'appel</button>
     </nav>
   </div>
 </header>
 
 <main class="wrap">
-  <!-- MÉTHODE -->
+  <section class="view" id="v-home" hidden></section>
+
   <section class="view" id="v-methode" hidden>
     <h2 class="h2">Prendre un appel sans se perdre</h2>
-    <p class="lead">Six réflexes qui évitent 80 % des pertes de temps. Le bon diagnostic vient presque toujours de la question « qui d'autre est touché ? ».</p>
+    <p class="lead">Six réflexes qui évitent la plupart des pertes de temps. Le bon diagnostic vient presque toujours de la question « qui d'autre est touché ? ».</p>
     <div class="steps">
-      <div class="step"><h3>Identifier</h3><p>Client, utilisateur, poste (nom ou ID TeamViewer), environnement : poste local, TSE sur site, Genapi Cloud, Fiducial Cloud.</p></div>
+      <div class="step"><h3>Identifier</h3><p>Client, utilisateur, poste (nom ou ID TeamViewer), environnement : poste local, TSE sur site, Genapi cloud, Fiducial Cloud.</p></div>
       <div class="step"><h3>Faire décrire précisément</h3><p>Message d'erreur exact (capture), depuis quand, ce qui a changé (mise à jour, nouveau PC, mot de passe changé, coupure de courant).</p></div>
-      <div class="step"><h3>Mesurer le périmètre</h3><ul><li>1 utilisateur → poste, profil, compte</li><li>Tout un site → réseau, pfSense, box, serveur</li><li>Tous les clients → panne éditeur ou Microsoft (vérifier l'état des services)</li></ul></div>
-      <div class="step"><h3>Reproduire</h3><p>Prendre la main, refaire le geste. Tester en webmail / sur un autre poste / avec un autre compte pour isoler.</p></div>
+      <div class="step"><h3>Mesurer le périmètre</h3><ul><li>1 utilisateur → poste, profil, compte</li><li>Tout un site → réseau, pfSense, box, serveur</li><li>Plusieurs clients → panne éditeur ou Microsoft</li></ul></div>
+      <div class="step"><h3>Reproduire</h3><p>Prendre la main, refaire le geste. Tester en webmail, sur un autre poste ou avec un autre compte pour isoler.</p></div>
       <div class="step"><h3>Corriger du moins au plus risqué</h3><p>Redémarrer l'appli, puis réparer, puis recréer (profil, cache). Sauvegarder avant toute suppression (OST, profil, config pfSense).</p></div>
-      <div class="step"><h3>Tracer et clôturer</h3><p>Noter cause et solution dans le ticket. Faire valider par l'utilisateur. Si récurrent : en parler pour une correction de fond.</p></div>
+      <div class="step"><h3>Tracer et clôturer</h3><p>Noter cause et solution dans le ticket. Faire valider par l'utilisateur. Si c'est récurrent, en parler pour une correction de fond.</p></div>
     </div>
-
     <div class="two">
       <div class="card">
-        <h3 class="h2" style="font-size:1.1rem;margin-bottom:10px">Isoler en 3 tests</h3>
+        <h3 class="h2" style="font-size:1.1rem;margin-bottom:10px">Isoler en 4 tests</h3>
         <div class="tw"><table>
           <thead><tr><th>Test</th><th>Si ça marche</th><th>Si ça ne marche pas</th></tr></thead>
           <tbody>
             <tr><td>Webmail <code>outlook.office.com</code></td><td>Problème local (Outlook, profil, cache)</td><td>Compte, licence, boîte ou service M365</td></tr>
-            <tr><td>Autre poste / autre session</td><td>Problème du poste ou du profil Windows</td><td>Compte ou serveur</td></tr>
+            <tr><td>Autre poste ou autre session</td><td>Problème du poste ou du profil Windows</td><td>Compte ou serveur</td></tr>
             <tr><td>Autre utilisateur, même poste</td><td>Profil ou droits de l'utilisateur</td><td>Poste, réseau, serveur</td></tr>
             <tr><td>Accès par IP au lieu du nom</td><td>DNS</td><td>Réseau, pare-feu, service arrêté</td></tr>
           </tbody>
@@ -234,10 +264,10 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
         <div class="tw"><table>
           <tbody>
             <tr><td>Centre d'admin M365</td><td><code>admin.microsoft.com</code></td></tr>
-            <tr><td>Entra (comptes, MFA, journaux de connexion)</td><td><code>entra.microsoft.com</code></td></tr>
+            <tr><td>Entra (comptes, MFA, journaux)</td><td><code>entra.microsoft.com</code></td></tr>
             <tr><td>Exchange admin</td><td><code>admin.exchange.microsoft.com</code></td></tr>
             <tr><td>SharePoint admin</td><td><code>&lt;tenant&gt;-admin.sharepoint.com</code></td></tr>
-            <tr><td>Defender (mails bloqués, quarantaine)</td><td><code>security.microsoft.com</code></td></tr>
+            <tr><td>Defender (quarantaine)</td><td><code>security.microsoft.com</code></td></tr>
             <tr><td>État des services M365</td><td>Admin › Intégrité › Intégrité du service</td></tr>
             <tr><td>Console TeamViewer</td><td><code>web.teamviewer.com</code></td></tr>
           </tbody>
@@ -246,24 +276,13 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
     </div>
   </section>
 
-  <!-- FICHES -->
-  <section class="view" id="v-fiches" hidden>
-    <div class="chips" id="cats"></div>
-    <div class="split">
-      <div class="list" id="list"></div>
-      <article class="card fiche" id="fiche"></article>
-    </div>
-  </section>
-
-  <!-- DIAGNOSTIC -->
   <section class="view" id="v-diag" hidden>
     <h2 class="h2">Diagnostic guidé</h2>
-    <p class="lead">Réponds aux questions pendant l'appel. L'arbre t'amène à la fiche qui correspond.</p>
+    <p class="lead">Choisis le problème, puis réponds aux questions pendant l'appel. L'arbre t'amène à la bonne fiche.</p>
     <div class="tree-pick" id="trees"></div>
     <div class="card" id="tree"></div>
   </section>
 
-  <!-- QUIZ -->
   <section class="view" id="v-quiz" hidden>
     <h2 class="h2">Entraînement sur cas réels</h2>
     <p class="lead">Un ticket arrive. Choisis la première action la plus pertinente. L'explication renvoie vers la fiche pour réviser.</p>
@@ -272,10 +291,9 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
     <div class="card" id="qcard"></div>
   </section>
 
-  <!-- VEILLE -->
   <section class="view" id="v-veille" hidden>
     <h2 class="h2">Veille</h2>
-    <p class="lead">Ce qui peut générer des appels dans les semaines qui viennent, puis les sources à suivre et une routine de 15 minutes par jour.</p>
+    <p class="lead">Ce qui peut générer des appels dans les semaines qui viennent, les sources à suivre et une routine de 15 minutes par jour.</p>
     <h3 class="eyebrow" style="margin-bottom:8px">Points d'attention · relevé du 12 octobre 2026</h3>
     <div class="news" id="news"></div>
     <div class="veille-grid" style="margin-top:26px" id="sources"></div>
@@ -289,13 +307,16 @@ th { font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color:
 <script>
 /* ===================== CATÉGORIES ===================== */
 const CATS = {
+  internet: "Internet & Wi-Fi",
+  serveur: "Serveurs",
+  partage: "Lecteurs réseau & fichiers",
   outlook: "Outlook / Exchange",
   office: "Office & licences",
   onedrive: "OneDrive / SharePoint",
   teams: "Teams",
   compte: "Comptes, MFA & sécurité",
   ad: "Active Directory / GPO",
-  dns: "DNS / DHCP / réseau",
+  dns: "Réseau local & DNS",
   tse: "TSE / RDS",
   notaire: "Genapi & notariat",
   fiducial: "Fiducial Cloud",
@@ -544,7 +565,7 @@ const FICHES = [
   note:"Règle d'or : postes du domaine → DNS = contrôleur(s) de domaine. Le DC, lui, transfère vers Internet (redirecteurs).",
   rel:["dns-internet","ad-gpo"] },
 
-{ id:"dns-internet", cat:"dns", niv:2, t:"Plus d'Internet sur tout le site",
+{ id:"dns-internet", cat:"internet", niv:2, t:"Plus d'Internet sur tout le site",
   sym:["Aucun site ne s'ouvre pour personne","Teams/Outlook déconnectés sur tous les postes"],
   cause:"Lien opérateur, pfSense, DNS du serveur (redirecteurs), ou DHCP épuisé.",
   diag:["`ping 8.8.8.8` : s'il répond mais pas `ping google.fr` → DNS","Si rien ne répond : passerelle (pfSense) joignable ? Puis WAN (fiche pfSense)","Nouveaux appareils sans IP (169.254.x.x) → étendue DHCP pleine ou serveur DHCP arrêté"],
@@ -760,7 +781,7 @@ const QUIZ = [
 {cat:"ad", s:"Au démarrage : « La relation d'approbation entre cette station de travail et le domaine principal a échoué ».", c:["Réinstaller Windows","Se connecter en admin local et lancer Test-ComputerSecureChannel -Repair","Réinitialiser le mot de passe de l'utilisateur","Supprimer le DC"], a:1, e:"C'est le compte ordinateur qui est désynchronisé, pas l'utilisateur. La réparation du canal sécurisé évite de sortir du domaine.", f:"ad-trust"},
 {cat:"ad", s:"Le client est synchronisé avec Entra Connect. Tu réinitialises le mot de passe dans le portail M365, rien ne marche sur le poste.", c:["C'est normal, il faut changer le mot de passe dans l'AD local","Il faut attendre 24 h","Il faut une licence en plus","Recréer le profil Windows"], a:0, e:"En synchro AD, l'AD local fait foi. Changer dans l'AD, puis Start-ADSyncSyncCycle -PolicyType Delta si on veut accélérer.", f:"ad-mdp"},
 {cat:"dns", s:"Les lecteurs réseau sont rouges sur un poste. ping 192.168.1.10 répond, ping SRV-AD01 non.", c:["Redémarrer le serveur","Vérifier que le DNS du poste est le contrôleur de domaine (ipconfig /all)","Réinstaller la carte réseau","Changer le câble"], a:1, e:"L'IP répond mais pas le nom : c'est le DNS. Le poste utilise probablement la box comme DNS.", f:"dns-client"},
-{cat:"dns", s:"Tout le site : ping 8.8.8.8 répond, mais aucun site web ne s'ouvre.", c:["Lien opérateur coupé","Problème DNS (redirecteurs du DC ou DNS Resolver pfSense)","Panne Microsoft 365","Câble du poste"], a:1, e:"Si on joint une IP Internet mais pas les noms, c'est la résolution DNS.", f:"dns-internet"},
+{cat:"internet", s:"Tout le site : ping 8.8.8.8 répond, mais aucun site web ne s'ouvre.", c:["Lien opérateur coupé","Problème DNS (redirecteurs du DC ou DNS Resolver pfSense)","Panne Microsoft 365","Câble du poste"], a:1, e:"Si on joint une IP Internet mais pas les noms, c'est la résolution DNS.", f:"dns-internet"},
 {cat:"tse", s:"Un utilisateur arrive sur le TSE avec « profil temporaire ».", c:["Lui créer un nouveau compte AD","Fermer sa session et corriger la clé SID en .bak dans ProfileList","Redémarrer le serveur en pleine journée","Réinstaller Office"], a:1, e:"Cas classique de clé ProfileList dupliquée. Exporter la clé, corriger, faire reconnecter.", f:"tse-profil"},
 {cat:"tse", s:"L'utilisateur ne peut pas rouvrir le TSE : « session déjà ouverte », écran noir.", c:["quser puis logoff de sa session","Redémarrer le serveur","Réinitialiser son mot de passe","Recréer son profil"], a:0, e:"Fermer la session bloquée suffit dans la plupart des cas, sans gêner les autres utilisateurs.", f:"tse-session"},
 {cat:"tse", s:"Message « Aucun serveur de licences Bureau à distance n'est disponible ».", c:["Réparer Office","Lancer lsdiag.msc pour voir le serveur et le mode de licence","Vider le cache DNS","Mettre à jour TeamViewer"], a:1, e:"Le Diagnostic des licences Bureau à distance indique si le serveur de licences est configuré et joignable, et si la période de grâce est finie.", f:"tse-lic"},
@@ -813,24 +834,385 @@ const ROUTINE = [
   ["mois2","Chaque mois : ajouter une fiche à ce carnet à partir d'un ticket marquant"]
 ];
 
+
+/* ===================== FICHES AJOUTÉES ===================== */
+FICHES.push(
+/* ---------- INTERNET ---------- */
+{ id:"net-poste", cat:"internet", niv:1, u:"Un seul poste n'a plus Internet", t:"Un seul poste sans Internet (les autres marchent)",
+  sym:["Icône réseau avec un globe barré ou « Pas d'Internet »","Les collègues ont Internet"],
+  cause:"Le problème vient du poste lui-même : câble, Wi-Fi sur le mauvais réseau, pas d'adresse IP, proxy ou VPN resté actif.",
+  diag:["`ipconfig` : une adresse en 169.254.x.x veut dire que le poste n'a pas reçu d'IP (câble, prise murale, DHCP)","Câble branché et voyant de la prise réseau allumé ? Tester une autre prise ou un autre câble","En Wi-Fi : le poste est-il sur le bon réseau (pas le Wi-Fi invité ou le voisin) ?","Un proxy ou un VPN est-il configuré ? Paramètres › Réseau et Internet › Proxy"],
+  fix:["Renouveler l'adresse IP (commandes ci-dessous)","Désactiver puis réactiver la carte réseau","Réinitialiser la pile réseau puis redémarrer","En dernier recours : Paramètres › Réseau et Internet › Paramètres réseau avancés › Réinitialisation du réseau (supprime les Wi-Fi enregistrés et les VPN)"],
+  cmd:[{l:"Renouveler l'IP",c:"ipconfig /release\nipconfig /renew"},{l:"Réinitialiser la pile réseau (admin, puis redémarrer)",c:"netsh winsock reset\nnetsh int ip reset\nipconfig /flushdns"},{l:"Voir le proxy système",c:"netsh winhttp show proxy"}],
+  rel:["net-wifi","dns-client","dns-internet"] },
+
+{ id:"net-lent", cat:"internet", niv:2, u:"Internet est très lent", t:"Internet lent sur le site",
+  sym:["Pages qui mettent longtemps à charger","Visios Teams qui coupent ou pixelisent","TSE cloud (Genapi, Fiducial) qui rame"],
+  cause:"Un poste ou un serveur sature la ligne (sauvegarde cloud, OneDrive qui envoie des Go, mises à jour), Wi-Fi faible, ou souci opérateur.",
+  diag:["Lent pour tout le monde ou un seul poste ? Un seul : voir Wi-Fi ou poste","Test de débit sur un poste en câble, pas en Wi-Fi","pfSense › Status › Traffic Graph (WAN) : qui consomme ? Diagnostics › States ou paquet ntopng si installé","Une sauvegarde externalisée tourne-t-elle en journée ?"],
+  fix:["Identifier le poste ou le serveur qui sature, le mettre en pause","OneDrive : Paramètres › Synchronisation et sauvegarde › Paramètres avancés › limiter le débit d'envoi","Planifier sauvegardes et mises à jour la nuit","Si débit très en dessous de l'abonnement sans consommation interne : ticket opérateur"],
+  rel:["net-wifi","net-box","pf-wan"] },
+
+{ id:"net-wifi", cat:"internet", niv:1, u:"Le Wi-Fi coupe ou est faible", t:"Wi-Fi qui se déconnecte ou signal faible",
+  sym:["Connexion qui saute toutes les quelques minutes","Wi-Fi OK près de la borne, mauvais dans certains bureaux"],
+  cause:"Éloignement de la borne, interférences en 2,4 GHz, gestion d'alimentation de la carte Wi-Fi, pilote ancien.",
+  diag:["Le problème touche-t-il un poste ou tous les appareils d'une zone ?","Le poste est-il en 2,4 GHz ou 5 GHz ?","Le câble est-il possible pour ce poste fixe ?"],
+  fix:["Oublier le réseau puis se reconnecter","Gestionnaire de périphériques › carte Wi-Fi › Gestion de l'alimentation › décocher « Autoriser l'ordinateur à éteindre ce périphérique »","Mettre à jour le pilote Wi-Fi (site du fabricant du PC)","Redémarrer la borne ; si la couverture est le problème, proposer une borne supplémentaire"],
+  cmd:[{l:"Voir le signal et la bande utilisée",c:"netsh wlan show interfaces"},{l:"Rapport Wi-Fi détaillé (HTML)",c:"netsh wlan show wlanreport"}],
+  rel:["net-poste","net-lent"] },
+
+{ id:"net-sites", cat:"internet", niv:1, u:"Certains sites ne s'ouvrent pas", t:"Un site précis ne s'ouvre pas (erreur certificat, DNS, connexion)",
+  sym:["« Votre connexion n'est pas privée », NET::ERR_CERT_DATE_INVALID","DNS_PROBE_FINISHED_NXDOMAIN","Le site marche sur le téléphone en 4G mais pas au bureau"],
+  cause:"Heure du PC fausse (certificats), cache DNS, filtrage pfSense/pfBlockerNG, ou site réellement en panne.",
+  diag:["Tester avec un autre navigateur et un autre poste","Heure et date du PC correctes ?","`nslookup site.fr` : le nom se résout-il ?","Le site est-il en panne pour tout le monde ? (tester en 4G)"],
+  fix:["Corriger l'heure : Paramètres › Heure et langue › Synchroniser maintenant","Vider le cache DNS puis le cache du navigateur (Ctrl+Maj+Suppr)","Bloqué au bureau seulement : vérifier les journaux pfSense / pfBlockerNG et ajouter une exception ciblée"],
+  cmd:[{l:"Vider le cache DNS",c:"ipconfig /flushdns"},{l:"Tester la résolution",c:"nslookup site.fr\nnslookup site.fr 1.1.1.1"},{l:"Resynchroniser l'heure",c:"w32tm /resync"}],
+  rel:["pf-logs","net-nav"] },
+
+{ id:"net-nav", cat:"internet", niv:1, u:"Le navigateur fait n'importe quoi (pubs, pages blanches)", t:"Navigateur lent, publicités, redirections",
+  sym:["Pages de pub qui s'ouvrent seules, moteur de recherche changé","Pages blanches, onglets qui plantent","Edge ou Chrome très lent"],
+  cause:"Extension malveillante ou inutile, cache plein, profil de navigateur corrompu.",
+  diag:["Tester en navigation InPrivate (sans extensions) : si ça marche, c'est une extension ou le cache","Lister les extensions : `edge://extensions` ou `chrome://extensions`"],
+  fix:["Supprimer les extensions inconnues","Vider le cache (Ctrl+Maj+Suppr, « Images et fichiers en cache »)","Réinitialiser les paramètres : `edge://settings/reset`","Pubs ou redirections : lancer une analyse antivirus complète du poste"],
+  rel:["net-sites"] },
+
+{ id:"net-box", cat:"internet", niv:2, u:"La box / la fibre a un voyant rouge", t:"Box opérateur, fibre ou ADSL en panne",
+  sym:["Voyant fibre rouge ou clignotant sur la box / l'ONT","pfSense ne voit plus de passerelle WAN"],
+  cause:"Coupure de la ligne chez l'opérateur, box plantée, câble fibre arraché ou débranché.",
+  diag:["Faire décrire les voyants par l'utilisateur (photo si possible)","Voyant fibre/LOS rouge = pas de signal : c'est la ligne, pas le réseau local","Vérifier sur le site de l'opérateur s'il y a un incident dans le secteur"],
+  fix:["Redémarrage électrique de la box : débrancher 30 secondes, rebrancher, attendre 5 min","Vérifier que la jarretière fibre est bien enfoncée (sans la plier)","Ligne coupée : ticket chez l'opérateur avec le numéro de ligne / de contrat (fiche client)","Si le site a une 4G de secours, vérifier que la bascule s'est faite dans pfSense"],
+  note:"Ne pas réinitialiser la box (bouton reset) : on perd sa configuration (mode bridge, redirections vers le pfSense).",
+  rel:["pf-wan","dns-internet"] },
+
+/* ---------- SERVEUR ---------- */
+{ id:"srv-ping", cat:"serveur", niv:2, u:"Plus personne n'accède au serveur", t:"Serveur injoignable pour tout le monde",
+  sym:["Lecteurs réseau, Genapi et TSE tombés en même temps","Le serveur ne répond plus au ping"],
+  cause:"Serveur éteint (coupure de courant, onduleur), machine virtuelle arrêtée, carte réseau ou switch en panne, serveur bloqué sur une mise à jour.",
+  diag:["Ping par IP depuis un poste ou depuis le pfSense (Diagnostics › Ping)","Y a-t-il eu une coupure de courant ? L'onduleur a-t-il éteint le serveur ?","Accès console à distance : iDRAC (Dell), iLO (HPE), ou console de l'hyperviseur Hyper-V/VMware pour une VM","Le switch du local technique est-il allumé ?"],
+  fix:["VM arrêtée : la démarrer depuis l'hyperviseur","Serveur physique éteint : le démarrer via iDRAC/iLO, sinon demander au client d'appuyer sur le bouton","Bloqué sur une mise à jour : voir la fiche dédiée","Après redémarrage : vérifier les services, puis l'Observateur d'événements (ID 6008 arrêt inattendu, 41 Kernel-Power)"],
+  cmd:[{l:"Tester le serveur et un port précis",c:"ping SRV-AD01\nTest-NetConnection SRV-AD01 -Port 445"},{l:"Derniers arrêts inattendus (sur le serveur)",c:"Get-WinEvent -FilterHashtable @{LogName='System';Id=6008,41} -MaxEvents 10"}],
+  note:"Prévenir l'étude avant tout redémarrage forcé : des actes peuvent être en cours de rédaction.",
+  rel:["srv-maj","srv-service","dns-client"] },
+
+{ id:"srv-rdp", cat:"serveur", niv:2, u:"Je n'arrive pas à me connecter au serveur en Bureau à distance", t:"Connexion Bureau à distance (RDP) au serveur impossible",
+  sym:["« L'utilisateur n'a pas l'autorisation d'ouvrir une session à distance »","« Erreur d'authentification… correction Oracle CredSSP »","« Le nombre maximal de connexions est atteint »","« Bureau à distance ne peut pas se connecter à l'ordinateur distant »"],
+  cause:"Chaque message a sa cause : droits, mises à jour décalées entre client et serveur, sessions admin occupées, service ou pare-feu.",
+  diag:["Lire le message exact","Port 3389 joignable ? (commande ci-dessous)","Sessions ouvertes sur le serveur : `quser /server:SRV`"],
+  fix:["Pas l'autorisation : ajouter l'utilisateur au groupe « Utilisateurs du Bureau à distance » (sur un DC ou via GPO), puis nouvelle session","CredSSP : mettre à jour le poste ET le serveur (ne pas affaiblir la stratégie)","Nombre maximal : fermer une session déconnectée avec `logoff`, ou se connecter avec `mstsc /admin`","Ne peut pas se connecter : service « Services Bureau à distance » (TermService) démarré ? Pare-feu Windows ? Serveur allumé ?"],
+  cmd:[{l:"Tester le port RDP",c:"Test-NetConnection SRV-TSE01 -Port 3389"},{l:"Voir et fermer des sessions",c:"quser /server:SRV-TSE01\nlogoff 2 /server:SRV-TSE01"},{l:"Connexion console d'administration",c:"mstsc /admin /v:SRV-TSE01"}],
+  rel:["tse-session","srv-ping","tse-lic"] },
+
+{ id:"srv-maj", cat:"serveur", niv:3, u:"Le serveur est bloqué sur « Ne pas éteindre l'ordinateur »", t:"Serveur bloqué en mise à jour ou en redémarrage",
+  sym:["« Travail sur les mises à jour 30 % » depuis longtemps","Redémarrage en boucle après Patch Tuesday"],
+  cause:"Mise à jour cumulative longue (fréquent sur DC et TSE), ou mise à jour en échec qui revient en arrière.",
+  diag:["Depuis quand ? Une mise à jour sur un serveur peut prendre plus d'une heure","Le disque travaille-t-il encore (voyant, compteurs dans iDRAC/iLO ou l'hyperviseur) ?","Problème connu ce mois-ci ? (onglet Veille, Windows release health)"],
+  fix:["Patienter tant que le disque travaille","Bloqué plus de 2 heures sans activité : redémarrage forcé, avec accord du N2","Boucle de redémarrage : démarrer en mode sans échec ou dans l'environnement de récupération, puis désinstaller la dernière mise à jour","Pour la suite : appliquer les mises à jour serveur le soir, après lecture des problèmes connus"],
+  cmd:[{l:"Dernières mises à jour installées",c:"Get-HotFix | Sort InstalledOn -Desc | Select -First 5"},{l:"Désinstaller une mise à jour (remplacer le numéro)",c:"wusa /uninstall /kb:5040000"}],
+  rel:["srv-ping","pc-maj"] },
+
+{ id:"srv-disque", cat:"serveur", niv:2, u:"Le disque du serveur est plein", t:"Disque plein sur un serveur",
+  sym:["Alerte de supervision espace disque","Applis métier en erreur d'écriture, sauvegarde en échec","TSE très lent, profils temporaires"],
+  cause:"Profils TSE, journaux, sauvegardes locales, clichés instantanés, dossier des mises à jour, fichiers temporaires.",
+  diag:["Quel volume ? C: (système) ou D: (données) ?","Trouver les gros dossiers avec TreeSize ou WinDirStat (version portable)","Clichés instantanés : `vssadmin list shadowstorage`"],
+  fix:["Nettoyage de disque › Nettoyer les fichiers système","Nettoyer le magasin de composants Windows (commande)","Supprimer les anciens profils TSE inutilisés (Propriétés système › Profils des utilisateurs)","Réduire l'espace des clichés instantanés si démesuré","Machine virtuelle : agrandir le disque dans l'hyperviseur puis étendre le volume (Gestion des disques)"],
+  cmd:[{l:"Espace libre par volume",c:"Get-PSDrive -PSProvider FileSystem"},{l:"Nettoyer le magasin de composants",c:"DISM /Online /Cleanup-Image /StartComponentCleanup"},{l:"Espace des clichés instantanés",c:"vssadmin list shadowstorage"}],
+  note:"Ne jamais supprimer à la main dans C:\\Windows\\WinSxS ni dans les dossiers des bases de l'éditeur.",
+  rel:["tse-lent","srv-sauvegarde"] },
+
+{ id:"srv-service", cat:"serveur", niv:2, u:"Un service du serveur est arrêté", t:"Service arrêté sur un serveur (appli métier, DNS, impression)",
+  sym:["Une seule fonction tombée (Genapi, impression, DNS) alors que le serveur répond"],
+  cause:"Service planté, compte de service au mot de passe expiré, dépendance arrêtée.",
+  diag:["Lister les services automatiques arrêtés (commande)","Observateur d'événements › Système : ID 7000, 7031, 7034 (service qui ne démarre pas / s'arrête)","Le service tourne-t-il avec un compte de domaine ? Son mot de passe a-t-il expiré ?"],
+  fix:["Démarrer le service, vérifier qu'il reste démarré","Compte de service expiré : mettre à jour le mot de passe dans l'onglet Connexion du service","Si le service replante : relever l'erreur et escalader (éditeur s'il s'agit d'une appli métier)"],
+  cmd:[{l:"Services automatiques arrêtés",c:"Get-CimInstance Win32_Service -Filter \"StartMode='Auto' AND State<>'Running'\" | Select Name,DisplayName,StartName"},{l:"Démarrer un service",c:"Start-Service -Name Spooler"}],
+  rel:["srv-ping","nt-inot"] },
+
+{ id:"srv-sauvegarde", cat:"serveur", niv:2, u:"La sauvegarde est en échec", t:"Sauvegarde en échec",
+  sym:["Mail ou alerte « Échec » du logiciel de sauvegarde","Sauvegarde qui ne s'est pas lancée cette nuit"],
+  cause:"Destination pleine ou absente (disque USB non branché, NAS éteint), identifiants du NAS changés, écrivains VSS en erreur, fichier verrouillé.",
+  diag:["Lire le journal de la tâche : message exact et étape en échec","Destination : espace libre, disque de rotation branché, NAS joignable","État des écrivains VSS (commande)"],
+  fix:["Libérer de la place ou faire purger les anciens points selon la rétention","Rebrancher / échanger le disque de rotation","Mettre à jour les identifiants de la destination","Écrivain VSS en erreur : redémarrer le service concerné (ou le serveur hors production), relancer la tâche","Relancer la sauvegarde manuellement et vérifier qu'elle se termine"],
+  cmd:[{l:"État des écrivains VSS",c:"vssadmin list writers"}],
+  note:"Une sauvegarde jamais testée n'est pas une sauvegarde. Faire régulièrement un test de restauration d'un fichier.",
+  rel:["srv-disque","lec-restore"] },
+
+/* ---------- LECTEURS RÉSEAU ---------- */
+{ id:"lec-absent", cat:"partage", niv:1, u:"Mon lecteur réseau (Z:, S:…) a disparu", t:"Lecteur réseau absent",
+  sym:["Le lecteur n'apparaît plus dans « Ce PC »","Nouveau poste ou nouvel utilisateur sans ses lecteurs"],
+  cause:"Lecteurs donnés par GPO ou script de connexion qui ne s'est pas appliqué, utilisateur absent du bon groupe, poste hors réseau (télétravail sans VPN).",
+  diag:["Le serveur répond-il ? `ping SRV-FICHIERS`","Le chemin s'ouvre-t-il en tapant `\\\\SRV-FICHIERS\\Commun` dans l'Explorateur ?","Télétravail : le VPN est-il connecté ?","`gpresult /r` : la GPO des lecteurs est-elle appliquée ?"],
+  fix:["Le chemin s'ouvre : relancer les GPO (`gpupdate /force`) et rouvrir la session","Utilisateur pas dans le groupe qui reçoit le lecteur : l'ajouter puis fermer/rouvrir la session","Dépannage immédiat : mapper le lecteur à la main (commande)","Le chemin ne s'ouvre pas : voir « Accès refusé » ou « Serveur introuvable »"],
+  cmd:[{l:"Lecteurs connectés",c:"net use"},{l:"Mapper à la main, persistant",c:"net use Z: \\\\SRV-FICHIERS\\Commun /persistent:yes"},{l:"Supprimer un mappage cassé",c:"net use Z: /delete"}],
+  rel:["lec-croix","lec-refuse","ad-gpo","dns-client"] },
+
+{ id:"lec-croix", cat:"partage", niv:1, u:"Mes lecteurs ont une croix rouge au démarrage", t:"Lecteurs réseau avec une croix rouge au démarrage",
+  sym:["Croix rouge sur les lecteurs à l'ouverture de session","Un double-clic sur le lecteur le reconnecte","Notification « Impossible de reconnecter tous les lecteurs réseau »"],
+  cause:"Windows tente de reconnecter les lecteurs avant que le réseau (souvent le Wi-Fi) soit prêt.",
+  diag:["Poste en Wi-Fi ou câble ? Fréquent en Wi-Fi","Le lecteur marche-t-il après un double-clic ? Si oui, ce n'est qu'un problème de timing"],
+  fix:["GPO : Configuration ordinateur › Modèles d'administration › Système › Ouverture de session › « Toujours attendre le réseau lors du démarrage de l'ordinateur et de l'ouverture de session » = Activé","Lecteurs par GPO (préférences) : action « Remplacer » ou « Mettre à jour » avec « Reconnecter » coché","Désactiver le démarrage rapide de Windows sur les postes concernés"],
+  cmd:[{l:"Désactiver le démarrage rapide (admin)",c:"powercfg /h off"}],
+  rel:["lec-absent","net-wifi"] },
+
+{ id:"lec-refuse", cat:"partage", niv:2, u:"« Accès refusé » sur un dossier partagé", t:"Accès refusé à un dossier du serveur",
+  sym:["« Vous n'avez pas l'autorisation d'accéder à ce dossier »","Le collègue y accède, pas l'utilisateur"],
+  cause:"Droits NTFS ou droits de partage insuffisants (le plus restrictif des deux gagne), ou utilisateur ajouté au groupe sans avoir rouvert sa session.",
+  diag:["Sur le serveur : clic droit sur le dossier › Propriétés › Sécurité › Avancé › Accès effectif › choisir l'utilisateur","Onglet Partage › Partage avancé › Autorisations : le groupe est-il présent ?","L'utilisateur vient-il d'être ajouté à un groupe ? (`whoami /groups` sur son poste)"],
+  fix:["Ajouter l'utilisateur au groupe qui a les droits (éviter de donner des droits nominatifs)","Lui faire fermer puis rouvrir sa session Windows : les groupes sont lus à l'ouverture","Dossier à héritage désactivé : vérifier les droits sur ce dossier précis"],
+  cmd:[{l:"Groupes de l'utilisateur (sur son poste)",c:"whoami /groups"},{l:"Droits NTFS d'un dossier (sur le serveur)",c:"icacls \"D:\\Partages\\Commun\\Dossiers clients\""}],
+  note:"Pour un office notarial, certains dossiers (comptabilité, RH) sont volontairement restreints. Valider avec le notaire avant d'ouvrir un droit.",
+  rel:["lec-absent","sp-acces"] },
+
+{ id:"lec-verrou", cat:"partage", niv:1, u:"« Fichier verrouillé par un autre utilisateur »", t:"Fichier verrouillé ou ouvert en lecture seule",
+  sym:["« Ce fichier est verrouillé pour modification par … »","Word ouvre le document en lecture seule"],
+  cause:"Un collègue a le fichier ouvert, ou une session a planté en le laissant ouvert (souvent un fichier ~$ temporaire).",
+  diag:["Qui l'a ouvert ? Sur le serveur : Gestion de l'ordinateur › Dossiers partagés › Fichiers ouverts","Le collègue indiqué l'a-t-il vraiment ouvert ?"],
+  fix:["Demander au collègue de fermer le fichier","S'il n'est plus ouvert : fermer le fichier ouvert côté serveur (prévenir, les modifs non enregistrées sont perdues)","Supprimer le fichier temporaire `~$nom.docx` s'il est resté dans le dossier"],
+  cmd:[{l:"Trouver et fermer un fichier ouvert (sur le serveur)",c:"Get-SmbOpenFile | Where Path -like \"*Compromis*\" | Select ClientUserName,Path\nGet-SmbOpenFile | Where Path -like \"*Compromis*\" | Close-SmbOpenFile -Force"}],
+  rel:["lec-refuse","off-fichier"] },
+
+{ id:"lec-lent", cat:"partage", niv:2, u:"Les fichiers du serveur s'ouvrent lentement", t:"Accès lent aux fichiers réseau",
+  sym:["Ouvrir un dossier prend plusieurs secondes","Enregistrer un Word sur le serveur est long"],
+  cause:"Wi-Fi, serveur chargé ou disque plein, antivirus qui analyse chaque ouverture, fichiers hors connexion qui se synchronisent, dossier contenant des milliers de fichiers.",
+  diag:["Lent pour tous ou un seul poste ? Wi-Fi ou câble ?","Charge du serveur (CPU, disque) au moment de la lenteur","Fichiers hors connexion activés ? (Centre de synchronisation)"],
+  fix:["Passer le poste en câble si possible","Vérifier l'espace et la charge du serveur","Désactiver les fichiers hors connexion s'ils ne sont pas voulus","Exclusions antivirus recommandées par l'éditeur pour les dossiers de l'appli métier"],
+  rel:["srv-disque","net-wifi"] },
+
+{ id:"lec-restore", cat:"partage", niv:1, u:"J'ai supprimé un fichier sur le serveur", t:"Récupérer un fichier supprimé ou écrasé sur le serveur",
+  sym:["Fichier supprimé sur un lecteur réseau (il ne va pas dans la corbeille)","Document écrasé par une mauvaise version"],
+  cause:"Sur un partage réseau, une suppression est définitive côté poste. On récupère via les clichés instantanés ou la sauvegarde.",
+  diag:["Quand le fichier existait-il encore pour la dernière fois ?","Les clichés instantanés sont-ils activés sur le volume ?"],
+  fix:["Clic droit sur le dossier parent › Propriétés › Versions précédentes › choisir une date › Ouvrir pour vérifier, puis Restaurer ou copier","Pas de version : restaurer depuis la sauvegarde","Conseiller d'activer les clichés instantanés (2 fois par jour) sur le volume de données"],
+  cmd:[{l:"Voir les clichés existants (serveur)",c:"vssadmin list shadows /for=D:"}],
+  rel:["srv-sauvegarde","od-restore"] },
+
+{ id:"lec-nas", cat:"partage", niv:2, u:"Le NAS ou le copieur n'est plus accessible depuis Windows 11", t:"Accès au NAS bloqué (accès invité, signature SMB)",
+  sym:["« Vous ne pouvez pas accéder à ce dossier partagé, car les stratégies de sécurité de votre organisation bloquent l'accès invité non authentifié »","Le NAS marchait avant la mise à jour en Windows 11 24H2"],
+  cause:"Windows 11 24H2 bloque l'accès invité sans mot de passe et exige la signature SMB. Les vieux NAS ou copieurs ne suivent pas.",
+  diag:["Le partage est-il configuré en accès invité (sans compte) sur le NAS ?","Version de firmware du NAS"],
+  fix:["Créer un compte utilisateur sur le NAS et se connecter avec (ne plus utiliser l'accès invité)","Mettre à jour le firmware du NAS pour qu'il gère la signature SMB","Enregistrer l'identifiant du NAS dans le Gestionnaire d'identification","Éviter de réactiver l'accès invité sur les postes : c'est une faille"],
+  cmd:[{l:"Connexion avec un compte du NAS",c:"net use N: \\\\NAS01\\Partage /user:NAS01\\utilisateur /persistent:yes"}],
+  rel:["lec-identifiants","pc-scan"] },
+
+{ id:"lec-identifiants", cat:"partage", niv:1, u:"Windows me demande un mot de passe pour ouvrir le partage", t:"Identifiants demandés pour accéder à un partage",
+  sym:["Fenêtre « Entrer les informations d'identification réseau »","Poste hors domaine ou ordinateur personnel"],
+  cause:"Le poste n'est pas dans le domaine, ou un ancien identifiant enregistré est faux.",
+  diag:["Le poste est-il dans le domaine ? (`systeminfo | findstr Domaine`)","Gestionnaire d'identification : entrée existante pour ce serveur ?"],
+  fix:["Gestionnaire d'identification › Informations d'identification Windows › Ajouter : adresse `SRV-FICHIERS`, utilisateur `DOMAINE\\jdupont`","Supprimer l'ancienne entrée fausse si elle existe","Remapper le lecteur"],
+  cmd:[{l:"Ouvrir le Gestionnaire d'identification",c:"control /name Microsoft.CredentialManager"}],
+  rel:["lec-nas","lec-absent"] },
+
+/* ---------- OUTLOOK (suite) ---------- */
+{ id:"ol-nouveau", cat:"outlook", niv:1, u:"Outlook a changé d'apparence, il manque des choses", t:"Nouvel Outlook ou Outlook classique",
+  sym:["Interface différente, bouton « Nouvel Outlook » activé","Compléments (Genapi, PDF…) absents","PST ou certaines fonctions introuvables"],
+  cause:"L'utilisateur a basculé (ou été basculé) vers le nouvel Outlook, qui ne prend pas en charge les compléments COM.",
+  diag:["Y a-t-il un interrupteur « Nouvel Outlook » en haut à droite ?","Dans le menu Démarrer, existe-t-il « Outlook (classic) » à côté d'« Outlook (new) » ?"],
+  fix:["Désactiver l'interrupteur « Nouvel Outlook » (ou Paramètres › Général › Revenir à Outlook classique)","Épingler « Outlook (classic) » dans la barre des tâches","Empêcher la bascule chez les clients qui ont des compléments métier (clé ci-dessous, ou GPO)"],
+  cmd:[{l:"Masquer l'interrupteur Nouvel Outlook (par utilisateur)",c:"reg add \"HKCU\\Software\\Microsoft\\Office\\16.0\\Outlook\\Options\\General\" /v HideNewOutlookToggle /t REG_DWORD /d 1 /f"}],
+  rel:["nt-outlook","ol-safe"] },
+
+{ id:"ol-recherche", cat:"outlook", niv:1, u:"La recherche Outlook ne trouve rien", t:"Recherche Outlook incomplète ou vide",
+  sym:["La recherche ne renvoie rien ou des résultats partiels","« Les résultats de recherche peuvent être incomplets car les éléments sont encore en cours d'indexation »"],
+  cause:"Index Windows Search incomplet ou corrompu.",
+  diag:["Service « Windows Search » démarré ?","Tester la même recherche dans le webmail"],
+  fix:["Outlook › Fichier › Options › Recherche › Options d'indexation › Avancé › Reconstruire (laisser tourner, peut prendre des heures)","Vérifier que Microsoft Outlook est coché dans « Modifier » des emplacements indexés","En attendant, chercher dans le webmail"],
+  cmd:[{l:"Options d'indexation",c:"control /name Microsoft.IndexingOptions"}],
+  rel:["ol-profil"] },
+
+{ id:"ol-signature", cat:"outlook", niv:1, u:"Ma signature mail a disparu", t:"Signature Outlook absente ou à créer",
+  sym:["Signature disparue après un nouveau profil ou un nouveau PC","Signature différente selon le poste"],
+  cause:"Les signatures du classique sont stockées dans le profil Windows (%appdata%\\Microsoft\\Signatures) ou synchronisées dans la boîte (signatures itinérantes).",
+  diag:["Ouvrir le dossier des signatures de l'ancien profil/poste s'il existe encore"],
+  fix:["Copier le dossier Signatures de l'ancien profil vers le nouveau","Ou recréer : Fichier › Options › Courrier › Signatures","Choisir la signature par défaut pour les nouveaux messages et les réponses"],
+  cmd:[{l:"Dossier des signatures",c:"explorer %appdata%\\Microsoft\\Signatures"}],
+  rel:["ol-profil"] },
+
+{ id:"ol-mobile", cat:"outlook", niv:1, u:"Je veux mes mails sur mon téléphone", t:"Configurer la messagerie sur smartphone",
+  sym:["Nouveau téléphone, mails à configurer","L'appli Mail du téléphone refuse le compte"],
+  cause:"Avec la MFA, les vieilles applis mail ne passent plus. L'appli Outlook mobile est la plus simple.",
+  diag:["Le compte a-t-il la MFA ? Authenticator est-il déjà sur le téléphone ?"],
+  fix:["Installer Outlook (App Store / Play Store)","Ajouter le compte avec l'adresse M365, valider la MFA","Ajouter les boîtes partagées dans Outlook mobile : Paramètres › compte › Ajouter une boîte aux lettres partagée"],
+  rel:["cpt-mfa"] },
+
+/* ---------- GENAPI (suite) ---------- */
+{ id:"nt-outlook", cat:"notaire", niv:1, u:"Le complément Outlook Genapi ne fonctionne plus", t:"Complément Outlook Genapi absent ou inactif",
+  sym:["Les boutons Genapi ont disparu d'Outlook (classement des mails dans le dossier)","Message « Un complément a été désactivé » dans le bandeau jaune","Marche chez un collègue, pas chez l'utilisateur"],
+  cause:"Le plus souvent : nouvel Outlook activé (pas de compléments COM), complément désactivé par Outlook parce qu'il ralentissait le démarrage, ou désinstallé par une mise à jour/réparation d'Office.",
+  diag:["Nouvel Outlook activé ? Si oui, revenir au classique : c'est la cause n°1","Fichier › Options › Compléments : le complément Genapi est-il dans « Inactifs » ou « Désactivés » ?","Bandeau jaune ou Fichier › Gérer les compléments COM : est-il marqué « lent » ?","Office a-t-il été réinstallé ou réparé récemment (changement 32/64 bits) ?"],
+  fix:["Revenir à Outlook classique si besoin (fiche « Nouvel Outlook »)","Fichier › Gérer les compléments COM › « Toujours activer ce complément »","Fichier › Options › Compléments › Gérer : Compléments COM › Atteindre › cocher le complément Genapi","Gérer : Éléments désactivés › Atteindre › réactiver s'il y est","Redémarrer Outlook. Si le complément n'est pas dans la liste du tout : le réinstaller (installeur Genapi ou support Genapi)"],
+  cmd:[{l:"Voir les compléments Outlook et leur état (LoadBehavior 3 = actif)",c:"reg query \"HKCU\\Software\\Microsoft\\Office\\Outlook\\Addins\" /s /v LoadBehavior\nreg query \"HKLM\\SOFTWARE\\Microsoft\\Office\\Outlook\\Addins\" /s /v LoadBehavior\nreg query \"HKLM\\SOFTWARE\\WOW6432Node\\Microsoft\\Office\\Outlook\\Addins\" /s /v LoadBehavior"},{l:"Empêcher Outlook de le désactiver (remplacer NomDuComplement par la clé trouvée ci-dessus)",c:"reg add \"HKCU\\Software\\Microsoft\\Office\\16.0\\Outlook\\Resiliency\\DoNotDisableAddinList\" /v NomDuComplement /t REG_DWORD /d 1 /f"}],
+  note:"Sur un TSE, l'activation des compléments se fait dans la session de chaque utilisateur. Le nom exact du complément Genapi est à noter dans la fiche client.",
+  rel:["ol-nouveau","nt-word-addin","ol-safe"] },
+
+{ id:"nt-ocr", cat:"notaire", niv:2, u:"L'OCR Genapi ne reconnaît pas mes documents", t:"OCR Genapi : documents scannés non reconnus",
+  sym:["Le texte des pièces scannées n'est pas reconnu ou pas recherchable","Les documents restent « en attente » de traitement","Reconnaissance qui fonctionne mal sur certains documents seulement"],
+  cause:"Qualité de numérisation (résolution, couleur, document de travers), format de fichier non adapté, ou module de traitement arrêté / non mis à jour.",
+  diag:["Tous les documents ou certains seulement ? Certains seulement = qualité du scan","Réglages du copieur : 300 dpi, niveaux de gris ou noir et blanc, PDF (pas JPEG)","Document scanné droit, sans pages blanches parasites ?","Tous les documents bloqués ? Le module ou service de traitement côté serveur tourne-t-il ? Espace disque du serveur ?","Mise à jour Genapi récente ?"],
+  fix:["Rescanner un document test avec les bons réglages (300 dpi, PDF)","Corriger le profil de numérisation du copieur pour tout le monde","Traitement bloqué pour tous : vérifier/redémarrer le service concerné et l'espace disque (fiche « Service arrêté »)","Toujours en échec : ticket au support Genapi avec un exemple de document, l'heure et le poste"],
+  note:"Fiche générique : le fonctionnement exact de l'OCR (sur le poste, sur le serveur ou dans le cloud Genapi) dépend de la version de l'étude. Note-le dans la fiche client avec le nom du service.",
+  rel:["nt-scan","srv-service","srv-disque"] },
+
+{ id:"nt-scan", cat:"notaire", niv:2, u:"Mes scans n'arrivent plus dans le dossier", t:"Scan vers dossier réseau en échec (copieur)",
+  sym:["Le copieur affiche une erreur d'envoi vers dossier / SMB","Les scans n'arrivent plus dans le dossier de numérisation ou dans Genapi"],
+  cause:"Mot de passe du compte utilisé par le copieur expiré ou changé, dossier déplacé/renommé, copieur ne gérant pas la signature SMB, serveur plein.",
+  diag:["Message d'erreur sur le copieur","Quel compte le copieur utilise-t-il ? Ce compte est-il verrouillé ou expiré dans l'AD ?","Le dossier cible existe-t-il toujours ?"],
+  fix:["Compte expiré : réinitialiser son mot de passe et le saisir dans le carnet d'adresses du copieur","Pour la suite : compte dédié au copieur avec droits limités au dossier de scan","Dossier déplacé : corriger le chemin dans le copieur","Erreur SMB après mise à jour Windows : mettre à jour le firmware du copieur"],
+  cmd:[{l:"État du compte du copieur",c:"Get-ADUser svc-copieur -Properties LockedOut,PasswordExpired,PasswordLastSet,Enabled"}],
+  rel:["pc-scan","lec-nas","nt-ocr"] },
+
+{ id:"nt-version", cat:"notaire", niv:2, u:"Genapi dit que ma version n'est pas à jour", t:"Genapi : version du poste incompatible après mise à jour",
+  sym:["Message de version différente entre poste et serveur","Ça marche sur certains postes et pas d'autres après une mise à jour"],
+  cause:"Le serveur a été mis à jour, mais la partie poste n'a pas suivi sur certains postes ou sur le TSE.",
+  diag:["Quels postes sont touchés ? Comparer leur version","Sur TSE : la mise à jour a-t-elle été lancée en mode installation ?"],
+  fix:["Lancer la mise à jour du poste avec un compte administrateur","Sur TSE : fermer les sessions, passer en mode installation, installer, revenir en mode exécution (commandes)","Si la mise à jour échoue : support Genapi"],
+  cmd:[{l:"Mode installation sur un serveur RDS",c:"change user /install\nREM ... lancer l'installation ...\nchange user /execute"}],
+  rel:["nt-inot","tse-session"] },
+
+{ id:"nt-lent", cat:"notaire", niv:2, u:"Genapi est très lent", t:"Genapi lent",
+  sym:["Ouverture des dossiers longue","Fusion d'acte qui prend plusieurs minutes"],
+  cause:"Serveur chargé ou disque plein, réseau (Wi-Fi), antivirus qui analyse les fichiers de l'application, TSE saturé, ou connexion Internet pour la version cloud.",
+  diag:["Lent pour toute l'étude ou un poste ?","Version locale : charge et espace du serveur ; version cloud : débit Internet","Antivirus : les exclusions recommandées par Genapi sont-elles en place ?"],
+  fix:["Un poste : câble plutôt que Wi-Fi, redémarrage","Tous : vérifier serveur (CPU, RAM, disque) ou débit Internet","Mettre en place les exclusions antivirus de l'éditeur","Escalader à Genapi avec heures et actions lentes précises"],
+  rel:["tse-lent","net-lent","srv-disque"] },
+
+/* ---------- POSTE (suite) ---------- */
+{ id:"pc-maj", cat:"poste", niv:1, u:"Windows Update n'arrive pas à installer les mises à jour", t:"Windows Update en échec",
+  sym:["Mise à jour qui échoue en boucle avec un code 0x8…","« Annulation des modifications » au redémarrage"],
+  cause:"Cache Windows Update corrompu, disque plein, fichiers système endommagés.",
+  diag:["Espace libre sur C: (au moins 20 Go)","Code d'erreur dans Paramètres › Windows Update › Historique"],
+  fix:["Libérer de l'espace","Réinitialiser le cache Windows Update (commandes, en admin)","Réparer Windows avec DISM puis SFC","Relancer la recherche de mises à jour"],
+  cmd:[{l:"Réinitialiser le cache Windows Update",c:"net stop wuauserv\nnet stop bits\nren C:\\Windows\\SoftwareDistribution SoftwareDistribution.old\nnet start bits\nnet start wuauserv"},{l:"Réparer Windows",c:"DISM /Online /Cleanup-Image /RestoreHealth\nsfc /scannow"}],
+  rel:["pc-disque","srv-maj"] },
+
+{ id:"pc-lent", cat:"poste", niv:1, u:"Mon ordinateur est lent", t:"Poste lent",
+  sym:["Démarrage long, applis qui mettent du temps à s'ouvrir","Ventilateur bruyant"],
+  cause:"Trop d'applis au démarrage, mémoire saturée, disque plein, analyse antivirus ou mise à jour en cours, disque dur mécanique vieillissant.",
+  diag:["Gestionnaire des tâches (Ctrl+Maj+Échap) › Processus : qu'est-ce qui prend CPU, mémoire, disque ?","Depuis quand le poste n'a-t-il pas redémarré ? (onglet Performances › Temps d'activité)","Disque SSD ou HDD ?"],
+  fix:["Redémarrer (pas seulement mettre en veille)","Gestionnaire des tâches › Applications de démarrage : désactiver l'inutile","Libérer de l'espace (fiche disque plein)","HDD ou 4 Go de RAM : proposer un SSD / plus de mémoire ou un remplacement"],
+  rel:["pc-disque","pc-maj"] },
+
+{ id:"pc-ecran", cat:"poste", niv:1, u:"Mon deuxième écran ne s'affiche pas", t:"Deuxième écran non détecté",
+  sym:["Écran noir ou « Pas de signal »","Écran détecté mais en miroir"],
+  cause:"Mode d'affichage, câble ou source de l'écran, station d'accueil, pilote graphique.",
+  diag:["L'écran est-il allumé et sur la bonne source (HDMI/DisplayPort) ?","Portable sur station d'accueil : l'écran marche-t-il en direct sur le portable ?"],
+  fix:["Windows+P › Étendre","Paramètres › Système › Écran › Plusieurs écrans › Détecter","Rebrancher le câble, tester un autre câble","Station d'accueil : la débrancher/rebrancher, mettre à jour son firmware et le pilote graphique"],
+  rel:["pc-lent"] },
+
+{ id:"pc-pin", cat:"poste", niv:1, u:"Mon code PIN Windows ne marche plus", t:"Code PIN Windows Hello indisponible",
+  sym:["« Un problème est survenu et votre code PIN n'est pas disponible »"],
+  cause:"Conteneur Windows Hello corrompu, souvent après une mise à jour ou un changement de carte mère/TPM.",
+  diag:["L'utilisateur peut-il se connecter avec son mot de passe (Options de connexion sous le champ PIN) ?"],
+  fix:["Se connecter avec le mot de passe","Paramètres › Comptes › Options de connexion › Code PIN › « J'ai oublié mon code PIN »","Si ça échoue : supprimer le dossier Ngc (commandes admin) puis recréer le code PIN"],
+  cmd:[{l:"Supprimer le conteneur PIN (admin, puis redémarrer)",c:"takeown /f C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Microsoft\\Ngc /r /d o\nicacls C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Microsoft\\Ngc /grant administrateurs:F /t\nrd /s /q C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Microsoft\\Ngc"}],
+  note:"`/d o` et `administrateurs` valent pour un Windows en français. Sur un Windows en anglais : `/d y` et `administrators`.",
+  rel:["ad-mdp","ad-lock"] },
+
+{ id:"pc-pdf", cat:"poste", niv:1, u:"Mes PDF s'ouvrent dans Edge au lieu d'Adobe", t:"Changer l'application par défaut des PDF",
+  sym:["Les PDF s'ouvrent dans le navigateur","Impossible de signer ou annoter comme d'habitude"],
+  cause:"Une mise à jour a remis Edge comme lecteur PDF par défaut.",
+  diag:["Adobe Reader / Acrobat est-il installé ?"],
+  fix:["Paramètres › Applications › Applications par défaut › taper `.pdf` › choisir Adobe Acrobat","Ou clic droit sur un PDF › Ouvrir avec › Choisir une autre application › Toujours"],
+  rel:["pc-lent"] }
+);
+
+/* Formulation « comme l'utilisateur le dit » pour les fiches existantes */
+const USER = {
+  "ol-profil":"Outlook ne charge plus mon profil","ol-safe":"Outlook plante ou ne s'ouvre pas","ol-ost":"Outlook ne synchronise plus / erreur .ost",
+  "ol-pst":"Mon archive PST ne s'ouvre plus","ol-archive":"Je veux archiver mes anciens mails","ol-quota":"Ma boîte mail est pleine",
+  "ol-mdp":"Outlook me redemande le mot de passe sans arrêt","ol-partagee":"Je ne vois pas la boîte partagée","ol-calendrier":"Je dois accéder à l'agenda du notaire",
+  "ol-quarantaine":"Je n'ai pas reçu un mail","off-repair":"Word / Excel plantent","off-activation":"Office affiche « Produit sans licence »",
+  "off-fichier":"Mon document Word est corrompu ou perdu","od-sync":"OneDrive ne synchronise plus","od-restore":"Des fichiers ont disparu de OneDrive / SharePoint",
+  "sp-acces":"SharePoint me dit « accès refusé »","sp-bibli":"Le client veut passer son serveur de fichiers sur SharePoint","teams-cache":"Teams reste blanc ou ne se connecte pas",
+  "teams-fichiers":"Je ne vois pas l'équipe Teams","cpt-login":"Je n'arrive pas à me connecter à Microsoft 365","cpt-mfa":"J'ai changé de téléphone, plus de code MFA",
+  "cpt-compromis":"Mes contacts reçoivent des mails bizarres de moi","ad-lock":"Mon compte Windows est verrouillé","ad-mdp":"Mon mot de passe Windows a expiré",
+  "ad-trust":"« La relation d'approbation a échoué »","ad-gpo":"Une imprimante ou un réglage ne s'applique pas","ad-sante":"Problèmes d'authentification bizarres sur plusieurs postes",
+  "dns-client":"Le serveur est introuvable par son nom","dns-internet":"Plus d'Internet sur tout le site","tse-session":"Je n'arrive pas à rouvrir ma session TSE",
+  "tse-profil":"J'ai un profil temporaire sur le TSE","tse-lic":"Message de licence Bureau à distance","tse-lent":"Le TSE rame pour tout le monde",
+  "tse-imp":"Mon imprimante n'apparaît pas dans le TSE","tse-office":"Office sans licence sur le TSE","nt-inot":"Genapi ne s'ouvre plus",
+  "nt-word-addin":"Le ruban Genapi a disparu de Word","nt-cloud":"Je n'arrive pas à me connecter à Genapi cloud","nt-real":"Ma clé REAL n'est pas reconnue",
+  "fid-acces":"Je n'arrive pas à me connecter à Fiducial Cloud","pf-wan":"pfSense : passerelle WAN en rouge","pf-vpn":"Mon VPN ne se connecte pas",
+  "pf-nat":"Le client veut ouvrir un port","pf-logs":"Un site est bloqué au bureau","tv-pret":"TeamViewer « Non prêt »",
+  "tv-noir":"Écran noir en prise en main","pc-spooler":"L'impression est bloquée","pc-scan":"Le copieur n'envoie plus les scans par mail","pc-disque":"Mon disque C: est plein"
+};
+FICHES.forEach(f => { if (!f.u) f.u = USER[f.id] || f.t; });
+
+/* Thèmes de l'accueil : regroupent les fiches comme on pense au téléphone */
+const TILES = [
+  {k:"internet", t:"Internet & Wi-Fi", d:"Plus d'Internet, lenteurs, Wi-Fi, box, sites bloqués", ids:["dns-internet","net-poste","net-lent","net-wifi","net-sites","net-nav","net-box","pf-wan"]},
+  {k:"serveur", t:"Accès au serveur", d:"Serveur injoignable, Bureau à distance, mises à jour, disque, sauvegarde", ids:["srv-ping","srv-rdp","srv-maj","srv-disque","srv-service","srv-sauvegarde","ad-sante"]},
+  {k:"partage", t:"Lecteurs réseau & fichiers", d:"Lecteur disparu, croix rouge, accès refusé, fichier verrouillé, restauration", ids:["lec-absent","lec-croix","lec-refuse","lec-verrou","lec-lent","lec-restore","lec-identifiants","lec-nas","dns-client"]},
+  {k:"outlook", t:"Outlook & mails", d:"Profil, archive, boîte pleine, mot de passe, boîte partagée, recherche", ids:["ol-safe","ol-profil","ol-mdp","ol-ost","ol-archive","ol-quota","ol-pst","ol-partagee","ol-calendrier","ol-quarantaine","ol-nouveau","ol-recherche","ol-signature","ol-mobile"]},
+  {k:"genapi", t:"Genapi & notariat", d:"iNot, complément Outlook et Word, OCR, scans, clé REAL, cloud", ids:["nt-inot","nt-outlook","nt-word-addin","nt-ocr","nt-scan","nt-version","nt-lent","nt-cloud","nt-real"]},
+  {k:"office", t:"Office, OneDrive, SharePoint, Teams", d:"Réparer Office, licence, synchro, fichiers perdus, Teams", ids:["off-repair","off-activation","off-fichier","od-sync","od-restore","sp-acces","sp-bibli","teams-cache","teams-fichiers"]},
+  {k:"compte", t:"Connexion & sécurité", d:"Compte verrouillé, mot de passe, MFA, piratage, code PIN", ids:["ad-lock","ad-mdp","cpt-login","cpt-mfa","cpt-compromis","ad-trust","pc-pin"]},
+  {k:"tse", t:"TSE / Bureau à distance", d:"Session bloquée, profil temporaire, licences, lenteurs, imprimantes", ids:["tse-session","tse-profil","srv-rdp","tse-lent","tse-imp","tse-lic","tse-office"]},
+  {k:"pfsense", t:"pfSense & VPN", d:"WAN, VPN nomade, ouverture de port, blocages", ids:["pf-wan","pf-vpn","pf-nat","pf-logs"]},
+  {k:"poste", t:"Poste & impression", d:"Lenteur, mises à jour, écran, imprimante, scan, PDF", ids:["pc-lent","pc-maj","pc-disque","pc-ecran","pc-spooler","pc-scan","pc-pdf","ad-gpo"]},
+  {k:"cloud", t:"Fiducial Cloud & prise en main", d:"Accès Fiducial, TeamViewer non prêt, écran noir", ids:["fid-acces","tv-pret","tv-noir"]}
+];
+
+/* Arbres supplémentaires */
+Object.assign(TREES, {
+  internet: { t:"Internet ne marche pas", d:"Un poste, tout le site, lenteurs, un site précis", start:"i1", n:{
+    i1:{q:"Qui est touché ?", a:[["Tout le site","i2"],["Un seul poste","=net-poste"],["Tout le monde, mais c'est juste lent","=net-lent"],["Un seul site web","=net-sites"]]},
+    i2:{q:"Quels voyants sur la box / l'ONT ?", a:[["Voyant fibre rouge ou éteint","=net-box"],["Box normale, pfSense passerelle en rouge","=pf-wan"],["Tout semble normal","i3"]]},
+    i3:{q:"Depuis un poste : ping 8.8.8.8 répond-il ?", a:[["Oui, mais les sites ne s'ouvrent pas (DNS)","=dns-internet"],["Non","=pf-wan"]]}
+  }},
+  lecteur: { t:"Lecteur réseau / serveur", d:"Lecteur absent, croix rouge, accès refusé, serveur tombé", start:"s1", n:{
+    s1:{q:"Combien de personnes sont touchées ?", a:[["Toute l'étude : plus rien sur le serveur","=srv-ping"],["Un seul utilisateur","s2"]]},
+    s2:{q:"Que voit l'utilisateur ?", a:[["Le lecteur n'existe plus","=lec-absent"],["Croix rouge, ça revient au double-clic","=lec-croix"],["« Accès refusé »","=lec-refuse"],["Fichier verrouillé / lecture seule","=lec-verrou"],["Il a supprimé un fichier","=lec-restore"],["On lui demande un mot de passe","=lec-identifiants"]]}
+  }},
+  genapi: { t:"Problème Genapi", d:"Ne s'ouvre pas, compléments, OCR, scans", start:"g1", n:{
+    g1:{q:"Quel est le problème ?", a:[["Genapi ne s'ouvre pas","g2"],["Boutons Genapi absents dans Outlook","=nt-outlook"],["Ruban Genapi absent dans Word","=nt-word-addin"],["OCR / documents non reconnus","=nt-ocr"],["Les scans n'arrivent pas","=nt-scan"],["C'est lent","=nt-lent"]]},
+    g2:{q:"Version installée chez le client ou en cloud ?", a:[["Sur le serveur de l'étude","g3"],["Cloud Genapi","=nt-cloud"]]},
+    g3:{q:"Un message parle-t-il de version ?", a:[["Oui, version incompatible","=nt-version"],["Non, serveur ou base introuvable","=nt-inot"]]}
+  }}
+});
+
+/* Cas d'entraînement supplémentaires */
+QUIZ.push(
+{cat:"internet", s:"Un seul poste n'a plus Internet. ipconfig affiche 169.254.12.40.", c:["Problème DNS","Le poste n'a pas reçu d'adresse du DHCP : vérifier câble, prise, puis ipconfig /renew","Panne opérateur","Réinstaller le navigateur"], a:1, e:"169.254 = adresse automatique quand aucun serveur DHCP n'a répondu. On regarde d'abord la couche physique.", f:"net-poste"},
+{cat:"internet", s:"Toute l'étude est sans Internet, la box a un voyant fibre rouge.", c:["Redémarrer le pfSense","Coupure de ligne : redémarrage électrique de la box puis ticket opérateur","Vider le cache DNS de tous les postes","Réinitialiser la box avec le bouton reset"], a:1, e:"Voyant fibre rouge = pas de signal optique. Le reset ferait perdre la config (mode bridge).", f:"net-box"},
+{cat:"internet", s:"« Votre connexion n'est pas privée » sur tous les sites, sur un seul PC.", c:["Le pare-feu bloque tout","Vérifier la date et l'heure du PC","Changer de navigateur","Réinstaller Windows"], a:1, e:"Une heure fausse rend tous les certificats invalides aux yeux du navigateur.", f:"net-sites"},
+{cat:"internet", s:"Internet rame pour toute l'étude depuis 9 h. Le pfSense montre l'upload saturé par un seul poste.", c:["Appeler l'opérateur","Identifier ce poste : souvent OneDrive ou une sauvegarde qui envoie des Go, la mettre en pause","Redémarrer la box","Passer tout le monde en 4G"], a:1, e:"Le Traffic Graph du pfSense désigne le coupable. OneDrive peut être bridé en débit.", f:"net-lent"},
+{cat:"serveur", s:"Bureau à distance : « Le nombre maximal de connexions est atteint » sur le serveur (pas un TSE).", c:["Acheter des licences RDS","Fermer une session déconnectée (quser / logoff) ou se connecter avec mstsc /admin","Redémarrer le serveur","Désactiver NLA"], a:1, e:"Un serveur non-TSE autorise 2 sessions d'administration. Souvent occupées par des sessions oubliées.", f:"srv-rdp"},
+{cat:"serveur", s:"Après une coupure de courant, plus personne n'a ni lecteurs ni Genapi. Le serveur ne répond pas au ping.", c:["Recréer les lecteurs réseau","Vérifier l'alimentation et démarrer le serveur via iDRAC/iLO ou l'hyperviseur","Réinstaller Genapi","Changer le DNS des postes"], a:1, e:"Tout tombe en même temps = le serveur. Après redémarrage, vérifier les services et les événements 6008/41.", f:"srv-ping"},
+{cat:"serveur", s:"Le serveur est bloqué sur « Travail sur les mises à jour 27 % » depuis 25 minutes.", c:["Forcer l'arrêt tout de suite","Patienter tant que le disque travaille, consulter les problèmes connus","Débrancher le câble réseau","Restaurer la sauvegarde"], a:1, e:"Une mise à jour cumulative serveur peut dépasser une heure. Un arrêt forcé peut casser le système.", f:"srv-maj"},
+{cat:"partage", s:"Les lecteurs ont une croix rouge à chaque démarrage, mais un double-clic les reconnecte. Postes en Wi-Fi.", c:["Recréer les partages sur le serveur","GPO « Toujours attendre le réseau » au démarrage","Donner les droits Contrôle total","Changer les lettres de lecteurs"], a:1, e:"Windows tente la reconnexion avant que le Wi-Fi soit monté. Ce n'est qu'un problème de timing.", f:"lec-croix"},
+{cat:"partage", s:"Tu viens d'ajouter un utilisateur au groupe « Comptabilité ». Il a toujours « Accès refusé ».", c:["Lui donner les droits en nominatif","Lui faire fermer et rouvrir sa session Windows","Redémarrer le serveur","Recréer le partage"], a:1, e:"Les appartenances aux groupes sont lues à l'ouverture de session (jeton Kerberos).", f:"lec-refuse"},
+{cat:"partage", s:"« Le fichier Compromis.docx est verrouillé par Marie ». Marie est en congé depuis hier.", c:["Copier le fichier sous un autre nom et travailler dessus","Fermer le fichier ouvert côté serveur (Fichiers ouverts / Close-SmbOpenFile)","Redémarrer le serveur","Supprimer le fichier"], a:1, e:"Sa session ou son poste a gardé le fichier ouvert. On le ferme côté serveur sans toucher au reste.", f:"lec-verrou"},
+{cat:"partage", s:"Depuis le passage en Windows 11 24H2, le NAS refuse l'accès : « accès invité non authentifié bloqué ».", c:["Réactiver l'accès invité par GPO","Créer un compte sur le NAS, mettre à jour son firmware, se connecter avec ce compte","Revenir à Windows 10","Désactiver le pare-feu"], a:1, e:"24H2 bloque l'invité et exige la signature SMB. La bonne sortie est un vrai compte, pas l'affaiblissement des postes.", f:"lec-nas"},
+{cat:"partage", s:"Un clerc a supprimé un dossier client sur le lecteur S: ce matin.", c:["Regarder dans sa corbeille","Versions précédentes du dossier parent, sinon restauration depuis la sauvegarde","C'est perdu","Lancer SCANPST"], a:1, e:"Une suppression sur un partage réseau ne passe pas par la corbeille du poste.", f:"lec-restore"},
+{cat:"notaire", s:"Les boutons Genapi ont disparu d'Outlook chez une clerc. Son Outlook a une nouvelle interface avec un interrupteur « Nouvel Outlook » activé.", c:["Réinstaller Genapi","Revenir à Outlook classique : le nouvel Outlook ne charge pas les compléments COM","Recréer son profil","Réparer Office en ligne"], a:1, e:"Cause n°1 en ce moment. Penser à masquer l'interrupteur chez les clients qui ont des compléments métier.", f:"nt-outlook"},
+{cat:"notaire", s:"Bandeau jaune Outlook : « Un complément a été désactivé car il ralentissait Outlook » (Genapi).", c:["L'ignorer","Fichier › Gérer les compléments COM › Toujours activer ce complément","Désinstaller Genapi","Passer au nouvel Outlook"], a:1, e:"Outlook désactive les compléments jugés lents. « Toujours activer » ou la clé DoNotDisableAddinList évitent que ça revienne.", f:"nt-outlook"},
+{cat:"notaire", s:"L'OCR ne reconnaît pas les actes scannés d'une seule étude. Les scans sont en JPEG 150 dpi couleur.", c:["Réinstaller Genapi","Corriger le profil de scan du copieur : PDF, 300 dpi, niveaux de gris ou N&B","Changer de copieur","Redémarrer le serveur"], a:1, e:"La qualité du scan conditionne la reconnaissance. On teste avec un document rescanné avant d'escalader.", f:"nt-ocr"},
+{cat:"notaire", s:"Les scans n'arrivent plus dans le dossier de numérisation. Le copieur affiche une erreur d'authentification SMB.", c:["Changer le copieur","Vérifier le compte du copieur dans l'AD (expiré, verrouillé) et mettre à jour son mot de passe dans le copieur","Ouvrir le partage à Tout le monde","Réinstaller les pilotes"], a:1, e:"Cas typique : le mot de passe du compte de scan a expiré. Le copieur ne prévient pas.", f:"nt-scan"},
+{cat:"notaire", s:"Après la mise à jour Genapi du serveur, le TSE affiche « version incompatible ».", c:["Réinstaller Windows Server","Mettre à jour la partie poste sur le TSE en mode installation (change user /install)","Restaurer le serveur","Attendre que ça passe"], a:1, e:"Sur un serveur RDS, les installations se font en mode installation pour s'appliquer à tous les utilisateurs.", f:"nt-version"},
+{cat:"compte", s:"« Votre code PIN n'est pas disponible » à l'ouverture de session.", c:["Réinstaller Windows","Se connecter avec le mot de passe, puis recréer le PIN (supprimer le dossier Ngc si besoin)","Réinitialiser le compte AD","Changer le disque"], a:1, e:"Le conteneur Windows Hello est corrompu. Le mot de passe reste utilisable.", f:"pc-pin"},
+{cat:"outlook", s:"La recherche Outlook ne trouve plus aucun mail récent.", c:["Recréer la boîte","Reconstruire l'index (Options d'indexation › Avancé › Reconstruire)","Réparer le PST","Désactiver le mode Exchange mis en cache"], a:1, e:"La recherche du classique s'appuie sur Windows Search. En attendant la reconstruction, utiliser le webmail.", f:"ol-recherche"}
+);
+
 /* ===================== ÉTAT & STOCKAGE ===================== */
 const store = {
   get(k, d) { try { const v = localStorage.getItem("hl:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem("hl:" + k, JSON.stringify(v)); } catch (e) {} }
 };
 const S = {
-  view: "fiches", cat: "all", fiche: null, query: "",
+  view: "home", query: "",
+  mode: "tiles", tile: null, fiche: null, outcome: null,
   done: new Set(store.get("done", [])),
+  checks: store.get("checks", {}),
   quiz: store.get("quiz", { ok: 0, total: 0 }),
   qcat: "all", qi: null, answered: false,
-  tree: "mail", node: null, trail: [],
+  tree: "internet", node: null, trail: [],
   routine: store.get("routine", {})
 };
 const byId = Object.fromEntries(FICHES.map(f => [f.id, f]));
+const tileOf = id => TILES.find(t => t.ids.includes(id));
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
-const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const LV = ["", "Hotline", "Droits admin", "Escalade probable"];
 
 function stat() {
   const pct = S.quiz.total ? Math.round(100 * S.quiz.ok / S.quiz.total) : 0;
@@ -842,97 +1224,165 @@ function show(v) {
   S.view = v;
   document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.v === v));
   document.querySelectorAll("section.view").forEach(s => s.hidden = s.id !== "v-" + v);
-  store.set("view", v);
-  if (v === "fiches") renderFiches();
+  if (v === "home") renderHome();
   if (v === "diag") renderTree();
   if (v === "quiz") renderQuiz();
   if (v === "veille") renderVeille();
+  window.scrollTo({ top: 0 });
 }
-$("#tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(b.dataset.v); });
+function goTiles() { S.mode = "tiles"; S.tile = null; S.fiche = null; clearSearch(); show("home"); }
+function goTile(k) { S.mode = "tile"; S.tile = k; S.fiche = null; clearSearch(); show("home"); }
+function openFiche(id, tile) {
+  S.mode = "fiche"; S.fiche = id; S.outcome = null;
+  S.tile = tile || (S.tile && TILES.find(t => t.k === S.tile).ids.includes(id) ? S.tile : (tileOf(id) || {}).k || null);
+  clearSearch(); show("home");
+}
+function clearSearch() { S.query = ""; $("#q").value = ""; }
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.v === "home") { if (S.view === "home") goTiles(); else show("home"); } else show(b.dataset.v);
+});
+$("#home-link").addEventListener("click", goTiles);
+$("#q").addEventListener("input", e => { S.query = e.target.value.trim(); if (S.view !== "home") show("home"); else renderHome(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && S.view === "home") { if (S.query) { clearSearch(); renderHome(); } else if (S.mode === "fiche" && S.tile) goTile(S.tile); else goTiles(); }
+});
 
-function openFiche(id) { S.fiche = id; S.cat = "all"; S.query = ""; $("#q").value = ""; show("fiches"); window.scrollTo({ top: 0 }); }
-
-/* ===================== FICHES ===================== */
+/* ===================== ACCUEIL ===================== */
 function matches(f) {
-  if (S.cat !== "all" && f.cat !== S.cat) return false;
-  if (!S.query) return true;
-  const hay = norm([f.t, f.cause, ...(f.sym||[]), ...(f.diag||[]), ...(f.fix||[]), f.note||"", ...(f.cmd||[]).map(c => c.c + " " + c.l), CATS[f.cat]].join(" "));
+  const hay = norm([f.u, f.t, f.cause, ...f.sym, ...f.diag, ...f.fix, f.note || "", ...(f.cmd || []).map(c => c.c + " " + c.l), CATS[f.cat]].join(" "));
   return norm(S.query).split(/\s+/).filter(Boolean).every(w => hay.includes(w));
 }
-function renderFiches() {
-  const counts = {};
-  FICHES.forEach(f => counts[f.cat] = (counts[f.cat] || 0) + 1);
-  $("#cats").innerHTML = `<button class="chip" data-c="all" aria-pressed="${S.cat==="all"}">Toutes<span class="n">${FICHES.length}</span></button>` +
-    Object.entries(CATS).map(([k, v]) => `<button class="chip" data-c="${k}" aria-pressed="${S.cat===k}">${esc(v)}<span class="n">${counts[k]||0}</span></button>`).join("");
-  const list = FICHES.filter(matches);
-  if (!list.find(f => f.id === S.fiche)) S.fiche = list[0] ? list[0].id : null;
-  $("#list").innerHTML = list.length ? list.map(f => `
-    <button class="item" data-id="${f.id}" aria-current="${f.id===S.fiche}">
-      <span class="t">${esc(f.t)}</span>
-      <span class="m"><span class="dot ${S.done.has(f.id)?"done":""}"></span>${esc(CATS[f.cat])} · N${f.niv}</span>
-    </button>`).join("") : `<p class="empty">Aucune fiche pour « ${esc(S.query)} ». Essaie un autre mot (ex : profil, verrouillé, VPN).</p>`;
-  renderFiche();
+function symRow(f) {
+  return `<button class="sy" data-f="${f.id}">
+    <span class="u">${esc(f.u)}</span>
+    <span class="t2">${esc(f.t)}</span>
+    <span class="side">${S.done.has(f.id) ? '<span class="dot" title="Maîtrisée"></span>' : ""}<span class="lvl n${f.niv}">${LV[f.niv]}</span><span class="arrow">›</span></span>
+  </button>`;
 }
-function renderFiche() {
-  const f = byId[S.fiche];
-  const el = $("#fiche");
-  if (!f) { el.innerHTML = `<p class="empty">Choisis une fiche dans la liste.</p>`; return; }
-  const lv = ["", "Hotline", "Droits admin", "Escalade probable"][f.niv];
-  el.innerHTML = `
-    <div class="eyebrow">${esc(CATS[f.cat])}<span class="lvl n${f.niv}">N${f.niv} · ${lv}</span></div>
-    <h2>${esc(f.t)}</h2>
+function renderHome() {
+  const el = $("#v-home");
+  if (S.query) {
+    const list = FICHES.filter(matches);
+    el.innerHTML = `<h2 class="h2">${list.length} fiche${list.length > 1 ? "s" : ""} pour « ${esc(S.query)} »</h2>
+      <p class="lead">Clique sur ce qui ressemble le plus à ce que dit l'utilisateur. Échap pour effacer.</p>
+      ${list.length ? `<div class="symlist">${list.map(symRow).join("")}</div>` : `<p class="empty">Rien trouvé. Essaie un mot plus simple (internet, lecteur, outlook, genapi, verrouillé…) ou passe par les thèmes.</p><button class="btn" data-home>Voir les thèmes</button>`}`;
+    return;
+  }
+  if (S.mode === "tile" && S.tile) {
+    const T = TILES.find(t => t.k === S.tile);
+    el.innerHTML = `<button class="back" data-home>‹ Tous les thèmes</button>
+      <h2 class="h2">${esc(T.t)}</h2>
+      <p class="lead">Qu'est-ce que l'utilisateur te dit ?</p>
+      <div class="symlist">${T.ids.map(id => symRow(byId[id])).join("")}</div>`;
+    return;
+  }
+  if (S.mode === "fiche" && S.fiche) { el.innerHTML = ficheHTML(byId[S.fiche]); return; }
+  const QUICK = ["dns-internet","lec-absent","nt-outlook","ol-mdp","ad-lock","srv-ping","nt-ocr","tse-session","ol-profil","od-sync"];
+  el.innerHTML = `<h2 class="h2">Quel est le problème ?</h2>
+    <p class="lead">Choisis un thème, puis le symptôme décrit par l'utilisateur. Ou tape directement dans la recherche.</p>
+    <div class="tiles">${TILES.map(t => {
+      const d = t.ids.filter(id => S.done.has(id)).length;
+      return `<button class="tile" data-t="${t.k}">
+        <span class="tt"><b>${esc(t.t)}</b><span class="n">${t.ids.length} cas</span></span>
+        <span class="d">${esc(t.d)}</span>
+        <span class="prog" title="${d} fiche(s) maîtrisée(s)"><i style="width:${Math.round(100 * d / t.ids.length)}%"></i></span>
+      </button>`; }).join("")}</div>
+    <div class="quick"><h3>Les appels les plus fréquents</h3>
+      <div class="row">${QUICK.filter(id => byId[id]).map(id => `<button class="pill" data-f="${id}">${esc(byId[id].u)}</button>`).join("")}</div>
+    </div>`;
+}
+
+function checkList(f, key, items) {
+  const on = new Set(S.checks[f.id] || []);
+  return `<div class="checks">${items.map((s, i) => {
+    const k = key + i, c = on.has(k);
+    return `<button class="ck ${c ? "on" : ""}" data-ck="${k}" aria-pressed="${c}"><span class="box">${c ? "✓" : key === "f" ? i + 1 : ""}</span><span class="txt">${fmt(s)}</span></button>`;
+  }).join("")}</div>`;
+}
+function ficheHTML(f) {
+  const T = S.tile ? TILES.find(t => t.k === S.tile) : null;
+  const on = S.checks[f.id] || [];
+  const nd = on.filter(k => k[0] === "d").length, nf = on.filter(k => k[0] === "f").length;
+  let out = "";
+  if (S.outcome === "ok") out = `<div class="msg"><b>Parfait.</b> Note la cause et la solution dans le ticket, puis fais valider l'utilisateur.</div>
+      <div class="row">${S.done.has(f.id) ? "" : `<button class="btn good" data-mark>Je maîtrise cette fiche</button>`}<button class="btn" data-home>Nouveau problème</button></div>`;
+  if (S.outcome === "ko") {
+    const rel = (f.rel || []).filter(r => byId[r]);
+    out = `${rel.length ? `<div class="q" style="font-size:1rem">Pistes suivantes</div><div class="next">${rel.map(r => `<button data-f="${r}">${esc(byId[r].u)} <span>· ${esc(byId[r].t)}</span></button>`).join("")}</div>` : ""}
+      <div class="note"><b>Escalade ·</b> ${f.niv >= 2 ? "Si les pistes ne donnent rien, passe le ticket au N2 avec ce que tu as vérifié (étapes cochées ci-dessus), le message exact et l'heure." : "Si rien ne marche, note les étapes faites et passe au N2."}${f.cat === "notaire" || f.cat === "fiducial" ? " Pour un problème logiciel, ouvre aussi un ticket chez l'éditeur avec captures." : ""}</div>`;
+  }
+  return `<button class="back" ${T ? `data-t="${T.k}"` : "data-home"}>‹ ${T ? esc(T.t) : "Tous les thèmes"}</button>
+  <article class="card fiche">
+    <div class="eyebrow">${esc(CATS[f.cat])}<span class="lvl n${f.niv}">${LV[f.niv]}</span>${S.done.has(f.id) ? '<span class="lvl n1">Maîtrisée</span>' : ""}</div>
+    <h2>${esc(f.u)}</h2>
+    <p class="t2">${esc(f.t)}</p>
     <div class="block"><h3>Symptômes</h3><ul class="sym">${f.sym.map(s => `<li>${fmt(s)}</li>`).join("")}</ul></div>
     <div class="block"><h3>Cause probable</h3><p>${fmt(f.cause)}</p></div>
-    <div class="block"><h3>Vérifier d'abord</h3><ul>${f.diag.map(s => `<li>${fmt(s)}</li>`).join("")}</ul></div>
-    <div class="block"><h3>Résolution</h3><ol class="fix">${f.fix.map(s => `<li>${fmt(s)}</li>`).join("")}</ol></div>
+    <div class="block"><h3>1. Vérifier d'abord <span class="count">${nd}/${f.diag.length}</span></h3>${checkList(f, "d", f.diag)}</div>
+    <div class="block"><h3>2. Résoudre <span class="count">${nf}/${f.fix.length}</span></h3>${checkList(f, "f", f.fix)}</div>
     ${f.cmd ? `<div class="block"><h3>Commandes</h3>${f.cmd.map((c, i) => `
       <div class="cmd"><div class="cmd-h"><span>${esc(c.l)}</span><button data-copy="${i}">Copier</button></div><pre>${esc(c.c)}</pre></div>`).join("")}</div>` : ""}
     ${f.note ? `<div class="note"><b>Attention ·</b> ${fmt(f.note)}</div>` : ""}
-    ${f.rel ? `<div class="block"><h3>Fiches liées</h3><div class="related">${f.rel.filter(r => byId[r]).map(r => `<button data-go="${r}">${esc(byId[r].t)}</button>`).join("")}</div></div>` : ""}
-    <div class="actions">
-      <button class="btn ${S.done.has(f.id) ? "" : "primary"}" id="mark">${S.done.has(f.id) ? "Retirer de « maîtrisée »" : "Marquer comme maîtrisée"}</button>
-      <button class="btn" id="train">M'entraîner sur ce thème</button>
-    </div>`;
+    <div class="outcome">
+      <div class="q">C'est réglé ?</div>
+      <div class="row">
+        <button class="btn ${S.outcome === "ok" ? "good" : ""}" data-out="ok">Oui, c'est réglé</button>
+        <button class="btn ${S.outcome === "ko" ? "primary" : ""}" data-out="ko">Non, toujours pas</button>
+        <button class="btn" data-train>M'entraîner sur ce thème</button>
+        ${on.length ? `<button class="btn" data-reset>Décocher les étapes</button>` : ""}
+      </div>
+      ${out}
+    </div>
+  </article>`;
 }
-$("#cats").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) { S.cat = b.dataset.c; S.fiche = null; renderFiches(); } });
-$("#list").addEventListener("click", e => { const b = e.target.closest("[data-id]"); if (b) { S.fiche = b.dataset.id; renderFiches(); if (innerWidth < 820) $("#fiche").scrollIntoView({ behavior: "smooth" }); } });
-$("#fiche").addEventListener("click", e => {
-  const f = byId[S.fiche];
-  const cp = e.target.closest("[data-copy]");
+
+$("#v-home").addEventListener("click", e => {
+  const t = e.target;
+  const tile = t.closest("[data-t]"); if (tile) { goTile(tile.dataset.t); return; }
+  const f = t.closest("[data-f]"); if (f) { openFiche(f.dataset.f); return; }
+  if (t.closest("[data-home]")) { goTiles(); return; }
+  const fi = byId[S.fiche]; if (!fi) return;
+  const ck = t.closest("[data-ck]");
+  if (ck) {
+    const set = new Set(S.checks[fi.id] || []), k = ck.dataset.ck;
+    set.has(k) ? set.delete(k) : set.add(k);
+    S.checks[fi.id] = [...set]; store.set("checks", S.checks);
+    const y = scrollY; renderHome(); scrollTo({ top: y }); return;
+  }
+  const cp = t.closest("[data-copy]");
   if (cp) {
-    const txt = f.cmd[+cp.dataset.copy].c;
-    const done = () => { cp.textContent = "Copié"; setTimeout(() => cp.textContent = "Copier", 1400); };
-    const fallback = () => { const r = document.createRange(); r.selectNodeContents(cp.closest(".cmd").querySelector("pre")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent = "Sélectionné, Ctrl+C"; };
-    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+    const txt = fi.cmd[+cp.dataset.copy].c;
+    const ok = () => { cp.textContent = "Copié"; setTimeout(() => cp.textContent = "Copier", 1400); };
+    const fb = () => { const r = document.createRange(); r.selectNodeContents(cp.closest(".cmd").querySelector("pre")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent = "Sélectionné : Ctrl+C"; };
+    try { navigator.clipboard.writeText(txt).then(ok, fb); } catch (err) { fb(); }
     return;
   }
-  const go = e.target.closest("[data-go]");
-  if (go) { openFiche(go.dataset.go); return; }
-  if (e.target.id === "mark") {
-    S.done.has(f.id) ? S.done.delete(f.id) : S.done.add(f.id);
-    store.set("done", [...S.done]); stat(); renderFiches();
-  }
-  if (e.target.id === "train") { S.qcat = f.cat; S.qi = null; show("quiz"); }
+  const out = t.closest("[data-out]");
+  if (out) { S.outcome = out.dataset.out; const y = scrollY; renderHome(); scrollTo({ top: y }); return; }
+  if (t.closest("[data-mark]")) { S.done.add(fi.id); store.set("done", [...S.done]); stat(); const y = scrollY; renderHome(); scrollTo({ top: y }); return; }
+  if (t.closest("[data-reset]")) { delete S.checks[fi.id]; store.set("checks", S.checks); S.outcome = null; const y = scrollY; renderHome(); scrollTo({ top: y }); return; }
+  if (t.closest("[data-train]")) { S.qcat = QUIZ.some(q => q.cat === fi.cat) ? fi.cat : "all"; S.qi = null; show("quiz"); }
 });
-$("#q").addEventListener("input", e => { S.query = e.target.value.trim(); if (S.view !== "fiches") show("fiches"); else renderFiches(); });
 
 /* ===================== DIAGNOSTIC ===================== */
+const TREE_ORDER = ["internet","lecteur","genapi","mail","acces","login","reseau"];
 function renderTree() {
-  $("#trees").innerHTML = Object.entries(TREES).map(([k, t]) => `<button data-t="${k}" aria-pressed="${S.tree===k}"><b>${esc(t.t)}</b><span>${esc(t.d)}</span></button>`).join("");
+  $("#trees").innerHTML = TREE_ORDER.filter(k => TREES[k]).map(k => `<button data-tr="${k}" aria-pressed="${S.tree===k}"><b>${esc(TREES[k].t)}</b><span>${esc(TREES[k].d)}</span></button>`).join("");
   const T = TREES[S.tree];
   if (!S.node) S.node = T.start;
   const trail = S.trail.length ? `<div class="trail">${S.trail.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : "";
   if (S.node.startsWith("=")) {
     const f = byId[S.node.slice(1)];
-    $("#tree").innerHTML = `${trail}<div class="verdict"><div class="eyebrow">Piste la plus probable</div><div class="q" style="margin:4px 0 8px">${esc(f.t)}</div><p style="margin:0 0 12px">${fmt(f.cause)}</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-go="${f.id}">Ouvrir la fiche</button><button class="btn" data-reset>Recommencer</button></div></div>`;
+    $("#tree").innerHTML = `${trail}<div class="verdict"><div class="eyebrow">Piste la plus probable</div><div class="qq" style="margin:4px 0 4px">${esc(f.u)}</div><p style="margin:0 0 12px;color:var(--muted)">${esc(f.t)}</p><p style="margin:0 0 12px">${fmt(f.cause)}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-go="${f.id}">Ouvrir la fiche et dépanner</button><button class="btn" data-reset>Recommencer</button></div></div>`;
     return;
   }
   const n = T.n[S.node];
-  $("#tree").innerHTML = `${trail}<div class="q">${esc(n.q)}</div><div class="answers">${n.a.map((a, i) => `<button data-a="${i}">${esc(a[0])}</button>`).join("")}</div>
+  $("#tree").innerHTML = `${trail}<div class="qq">${esc(n.q)}</div><div class="answers">${n.a.map((a, i) => `<button data-a="${i}">${esc(a[0])}</button>`).join("")}</div>
     ${S.trail.length ? `<div style="margin-top:14px"><button class="btn" data-reset>Recommencer</button></div>` : ""}`;
 }
-$("#trees").addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (b) { S.tree = b.dataset.t; S.node = null; S.trail = []; renderTree(); } });
+$("#trees").addEventListener("click", e => { const b = e.target.closest("[data-tr]"); if (b) { S.tree = b.dataset.tr; S.node = null; S.trail = []; renderTree(); } });
 $("#tree").addEventListener("click", e => {
   if (e.target.closest("[data-reset]")) { S.node = null; S.trail = []; renderTree(); return; }
   const go = e.target.closest("[data-go]"); if (go) { openFiche(go.dataset.go); return; }
@@ -948,12 +1398,15 @@ function nextQ() {
   let i; do { i = p[Math.floor(Math.random() * p.length)]; } while (p.length > 1 && i === S.qi);
   S.qi = i; S.answered = false;
 }
+function scoreHTML() {
+  const pct = S.quiz.total ? Math.round(100 * S.quiz.ok / S.quiz.total) : 0;
+  return `<span><b>${S.quiz.ok}</b>bonnes réponses</span><span><b>${S.quiz.total}</b>questions</span><span><b>${pct} %</b>réussite</span>`;
+}
 function renderQuiz() {
   const counts = {}; QUIZ.forEach(q => counts[q.cat] = (counts[q.cat] || 0) + 1);
   $("#qcats").innerHTML = `<button class="chip" data-c="all" aria-pressed="${S.qcat==="all"}">Tous<span class="n">${QUIZ.length}</span></button>` +
     Object.keys(CATS).filter(k => counts[k]).map(k => `<button class="chip" data-c="${k}" aria-pressed="${S.qcat===k}">${esc(CATS[k])}<span class="n">${counts[k]}</span></button>`).join("");
-  const pct = S.quiz.total ? Math.round(100 * S.quiz.ok / S.quiz.total) : 0;
-  $("#score").innerHTML = `<span><b>${S.quiz.ok}</b>bonnes réponses</span><span><b>${S.quiz.total}</b>questions</span><span><b>${pct} %</b>réussite</span>`;
+  $("#score").innerHTML = scoreHTML();
   if (S.qi === null || (S.qcat !== "all" && QUIZ[S.qi].cat !== S.qcat)) nextQ();
   if (S.qi === null) { $("#qcard").innerHTML = `<p class="empty">Pas encore de cas sur ce thème. Choisis « Tous ».</p>`; return; }
   const q = QUIZ[S.qi];
@@ -975,8 +1428,7 @@ $("#qcard").addEventListener("click", e => {
   if (!ok) b.classList.add("wrong");
   $("#qx").innerHTML = `<div class="explain"><b>${ok ? "Bonne réponse." : "Pas tout à fait."}</b> ${fmt(q.e)}</div>
     <div class="actions"><button class="btn primary" id="nextq">Cas suivant</button><button class="btn" data-go="${q.f}">Réviser la fiche</button></div>`;
-  const pct = Math.round(100 * S.quiz.ok / S.quiz.total);
-  $("#score").innerHTML = `<span><b>${S.quiz.ok}</b>bonnes réponses</span><span><b>${S.quiz.total}</b>questions</span><span><b>${pct} %</b>réussite</span>`;
+  $("#score").innerHTML = scoreHTML();
 });
 
 /* ===================== VEILLE ===================== */
@@ -997,5 +1449,5 @@ $("#routine").addEventListener("change", e => { const k = e.target.dataset.k; if
 /* ===================== DÉMARRAGE ===================== */
 stat();
 const hash = location.hash.slice(1);
-show(["methode","fiches","diag","quiz","veille"].includes(hash) ? hash : store.get("view", "methode"));
+show(["home","diag","quiz","veille","methode"].includes(hash) ? hash : "home");
 </script>
