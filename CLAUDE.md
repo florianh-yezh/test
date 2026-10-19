@@ -12,11 +12,11 @@ Ce projet suit les performances des vidéos TikTok du compte **@zechromstore** e
 
 Les stats sont saisies depuis le dashboard en ligne (GitHub Pages), qui enregistre directement dans `data/*.csv` sur GitHub. La copie locale peut donc être en retard.
 
-Dépôt : `https://github.com/<COMPTE>/<DEPOT>` (à compléter une fois le dépôt créé), branche `main`.
+Dépôt : `https://github.com/florianh-yezh/test`, branche **`zechromstore-stats`**. Les autres branches de ce dépôt (`site-artymad`, `ccr-…`) sont un autre projet : ne jamais y toucher.
 
 - **Au début de chaque session et avant toute analyse**, récupérer les dernières stats :
-  - si le dossier est un clone git : `git pull` ;
-  - sinon (ou si git n'est pas installé) : lire directement `https://raw.githubusercontent.com/<COMPTE>/<DEPOT>/main/data/videos.csv` et `.../data/releves.csv`.
+  - si le dossier est un clone git : `git pull` (la branche locale `main` suit `origin/zechromstore-stats`) ;
+  - sinon (ou si git n'est pas installé) : lire directement `https://raw.githubusercontent.com/florianh-yezh/test/zechromstore-stats/data/videos.csv` et `.../data/releves.csv`.
 - Si la récupération échoue (pas de connexion, conflit, dépôt privé sans accès), le dire à l'utilisateur avant d'analyser des données qui ne sont peut-être pas à jour.
 - Après une modification des CSV par Claude, faire un commit puis un `git push` (après accord de l'utilisateur), pour que le dashboard voie les changements. Sans git, conseiller plutôt la saisie via le dashboard.
 

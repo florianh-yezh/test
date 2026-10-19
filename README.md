@@ -23,9 +23,10 @@ Téléphone / PC ──► dashboard (GitHub Pages) ──► enregistre dans da
 
 ### 1. Mettre le dashboard en ligne
 
-1. Crée le dépôt sur github.com (**New repository**, par ex. `zechromstore-stats`) et envoie-y les fichiers du projet.
-2. **Settings → Pages** → Source : *Deploy from a branch* → Branch : `main`, dossier `/ (root)` → **Save**.
-3. Après une minute environ, le dashboard est en ligne à l'adresse `https://<ton-pseudo>.github.io/zechromstore-stats/`. Ajoute-le à l'écran d'accueil de ton téléphone.
+Le projet est dans le dépôt `florianh-yezh/test`, sur la branche **`zechromstore-stats`** (les autres branches sont un autre projet).
+
+1. Sur github.com/florianh-yezh/test : **Settings → Pages** → Source : *Deploy from a branch* → Branch : `zechromstore-stats`, dossier `/ (root)` → **Save**.
+2. Après une minute environ, le dashboard est en ligne à l'adresse `https://florianh-yezh.github.io/test/`. Ajoute-le à l'écran d'accueil de ton téléphone.
 
 > ⚠️ Avec un compte GitHub gratuit, GitHub Pages ne fonctionne qu'avec un dépôt **public**. N'importe qui ayant l'adresse peut alors voir tes stats. Pour garder un dépôt privé avec Pages, il faut GitHub Pro.
 
@@ -33,7 +34,7 @@ Téléphone / PC ──► dashboard (GitHub Pages) ──► enregistre dans da
 
 1. GitHub → photo de profil → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
 2. Nom : `dashboard tiktok`. Expiration : selon ton choix (1 an par ex.).
-3. **Repository access** : *Only select repositories* → choisis uniquement `zechromstore-stats`.
+3. **Repository access** : *Only select repositories* → choisis uniquement `test`.
 4. **Permissions → Repository permissions → Contents** : *Read and write*.
 5. Génère le jeton et copie-le.
 6. Sur le dashboard, ouvre **Connexion GitHub**, colle le jeton et clique sur **Enregistrer**. Fais-le une fois sur chaque appareil.

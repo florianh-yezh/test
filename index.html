@@ -58,7 +58,7 @@
     <form id="fGh">
       <label>Compte GitHub<input name="owner" required></label>
       <label>Dépôt<input name="repo" required></label>
-      <label>Branche<input name="branch" value="main" required></label>
+      <label>Branche<input name="branch" value="zechromstore-stats" required></label>
       <label>Jeton d'accès (fine-grained)<input name="token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
       <div class="row" style="align-self:end">
         <button>Enregistrer</button>
@@ -175,7 +175,7 @@ function conf() {
   const repo = pages ? (location.pathname.split("/")[1] || location.hostname) : "";
   return {
     owner: store.get("gh_owner") || owner, repo: store.get("gh_repo") || repo,
-    branch: store.get("gh_branch") || "main", token: store.get("gh_token") || "",
+    branch: store.get("gh_branch") || "zechromstore-stats", token: store.get("gh_token") || "",
   };
 }
 const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, "")), c => c.charCodeAt(0)));
