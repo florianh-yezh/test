@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stats TikTok</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f6f8; --card: #ffffff; --text: #18181b; --muted: #6b6b76;
+    --border: #e4e4e9; --accent: #fe2c55; --accent2: #25f4ee; --good: #16a34a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f0f12; --card: #1a1a1f; --text: #f1f1f4; --muted: #9a9aa6; --border: #2c2c34; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1150px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0 0 4px; font-size: 26px; }
+  h2 { font-size: 17px; margin: 0 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .grid .card { margin: 0; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .kpi b { display: block; font-size: 22px; }
+  .kpi span { color: var(--muted); font-size: 13px; }
+  .chart { position: relative; height: 260px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: right; padding: 7px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  th { color: var(--muted); font-weight: 600; cursor: pointer; user-select: none; }
+  .scroll { overflow-x: auto; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 99px; background: var(--border); font-size: 12px; }
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  label { display: flex; flex-direction: column; font-size: 13px; color: var(--muted); gap: 4px; }
+  input, select, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; }
+  button { font: inherit; border: 0; border-radius: 8px; padding: 9px 14px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 600; }
+  button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tabs button { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .tabs button.on { background: var(--text); color: var(--bg); }
+  .hidden { display: none !important; }
+  .note { color: var(--muted); font-size: 13px; }
+  #empty { text-align: center; padding: 40px 16px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Stats TikTok · @zechromstore</h1>
+  <p class="sub">Performances des vidéos à partir de <code>zechromstore/data/videos.csv</code> et <code>zechromstore/data/releves.csv</code>.</p>
+
+  <details class="card" id="ghBox">
+    <summary class="row" style="cursor:pointer"><b>Connexion GitHub</b> <span id="status" class="note"></span></summary>
+    <p class="note">Le dashboard lit et enregistre directement les fichiers <code>zechromstore/data/*.csv</code> de ton dépôt. Le jeton reste uniquement dans ce navigateur (à saisir une fois par appareil).</p>
+    <form id="fGh">
+      <label>Compte GitHub<input name="owner" required></label>
+      <label>Dépôt<input name="repo" required></label>
+      <label>Branche<input name="branch" value="ccr-276ffb08-7divet" required></label>
+      <label>Jeton d'accès (fine-grained)<input name="token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+      <div class="row" style="align-self:end">
+        <button>Enregistrer</button>
+        <button type="button" class="ghost" id="ghLogout">Oublier le jeton</button>
+      </div>
+    </form>
+  </details>
+
+  <div id="empty" class="card hidden">
+    <h2>Aucune stat pour l'instant</h2>
+    <p class="note">Ajoute ta première vidéo avec le formulaire en bas de page, ou donne tes stats à Claude dans le projet.</p>
+  </div>
+
+  <section id="dash" class="hidden">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid">
+      <div class="card"><h2>Vues médianes par format</h2><div class="chart"><canvas id="cFormat"></canvas></div></div>
+      <div class="card"><h2>Engagement et rétention par format</h2><div class="chart"><canvas id="cEngage"></canvas></div></div>
+      <div class="card"><h2>Courbe des vues depuis la publication</h2><div class="chart"><canvas id="cCourbe"></canvas></div></div>
+      <div class="card"><h2>Vues médianes par heure de publication</h2><div class="chart"><canvas id="cHeure"></canvas></div></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>Toutes les vidéos <span class="note">(dernier relevé, clique sur une colonne pour trier)</span></h2>
+      <div class="scroll"><table id="table"></table></div>
+    </div>
+  </section>
+
+  <div class="card">
+    <h2>Ajouter des stats</h2>
+    <div class="tabs">
+      <button type="button" data-tab="releve" class="on">Nouveau relevé</button>
+      <button type="button" data-tab="video">Nouvelle vidéo</button>
+    </div>
+
+    <form id="fReleve">
+      <label>Vidéo<select name="video_id" required></select></label>
+      <label>Date du relevé<input type="date" name="date_releve" required></label>
+      <label>Heure du relevé<input type="time" name="heure_releve" required></label>
+      <label>Vues<input type="number" min="0" name="vues" required></label>
+      <label>Likes<input type="number" min="0" name="likes"></label>
+      <label>Commentaires<input type="number" min="0" name="commentaires"></label>
+      <label>Partages<input type="number" min="0" name="partages"></label>
+      <label>Enregistrements<input type="number" min="0" name="enregistrements"></label>
+      <label>Temps moyen de visionnage (s)<input type="number" min="0" step="0.1" name="temps_moyen_s"></label>
+      <label>% vue en entier<input type="number" min="0" max="100" step="0.1" name="pct_vue_complete"></label>
+      <label>% trafic Pour toi<input type="number" min="0" max="100" step="0.1" name="pct_for_you"></label>
+      <label>Nouveaux abonnés<input type="number" min="0" name="nouveaux_abonnes"></label>
+      <div class="row" style="align-self:end"><button>Ajouter le relevé</button></div>
+    </form>
+
+    <form id="fVideo" class="hidden">
+      <label>Nom<input name="nom" required></label>
+      <label>Date de publication<input type="date" name="date_publication" required></label>
+      <label>Heure de publication<input type="time" name="heure_publication" required></label>
+      <label>Durée (s)<input type="number" min="1" name="duree_s" required></label>
+      <label>Format<input name="format" list="formats" required placeholder="unboxing, tuto, pov…"></label>
+      <label>Accroche (2 premières s)<input name="accroche"></label>
+      <label>Sujet<input name="sujet"></label>
+      <label>Son<input name="son"></label>
+      <label>Hashtags<input name="hashtags" placeholder="#tag1 #tag2"></label>
+      <label>Notes<input name="notes"></label>
+      <div class="row" style="align-self:end"><button>Ajouter la vidéo</button></div>
+      <datalist id="formats"></datalist>
+    </form>
+
+    <p id="saveMsg" class="note" style="margin:12px 0 0"></p>
+  </div>
+</main>
+
+<script>
+const VIDEO_COLS = ["id","nom","date_publication","heure_publication","duree_s","format","accroche","sujet","son","hashtags","notes"];
+const RELEVE_COLS = ["video_id","date_releve","heure_releve","vues","likes","commentaires","partages","enregistrements","temps_moyen_s","pct_vue_complete","pct_for_you","nouveaux_abonnes"];
+let videos = [], releves = [], charts = {}, sortKey = "vues", sortDir = -1;
+
+// ---------- CSV ----------
+function parseCSV(text) {
+  const rows = []; let row = [], cell = "", q = false;
+  text = text.replace(/^﻿/, "");
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') q = false;
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell); rows.push(row); row = []; cell = "";
+    } else cell += c;
+  }
+  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+  const [head, ...body] = rows.filter(r => r.some(v => v.trim() !== ""));
+  if (!head) return [];
+  return body.map(r => Object.fromEntries(head.map((h, i) => [h.trim(), (r[i] ?? "").trim()])));
+}
+function toCSV(cols, data) {
+  const esc = v => { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  return [cols.join(","), ...data.map(o => cols.map(c => esc(o[c])).join(","))].join("\n") + "\n";
+}
+
+// ---------- GitHub ----------
+const FILES = { videos: "zechromstore/data/videos.csv", releves: "zechromstore/data/releves.csv" };
+const BRANCH = "ccr-276ffb08-7divet"; // branche publiée par GitHub Pages (partagée avec Grossesse Marina)
+const store = {
+  get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} },
+};
+function conf() {
+  // Sur GitHub Pages, compte et dépôt se déduisent de l'adresse (pseudo.github.io/depot/)
+  const pages = location.hostname.endsWith(".github.io");
+  const owner = pages ? location.hostname.split(".")[0] : "";
+  const repo = pages ? (location.pathname.split("/")[1] || location.hostname) : "";
+  return {
+    owner: store.get("gh_owner") || owner, repo: store.get("gh_repo") || repo,
+    branch: ((b) => !b || b === "zechromstore-stats" ? BRANCH : b)(store.get("gh_branch")), token: store.get("gh_token") || "",
+  };
+}
+const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, "")), c => c.charCodeAt(0)));
+const b64encode = s => { let bin = ""; new TextEncoder().encode(s).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+async function gh(path, init = {}) {
+  const c = conf();
+  const url = `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${path}` + (init.method ? "" : `?ref=${encodeURIComponent(c.branch)}&t=${Date.now()}`);
+  const r = await fetch(url, { ...init, cache: "no-store", headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${c.token}` } });
+  if (!r.ok) {
+    const msg = (await r.json().catch(() => ({}))).message || "";
+    throw new Error(r.status === 401 ? "jeton invalide ou expiré" : r.status === 404 ? "dépôt ou fichier introuvable (vérifie le nom et les droits du jeton)" : r.status === 409 ? "conflit, réessaie" : `GitHub ${r.status} ${msg}`);
+  }
+  return r.json();
+}
+async function readFile(path) { const j = await gh(path); return { rows: parseCSV(b64decode(j.content)), sha: j.sha }; }
+// Relit la dernière version du fichier sur GitHub, ajoute la ligne, et enregistre (commit)
+async function appendRow(path, cols, makeRow, message) {
+  const { rows, sha } = await readFile(path);
+  const row = makeRow(rows);
+  rows.push(row);
+  await gh(path, { method: "PUT", body: JSON.stringify({ message, content: b64encode(toCSV(cols, rows)), sha, branch: conf().branch }) });
+  return row;
+}
+
+// ---------- Calculs ----------
+const num = v => (v === "" || v == null || isNaN(+v)) ? null : +v;
+const dt = (d, h) => new Date(`${d}T${h || "00:00"}`);
+const median = a => { a = a.filter(x => x != null).sort((x, y) => x - y); if (!a.length) return null; const m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+const fmt = n => n == null ? "–" : n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + " M" : n >= 1e4 ? Math.round(n / 1e3) + " k" : Math.round(n).toLocaleString("fr-FR");
+const pct = n => n == null ? "–" : (n * 100).toFixed(1).replace(".", ",") + " %";
+
+function enrich() {
+  return videos.map(v => {
+    const pub = dt(v.date_publication, v.heure_publication);
+    const rs = releves.filter(r => r.video_id === v.id)
+      .map(r => ({ ...r, t: dt(r.date_releve, r.heure_releve) }))
+      .map(r => ({ ...r, age_h: (r.t - pub) / 36e5 }))
+      .sort((a, b) => a.t - b.t);
+    const last = rs[rs.length - 1] || {};
+    const vues = num(last.vues), dur = num(v.duree_s);
+    const inter = ["likes", "commentaires", "partages", "enregistrements"].reduce((s, k) => s + (num(last[k]) || 0), 0);
+    return {
+      ...v, releves: rs, pub, nbReleves: rs.length, age_h: last.age_h ?? null,
+      vues, likes: num(last.likes), partages: num(last.partages), enreg: num(last.enregistrements),
+      engagement: vues ? inter / vues : null,
+      partage: vues && num(last.partages) != null ? num(last.partages) / vues : null,
+      retention: dur && num(last.temps_moyen_s) != null ? num(last.temps_moyen_s) / dur : null,
+      complete: num(last.pct_vue_complete) != null ? num(last.pct_vue_complete) / 100 : null,
+      abos1k: vues && num(last.nouveaux_abonnes) != null ? num(last.nouveaux_abonnes) / vues * 1000 : null,
+      heure: pub.getHours(),
+    };
+  });
+}
+
+// ---------- Affichage ----------
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function chart(id, cfg) {
+  charts[id]?.destroy();
+  Chart.defaults.color = css("--muted"); Chart.defaults.borderColor = css("--border");
+  charts[id] = new Chart(document.getElementById(id), { ...cfg, options: { maintainAspectRatio: false, ...cfg.options } });
+}
+
+function render() {
+  fillSelects();
+  const has = videos.length > 0;
+  document.getElementById("dash").classList.toggle("hidden", !has);
+  document.getElementById("empty").classList.toggle("hidden", has);
+  if (!has) return;
+  const V = enrich(), withViews = V.filter(v => v.vues != null);
+
+  document.getElementById("kpis").innerHTML = [
+    [videos.length, "vidéos suivies"],
+    [fmt(withViews.reduce((s, v) => s + v.vues, 0)), "vues au total"],
+    [fmt(median(withViews.map(v => v.vues))), "vues médianes / vidéo"],
+    [pct(median(V.map(v => v.engagement))), "engagement médian"],
+    [pct(median(V.map(v => v.retention))), "rétention médiane"],
+  ].map(([b, s]) => `<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join("");
+
+  // Par format
+  const formats = [...new Set(V.map(v => v.format || "?"))];
+  const byF = f => V.filter(v => (v.format || "?") === f);
+  const ordered = formats.map(f => ({ f, n: byF(f).length, vues: median(byF(f).map(v => v.vues)) })).sort((a, b) => (b.vues || 0) - (a.vues || 0));
+  chart("cFormat", {
+    type: "bar",
+    data: { labels: ordered.map(o => `${o.f} (${o.n})`), datasets: [{ data: ordered.map(o => o.vues), backgroundColor: css("--accent"), borderRadius: 6 }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+  });
+  chart("cEngage", {
+    type: "bar",
+    data: {
+      labels: ordered.map(o => o.f),
+      datasets: [
+        { label: "Engagement", data: ordered.map(o => (median(byF(o.f).map(v => v.engagement)) ?? 0) * 100), backgroundColor: css("--accent"), borderRadius: 6 },
+        { label: "Rétention", data: ordered.map(o => (median(byF(o.f).map(v => v.retention)) ?? 0) * 100), backgroundColor: css("--accent2"), borderRadius: 6 },
+      ],
+    },
+    options: { scales: { y: { beginAtZero: true, ticks: { callback: v => v + " %" } } } },
+  });
+
+  // Courbes (10 vidéos les plus vues)
+  const palette = ["#fe2c55", "#25f4ee", "#f59e0b", "#8b5cf6", "#16a34a", "#3b82f6", "#ec4899", "#14b8a6", "#ef4444", "#a3a3a3"];
+  const top = [...withViews].sort((a, b) => b.vues - a.vues).slice(0, 10);
+  chart("cCourbe", {
+    type: "line",
+    data: { datasets: top.map((v, i) => ({
+      label: v.nom, data: v.releves.map(r => ({ x: +r.age_h.toFixed(1), y: num(r.vues) })),
+      borderColor: palette[i], backgroundColor: palette[i], tension: .25, pointRadius: 3,
+    })) },
+    options: {
+      parsing: false,
+      scales: { x: { type: "linear", min: 0, title: { display: true, text: "heures après publication" } }, y: { beginAtZero: true } },
+      plugins: { legend: { labels: { boxWidth: 10 } } },
+    },
+  });
+
+  // Par heure
+  const hours = [...Array(24).keys()];
+  chart("cHeure", {
+    type: "bar",
+    data: { labels: hours.map(h => h + "h"), datasets: [{ data: hours.map(h => median(V.filter(v => v.heure === h).map(v => v.vues))), backgroundColor: css("--accent2"), borderRadius: 4 }] },
+    options: { plugins: { legend: { display: false }, tooltip: { callbacks: { afterLabel: c => V.filter(v => v.heure === c.dataIndex).length + " vidéo(s)" } } }, scales: { y: { beginAtZero: true } } },
+  });
+
+  renderTable(V);
+}
+
+function renderTable(V) {
+  const cols = [
+    ["nom", "Vidéo", v => v.nom], ["format", "Format", v => `<span class="tag">${v.format || "?"}</span>`],
+    ["pub", "Publiée", v => v.pub.toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })],
+    ["age_h", "Âge relevé", v => v.age_h == null ? "–" : v.age_h < 48 ? Math.round(v.age_h) + " h" : Math.round(v.age_h / 24) + " j"],
+    ["vues", "Vues", v => fmt(v.vues)], ["likes", "Likes", v => fmt(v.likes)], ["partages", "Partages", v => fmt(v.partages)],
+    ["engagement", "Engagement", v => pct(v.engagement)], ["partage", "Taux partage", v => pct(v.partage)],
+    ["retention", "Rétention", v => pct(v.retention)], ["complete", "Vue entière", v => pct(v.complete)],
+    ["abos1k", "Abos / 1k vues", v => v.abos1k == null ? "–" : v.abos1k.toFixed(1).replace(".", ",")],
+    ["nbReleves", "Relevés", v => v.nbReleves],
+  ];
+  const sorted = [...V].sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (x == null) return 1; if (y == null) return -1;
+    return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+  });
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const table = document.getElementById("table");
+  table.innerHTML = `<thead><tr>${cols.map(([k, l]) => `<th data-k="${k}">${l}${k === sortKey ? (sortDir < 0 ? " ↓" : " ↑") : ""}</th>`).join("")}</tr></thead>` +
+    `<tbody>${sorted.map(v => `<tr>${cols.map(([k, , f]) => `<td>${k === "nom" ? esc(f(v)) : f(v)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  table.querySelectorAll("th").forEach(th => th.onclick = () => {
+    sortDir = th.dataset.k === sortKey ? -sortDir : -1; sortKey = th.dataset.k; renderTable(V);
+  });
+}
+
+function fillSelects() {
+  const sel = document.querySelector("#fReleve select");
+  const cur = sel.value;
+  sel.innerHTML = [...videos].reverse().map(v => `<option value="${v.id}">${v.id} · ${v.nom.replace(/</g, "&lt;")}</option>`).join("");
+  if (cur) sel.value = cur;
+  document.getElementById("formats").innerHTML = [...new Set(videos.map(v => v.format).filter(Boolean))].map(f => `<option value="${f}">`).join("");
+}
+
+// ---------- Formulaires ----------
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  document.getElementById("fReleve").classList.toggle("hidden", b.dataset.tab !== "releve");
+  document.getElementById("fVideo").classList.toggle("hidden", b.dataset.tab !== "video");
+});
+function nowInputs(form, d, h) {
+  const n = new Date(), p = x => String(x).padStart(2, "0");
+  form[d].value = `${n.getFullYear()}-${p(n.getMonth() + 1)}-${p(n.getDate())}`;
+  form[h].value = `${p(n.getHours())}:${p(n.getMinutes())}`;
+}
+const fR = document.getElementById("fReleve"), fV = document.getElementById("fVideo");
+nowInputs(fR, "date_releve", "heure_releve");
+const saveMsg = (t, err) => { const m = document.getElementById("saveMsg"); m.textContent = t; m.style.color = err ? "var(--accent)" : ""; };
+async function save(form, fn) {
+  if (!conf().token) { saveMsg("Connecte d'abord GitHub (en haut de la page) pour enregistrer.", true); document.getElementById("ghBox").open = true; return; }
+  const btn = form.querySelector("button"); btn.disabled = true; saveMsg("Enregistrement sur GitHub…");
+  try { await fn(); await load(); saveMsg("Enregistré sur GitHub ✓"); return true; }
+  catch (e) { saveMsg("Échec : " + e.message, true); }
+  finally { btn.disabled = false; }
+}
+fR.onsubmit = async e => {
+  e.preventDefault();
+  if (!videos.length) { saveMsg("Ajoute d'abord une vidéo.", true); return; }
+  const row = Object.fromEntries(RELEVE_COLS.map(c => [c, fR[c].value]));
+  const ok = await save(fR, () => appendRow(FILES.releves, RELEVE_COLS, () => row, `Relevé ${row.video_id} du ${row.date_releve} ${row.heure_releve}`));
+  if (ok) { const keep = row.video_id; fR.reset(); fR.video_id.value = keep; nowInputs(fR, "date_releve", "heure_releve"); }
+};
+fV.onsubmit = async e => {
+  e.preventDefault();
+  const data = Object.fromEntries(VIDEO_COLS.slice(1).map(c => [c, fV[c].value]));
+  let id;
+  const ok = await save(fV, () => appendRow(FILES.videos, VIDEO_COLS, rows => {
+    const max = rows.reduce((m, v) => Math.max(m, parseInt((v.id || "").replace(/\D/g, "")) || 0), 0);
+    id = "v" + String(max + 1).padStart(3, "0");
+    return { id, ...data };
+  }, `Nouvelle vidéo : ${data.nom}`));
+  if (ok) {
+    fV.reset();
+    document.querySelector('.tabs button[data-tab="releve"]').click();
+    fR.video_id.value = id;
+  }
+};
+
+// ---------- Chargement ----------
+const fG = document.getElementById("fGh");
+function fillGh() { const c = conf(); for (const k of ["owner", "repo", "branch"]) fG[k].value = c[k]; fG.token.value = ""; fG.token.placeholder = c.token ? "jeton enregistré ✓" : "github_pat_…"; }
+fG.onsubmit = e => {
+  e.preventDefault();
+  for (const k of ["owner", "repo", "branch"]) store.set("gh_" + k, fG[k].value.trim());
+  if (fG.token.value.trim()) store.set("gh_token", fG.token.value.trim());
+  fillGh(); load();
+};
+document.getElementById("ghLogout").onclick = () => { store.set("gh_token", null); fillGh(); load(); };
+function setStatus(t, err) { const s = document.getElementById("status"); s.textContent = "· " + t; s.style.color = err ? "var(--accent)" : ""; }
+
+async function load() {
+  const c = conf();
+  try {
+    if (c.token && c.owner && c.repo) {
+      [videos, releves] = (await Promise.all([FILES.videos, FILES.releves].map(readFile))).map(f => f.rows);
+      setStatus(`connecté à ${c.owner}/${c.repo}`);
+    } else {
+      // Sans jeton : lecture seule des fichiers publiés avec la page
+      [videos, releves] = await Promise.all([FILES.videos, FILES.releves].map(u =>
+        fetch(u + "?t=" + Date.now(), { cache: "no-store" }).then(r => { if (!r.ok) throw new Error("fichiers introuvables"); return r.text(); }).then(parseCSV)));
+      setStatus("lecture seule, ajoute ton jeton pour enregistrer");
+    }
+  } catch (e) {
+    setStatus("erreur : " + e.message, true);
+    document.getElementById("ghBox").open = true;
+  }
+  render();
+}
+fillGh();
+if (!conf().token) document.getElementById("ghBox").open = true;
+load();
+</script>
+</body>
+</html>
